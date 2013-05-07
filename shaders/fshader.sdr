@@ -1,0 +1,38 @@
+uniform float time;
+uniform float[7] dials;
+uniform sampler2D tex;
+varying vec2 texc;
+
+const int numsamples = 40;
+const float samplestr = 2.2;
+const float sampledist = 2.0;
+
+const float pi = 3.14159;
+
+void main (void)  
+{   
+	vec2 dir = 0.5 - texc;
+	float s = length(dir);
+	float ang = atan2(dir.x, dir.y) - atan2(1, 0);
+	//acos(dot(dir, vec2(1.0, 0.0))/s);
+	
+	float frequency = dials[0]*32.0;
+	float amplitude	= dials[1];
+	float angularpulse	= dials[2]*32.0;
+	float waviness		= dials[3]*32.0;
+	float wave2		= dials[4]*32.0;
+	float wave2amp	= dials[5]*32.0;
+	
+	float concentric = sin(s*frequency - time*10.0 + ang*((int)(angularpulse)));
+	float radiating = cos( sin(s*wave2+time*3.0)*wave2amp+ang*(int)waviness);
+	float wave = amplitude*radiating*concentric;
+	vec2 offset = dir/s * wave;
+	
+	vec2 zoom = (0.5 - texc)*(1.0-dials[6]*0.9) + 0.5;
+	
+	if (gl_Color.b == 0.0) {
+		gl_FragColor = texture2D(tex, zoom+offset);
+	} else {
+		gl_FragColor = gl_Color;
+	}
+} 
