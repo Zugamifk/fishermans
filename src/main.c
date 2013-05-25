@@ -11,6 +11,7 @@ void skeys(int, int, int);
 #define SCREENH 600
 event_bus *Meb;
 mouse_state *Mms;
+audio_system *Mfms;
 shaderprogram *Msp;
 
 int main(int argc, char** argv) {
@@ -24,6 +25,9 @@ int main(int argc, char** argv) {
 	
 	Meb 	= bus_init();	
 	Mms = mouse_init(Meb);
+	
+	Mfms = audio_system_init();
+	
 	gui_init(Meb, Mms, SCREENW, SCREENH);
 	
 	initglut();

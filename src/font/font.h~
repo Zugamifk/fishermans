@@ -1,0 +1,3 @@
+#include "font/fchar.c"
+#include "font/charset.c"
+#include "font/font.c"

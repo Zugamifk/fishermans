@@ -11,6 +11,7 @@
 #include <GL/glut.h>
 #include <GL/glu.h>
 #include <fmod.h>
+#include <fmod_errors.h>
 
 #ifndef pi
     #define pi 3.14159
@@ -30,6 +31,8 @@ double TIME, DTIME;
 #include "loader.c"
 
 #include "mouse.c"
+
+#include "audio/audio.h"
 
 #include "color.c"
 #include "font/font.h"
