@@ -29,6 +29,8 @@ int main(int argc, char** argv) {
 	Mfms = audio_system_init();
 	
 	gui_init(Meb, Mms, SCREENW, SCREENH);
+
+	audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);
 	
 	initglut();
 
