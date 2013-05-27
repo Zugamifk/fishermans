@@ -16,6 +16,8 @@ audio_system_init()
 	result = FMOD_System_Init(fs, 100, FMOD_INIT_NORMAL, 0);
 	ERRCHECK(result);
 	
+	audio_tone_init_frequencies();
+	
 	return as;
 
 }

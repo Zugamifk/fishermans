@@ -4,27 +4,50 @@ float **audio_vars;
 float audio_time;
 
 AUDIO_STREAM_TYPE
-_audio_tonegentest
+_audio_tone
 (float n)
 {
-
-	float samplerate = AUDIO_SAMPLERATE;
+	float tone = 0;
+	
 	float cycle = 2.0*pi; 
 	float pos = n*cycle;
 	
-	float pulseamplitude = *(audio_vars[1]);
-	float pulse = 1.0+cos(pos*pulseamplitude);
+	float samplelen = cycle;
+	float sustain = *(audio_vars[1]);
 	
-	float lowkey = 10;
-	float highkey = 78;
-	float key = *(audio_vars[2]) * (highkey - lowkey) + lowkey;
-	float pitch = pow(2.0, (key - 49.0)/12.0)*440.0;
+	int range = 3**(audio_vars[4]);
+	int lowkey = 4+12*range;
+	int highkey = 87-12*range;
+	int key = *(audio_vars[7]) * (highkey - lowkey) + lowkey;
+	float noise = *(audio_vars[5]);
 	
-	//float drop = 1.0/(10.0*(*(audio_vars[3]))*n+0.0001);
+	float noisepeak = *(audio_vars[6])*samplelen;
+	float tonepeak = *(audio_vars[3])*samplelen;
 	
-	float tone = sin(pos*pitch)*pulse;
+	float noiseadsr = audio_tone_adsr(pos, samplelen, noisepeak*0.9, noisepeak*0.95, sustain, samplelen-0.2);
+	float toneadsr = audio_tone_adsr(pos, samplelen, tonepeak*0.9, tonepeak*0.95, sustain, samplelen-0.2);
+	
+	float d = 1;
+	for (int i = -range; i <= range; i++) {
+		tone += toneadsr*audio_tone_sin(key+i*12, pos, i*cycle)*(1.0-noise)/d;
+		d+=1;
+	}	
+	
+	tone += noiseadsr*audio_tone_noise()*noise;
+	
+	tone += math_usin(n)*audio_tone_square(16, pos, 0)*0.1**(audio_vars[2]);
 	
 	return tone;
+}
+
+AUDIO_STREAM_TYPE
+_audio_tonegentest
+(float n)
+{
+	float signal = _audio_tone(n);
+	
+	return signal;
+
 }
 
 
@@ -67,7 +90,7 @@ audio_test_init
 	audio_vars = malloc(sizeof(float *)*(1+paramsct));
 	audio_vars[0] = &audio_time;
 	for(int i=0;i<paramsct;i++) {
-		audio_vars[i+1] = cbparams+i;
+		*(audio_vars+i+1) = cbparams+i;
 	}
 	
 	_audio_test_stream = audio_stream_init(as, _audio_stream_bufferreadcb);

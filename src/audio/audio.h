@@ -17,6 +17,10 @@ t_audio_stream
 	int			generatorpramsct;
 } audio_stream;
 
+float 	*audio_tone_frequencies;
+#define AUDIO_TONE_FRQCT 88
+
+#include "audio_tone.c"
 #include "audio_stream.c"
 #include "audio_system.c"
 #include "audio_test.c"
