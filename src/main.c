@@ -16,6 +16,19 @@ shaderprogram *Msp;
 
 int main(int argc, char** argv) {
 
+	
+	hashtable *t = hashtable_init(10);
+	hashtable_insert(t, "duck", "quack");
+	hashtable_insert(t, "cat", "meow");
+	hashtable_insert(t, "dog", "moo");
+	printf("%s\t%s\t%s\n",  hashtable_get(t, "duck"), hashtable_get(t, "cat"), hashtable_get(t, "dog"));
+	hashtable_remove(t, "dog");
+		printf("%s\t%s\t%s\n",  hashtable_get(t, "duck"), hashtable_get(t, "cat"), hashtable_get(t, "dog"));
+
+	errorlog *l = errorlog_init("LOG!!!!!", "errorlog.txt", 0);
+	errorlog_logdef(l, "poop", "cat");
+	errorlog_free(l);
+		
 	srand(time(NULL));
 	glutInit(&argc, argv);
 	
@@ -27,10 +40,10 @@ int main(int argc, char** argv) {
 	Mms = mouse_init(Meb);
 	
 	Mfms = audio_system_init();
-	
-	gui_init(Meb, Mms, SCREENW, SCREENH);
 
-	audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);
+	//gui_init(Meb, Mms, SCREENW, SCREENH);
+
+	//audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);
 	
 	initglut();
 
@@ -92,9 +105,9 @@ update(int v)
 	TIME += DTIME;
 
 	shader_update1f(Msp, "time", TIME);
-	shader_update1fv(Msp, "dials", SDR_NUMDIALS, gui_dials);
+	//shader_update1fv(Msp, "dials", SDR_NUMDIALS, gui_dials);
 	
-	gui_update(TIME, DTIME);
+	//gui_update(TIME, DTIME);
 	
 	glutTimerFunc(16, update, v);
 }
@@ -107,7 +120,7 @@ draw()
 	shader_update1i(Msp, "tex", 0);
 	glBindTexture(GL_TEXTURE_2D, Msp->texture);
 	
-	gui_draw(TIME, DTIME);
+	//gui_draw(TIME, DTIME);
  //     gluPerspective( 60.0, aspectratio, 1.0, 30.0 );
 
   //  gluLookAt(0.0, 5.0, -7.0,
@@ -125,7 +138,7 @@ resize(int w, int h)
 	glViewport( 0, 0, w, h );	// View port uses whole window
 	aspectratio = (float)w/(float)h;
 	
-	gui_resize(w, h);
+	//gui_resize(w, h);
 
 	// Set up the projection view matrix (not very well!)
     glMatrixMode( GL_PROJECTION );

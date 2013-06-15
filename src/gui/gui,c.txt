@@ -1,0 +1,6 @@
+typedef struct
+t_gui
+{
+	gui_dimensions	dim;
+	gui_position	pos;
+} gui;

@@ -20,15 +20,19 @@
 double aspectratio;
 double TIME, DTIME;
 
+#include "lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"
 #include "math.c"
 
+
 #include "list.c"
+#include "hashtable.c"
 
 #include "event/bus.h"
 
 #include "loader.c"
+#include "errorlog.c"
 
 #include "mouse.c"
 

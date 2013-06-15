@@ -1,6 +1,8 @@
 #define vec2_print(v)		(vec4_print(v))
 #define vec2_new(x, y) 		(vec4_new(x, y, 0.0, 0.0))
 #define vec2_set(v, x, y) 	(vec4_set(v, x, y, 0.0, 0.0))
+#define vec2_apply(v)		(vec4_apply(v))
+#define vec2_translate(v)		(vec4_translate(v))
 #define vec2_add(r, x, y)	(vec4_add(r, x, y))
 #define vec2_sub(r, x, y)	(vec4_sub(r, x, y))
 #define vec2_scale(r, v, s)	(vec4_scale(r, v, s))
