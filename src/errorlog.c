@@ -1,6 +1,8 @@
 #define ERRORLOG_BUFFERLEN 1024
 #define	ERRORLOG_MESSAGELEN	1024
 
+#define ERRORLOG
+
 typedef void (*_cb_errorlog_errorformat)(char*, char**, int);
 
 typedef struct
@@ -14,6 +16,32 @@ _S_errorlog
 } errorlog;
 
 void
+_errorlog_logerrorlogerror
+(
+	char*	log,
+	char*	error
+)
+{
+	snprintf(log, ERRORLOG_MESSAGELEN, "ERROR LOG ERROR! ERROR CAUSED ERROR! ERROR LOG ERROR:\n\t%s\n", error);
+}
+
+void
+_errorlog_defaulterror_undecorated
+(
+	char*	log,
+	char**	messages,
+	int		messagect
+)
+{
+	char msg[ERRORLOG_MESSAGELEN], frag[ERRORLOG_MESSAGELEN];
+	for (int i = 0; i < messagect; i++) {
+		sprintf(frag, "%s\n", messages[i]);
+		strcat(msg, frag);
+	}
+	strcpy(log, msg);
+}
+
+void
 _errorlog_defaulterror
 (
 	char*	log,
@@ -21,8 +49,17 @@ _errorlog_defaulterror
 	int		messagect
 )
 {
-	if (messagect != 3) return;
-	snprintf(log, ERRORLOG_MESSAGELEN, "ERROR! <%s>:\n\t %s\n\t\t%s\n", messages[0], messages[1], messages[2]);
+	if  (messagect > 0) {
+		char msg[ERRORLOG_MESSAGELEN], frag[ERRORLOG_MESSAGELEN];
+		sprintf(msg, "ERROR: %s\n", messages[0]);
+		for (int i = 1; i < messagect; i++) {
+			sprintf(frag, "\t%s\n", messages[i]);
+			strcat(msg, frag);
+		}
+		strcpy(log, msg);
+	} else {
+		snprintf(log, ERRORLOG_MESSAGELEN, "ERROR: -- NO MESSAGE GIVEN --");
+	}
 }
 
 void
@@ -32,26 +69,10 @@ _errorlog_flushbuffer
 )
 {
 	for (int i = 0; i < log->bufferlen; i--) {
-		int success = fputs(log->buffer[i], log->log);
-		printf("%d\n", success);
+		fputs(log->buffer[i], log->log);
 	}
 	log->bufferlen = 0;
 }
-
-void
-errorlog_pusherror
-(
-	errorlog*	log,
-	char**		messages,
-	int 		messagect
-)
-{
-	if (log->bufferlen  == ERRORLOG_BUFFERLEN) _errorlog_flushbuffer(log);
-	int place = log->bufferlen;
-	log->formaterror(log->buffer[place], messages, messagect); 
-	log->bufferlen++;
-	printf("%s", log->buffer[place]);
-}	
 
 errorlog*
 errorlog_init
@@ -83,6 +104,20 @@ errorlog_init
 }
 
 void
+errorlog_pusherror
+(
+	errorlog*	log,
+	char**		messages,
+	int 		messagect
+)
+{
+	if (log->bufferlen  == ERRORLOG_BUFFERLEN) _errorlog_flushbuffer(log);
+	int place = log->bufferlen;
+	log->formaterror(log->buffer[place], messages, messagect); 
+	log->bufferlen++;
+}	
+
+void
 errorlog_logdef
 (
 	errorlog*	log,
@@ -90,9 +125,10 @@ errorlog_logdef
 	char*		errormsg
 )
 {
-	
-	char* msgs[] = {log->name, errortype, errormsg};
-	errorlog_pusherror(log, msgs, 3);
+	if (errortype == NULL) errortype = "-- NO TYPE GIVEN --";
+	if (errormsg == NULL) errormsg = "-- NO ERROR MESSAGE GIVEN --";
+	char* msgs[] = {errortype, errormsg};
+	errorlog_pusherror(log, msgs, 2);
 }
 
 void
@@ -111,3 +147,24 @@ errorlog_free
 	free(log->buffer);
 	free(log);
 }
+
+#ifdef EVENT_BUS
+typedef struct
+_S_errorlog_eventdata
+{
+	errorlog *log;
+	char** messages;
+	int messagect;
+} errorlog_eventdata;
+
+void
+errorlog_errorevent
+(
+	void*	data
+)
+{
+	errorlog_eventdata* ed = (errorlog_eventdata*)data;
+	errorlog_pusherror(ed->log, ed->messages, ed->messagect);
+}
+
+#endif

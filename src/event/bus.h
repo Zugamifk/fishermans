@@ -1,3 +1,5 @@
+#define EVENT_BUS 1
+
 #define	EVENT_LIST_MAX	1<<0xf
 #define EVENT_SUBSCRIPTION_MAX	1<<0xf
 

@@ -74,6 +74,7 @@ gui_cell_draw
 				glTranslatef(*x, *y, 0);
 				
 				glPushMatrix();
+				cell->drawcb(cell, t, dt);
 				gui_cell_draw(cell->cells[i], t, dt);
 				glPopMatrix();
 				

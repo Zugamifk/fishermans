@@ -7,28 +7,18 @@ void resize(int, int);
 void upkeys(unsigned char, int, int);
 void skeys(int, int, int);
 
+void quit();
+
 #define SCREENW 800
 #define SCREENH 600
 event_bus *Meb;
+errorlog *Mlog;
 mouse_state *Mms;
 audio_system *Mfms;
 shaderprogram *Msp;
 
 int main(int argc, char** argv) {
-
 	
-	hashtable *t = hashtable_init(10);
-	hashtable_insert(t, "duck", "quack");
-	hashtable_insert(t, "cat", "meow");
-	hashtable_insert(t, "dog", "moo");
-	printf("%s\t%s\t%s\n",  hashtable_get(t, "duck"), hashtable_get(t, "cat"), hashtable_get(t, "dog"));
-	hashtable_remove(t, "dog");
-		printf("%s\t%s\t%s\n",  hashtable_get(t, "duck"), hashtable_get(t, "cat"), hashtable_get(t, "dog"));
-
-	errorlog *l = errorlog_init("LOG!!!!!", "errorlog.txt", 0);
-	errorlog_logdef(l, "poop", "cat");
-	errorlog_free(l);
-		
 	srand(time(NULL));
 	glutInit(&argc, argv);
 	
@@ -37,6 +27,12 @@ int main(int argc, char** argv) {
 	vec4_initglobals();
 	
 	Meb 	= bus_init();	
+	
+	Mlog = errorlog_init("Main", "errorlog.txt", 0);
+	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
+	
+	guilang_state *sss = guilang_init("guilang spec.txt");
+	
 	Mms = mouse_init(Meb);
 	
 	Mfms = audio_system_init();
@@ -47,6 +43,8 @@ int main(int argc, char** argv) {
 	
 	initglut();
 
+	quit();
+	
 	return 0;
 }
 
@@ -155,7 +153,7 @@ upkeys(unsigned char key, int x, int y)
 	switch(key) {
 		case 27:
 			// kill window somehow
-			exit(0);
+			quit();
 		break;
 	}
 }
@@ -170,4 +168,14 @@ skeys(int key, int x, int y)
 		case GLUT_KEY_DOWN:
 		break;
 	}
+}
+
+void
+quit
+(
+	void
+)
+{
+	errorlog_free(Mlog);
+	exit(0);
 }

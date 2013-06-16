@@ -20,3 +20,4 @@ void gui_drawdefault(void*, float, float);
 #include "gui_cell.c"
 #include "gui_window.c"
 #include "gui.c"
+#include "gui_lang.c"
