@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
 	Mlog = errorlog_init("Main", "errorlog.txt", 0);
 	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
 	
-	guilang_state *sss = guilang_init("guilang spec.txt");
+	guilang_specification *sss = guilang_init("guilang spec.txt");
 	
 	Mms = mouse_init(Meb);
 	

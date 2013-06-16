@@ -45,9 +45,10 @@ _hashtable_initbucket
 {
 	_hashtable_bucket* bucket = malloc(sizeof(_hashtable_bucket));
 	
-	bucket->key = key;
+	bucket->key = malloc(strlen(key)+1);
+	strcpy(bucket->key, key);
 	bucket->value = value;
-	
+
 	return bucket;
 }
 
@@ -115,9 +116,10 @@ hashtable_insert
 	if (hashtable_isfull(table)) return;
 	
 	_hashtable_bucket** data = table->data;
-	int hash = _hashtable_hash(key);
-	int place = hash%table->size;
+	unsigned int hash = _hashtable_hash(key);
+	unsigned int place = hash%table->size;
 	int free = table->size - table->load;
+
 	for (int i = 0; i < free; i++) {
 		if (data[place] == NULL) {
 			data[place] = _hashtable_initbucket(key, value);
@@ -191,4 +193,22 @@ hashtable_remove
 		free(bucket->value);
 		free(bucket);
 	}
+}
+
+void
+hashtable_print
+(
+	hashtable*	table,
+	void (*datatostring)(void*)
+)
+{
+	printf("LOAD: %d\tCAPACITY: %d\tLOAD FACTOR THRESHOLD: %.2f\nDATA:{", table->load, table->size, table->lfthreshold);
+	for (int i = 0; i < table->size; i++) {
+		if (table->data[i] != NULL) {
+			printf("\t%s : ", table->data[i]->key);
+			datatostring(table->data[i]->value);
+			printf("\n");
+		}
+	}
+	printf("}\n");
 }
