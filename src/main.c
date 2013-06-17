@@ -1,5 +1,11 @@
 #include "main.h"
 
+#define DEBUGMAIN
+#ifdef DEBUGMAIN
+	#define DEBUG_DONTOPENWINDOW
+	#define DEBUG_KEEPLOG
+#endif
+
 void initglut();
 void update(int v);
 void draw();
@@ -31,7 +37,7 @@ int main(int argc, char** argv) {
 	Mlog = errorlog_init("Main", "errorlog.txt", 0);
 	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
 	
-	guilang_specification *sss = guilang_init("guilang spec.txt");
+	guilang_specification *sss = guilang_initspecification("guilang spec.txt");
 	
 	Mms = mouse_init(Meb);
 	
@@ -41,8 +47,10 @@ int main(int argc, char** argv) {
 
 	//audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);
 	
+	#ifndef DEBUG_DONTOPENWINDOW
 	initglut();
-
+	#endif
+	
 	quit();
 	
 	return 0;

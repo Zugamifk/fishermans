@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <string.h>
 #include <memory.h>
+#include <stdbool.h>
 
 #define GLEW_STATIC
 #include "glew/glew.c"
