@@ -1,3 +1,51 @@
+// TOKEN TYPES
+typedef enum
+_E_guilang_spec_token
+{
+	GUILANGSPEC_GUIHEAD,
+	GUILANGSPEC_WINDOWHEAD,
+	GUILANGSPEC_CELLHEAD,
+	GUILANGSPEC_HEADERPARENOPEN,
+	GUILANGSPEC_HEADERPARENCLOSE,
+	GUILANGSPEC_BODYPARENOPEN,
+	GUILANGSPEC_BODYPARENCLOSE,
+	GUILANGSPEC_KEYWORDPARAM,
+	GUILANGSPEC_NUMBER,
+	GUILANGSPEC_STRING,
+	GUILANGSPEC_OPERATOR,
+	GUILANGSPEC_OPTPARENOPEN,
+	GUILANGSPEC_OPTPARENCLOSE,
+	GUILANGSPEC_SETPARENOPEN,
+	GUILANGSPEC_SETPARENCLOSE,
+	GUILANGSPEC_SETSEP,
+	GUILANGSPEC_KLEENESTAR,
+	GUILANGSPEC_NONTERMINAL,
+	GUILANGSPEC_ENDOFSTRING
+} _guilang_spec_token;
+
+const char* _P_guilang_spec_tokenstrings[] = 
+{
+	"GUILANGSPEC_GUIHEAD",
+	"WINDOWHEAD",
+	"CELLHEAD",
+	"HEADERPARENOPEN",
+	"HEADERPARENCLOSE",
+	"BODYPARENOPEN",
+	"BODYPARENCLOSE",
+	"KEYWORDPARAM",
+	"NUMBER",
+	"STRING",
+	"OPERATOR",
+	"OPTPARENOPEN",
+	"OPTPARENCLOSE",
+	"SETPARENOPEN",
+	"SETPARENCLOSE",
+	"SETSEP",
+	"KLEENESTAR",
+	"NONTERMINAL",
+	"ENDOFSTRING"
+};
+
 typedef struct
 _S_guilang_specification
 {
@@ -5,6 +53,74 @@ _S_guilang_specification
 	int version;
 } guilang_specification;
 
+_guilang_tokenpair*
+guilang_parseword
+(
+	char*	word,
+	_guilang_tokenpair*	holder
+)
+{
+	char* keywords[] = {"x", "y", "w", "h", "active", "inactive", "horizontal", "vertical"};
+	char* operators[] = {":"};
+	_guilang_spec_token token;
+	if (strcmp(word, "\'GUI\'") == 0) {
+		token = GUILANGSPEC_GUIHEAD;
+	} else
+	if (strcmp(word, "\'WINDOW\'") == 0) {
+		token = GUILANGSPEC_WINDOWHEAD;
+	} else
+	if (strcmp(word, "\'CELL\'") == 0) {
+		token = GUILANGSPEC_CELLHEAD;
+	} else 
+	if (strcmp(word, "\'(\'") == 0) {
+		token = GUILANGSPEC_HEADERPARENOPEN;
+	} else
+	if (strcmp(word, "\')\'") == 0) {
+		token = GUILANGSPEC_HEADERPARENCLOSE;
+	} else
+	if (strcmp(word, "\'{\'") == 0) {
+		token = GUILANGSPEC_BODYPARENOPEN;
+	} else
+	if (strcmp(word, "\'}\'") == 0) {
+		token = GUILANGSPEC_BODYPARENCLOSE;
+	} else
+	if (_guilang_comparewords(word, keywords, 8) == 0) {
+		token = GUILANGSPEC_KEYWORDPARAM;
+	} else
+	if (strcmp(word, "NUMBER") == 0 || atoi(word) || atof(word)) {
+		token = GUILANGSPEC_NUMBER;
+	} else
+	if (strcmp(word, "STRING") == 0 || word[0] == '\'') {
+		token = GUILANGSPEC_STRING;
+	} else
+	if (_guilang_comparewords(word, operators, 1) == 0) {
+		token = GUILANGSPEC_OPERATOR;
+	} else
+	if (strcmp(word, "[") == 0) {
+		token = GUILANGSPEC_OPTPARENOPEN;
+	} else 
+	if (strcmp(word, "]") == 0) {
+		token = GUILANGSPEC_OPTPARENCLOSE;
+	} else
+	if (strcmp(word, "(") == 0) {
+		token = GUILANGSPEC_SETPARENOPEN;
+	} else
+	if (strcmp(word, ")") == 0) {
+		token = GUILANGSPEC_SETPARENCLOSE;
+	} else
+	if (strcmp(word, "|") == 0) {
+		token = GUILANGSPEC_SETSEP;
+	} else
+	if (strcmp(word, "*") == 0) {
+		token = GUILANGSPEC_KLEENESTAR;
+	} else
+	if (strcmp(word, "ENDOFSTRING") == 0) {
+		token = GUILANGSPEC_ENDOFSTRING;
+	} else {
+		token = GUILANGSPEC_NONTERMINAL;
+	}
+	return guilang_makepair(token, word, holder);
+}
 
 _guilang_tokenpair**
 _guilang_buildphrase
@@ -13,8 +129,8 @@ _guilang_buildphrase
 )
 {
 	_guilang_tokenpair** transition = malloc(sizeof(_guilang_tokenpair)*GUILANG_LINELEN);
-	
 	int i = 0;
+	
 	while (*phrase != '\0') {
 		char word[GUILANG_LINELEN];
 		sscanf(phrase, " %s ", word);
@@ -25,7 +141,7 @@ _guilang_buildphrase
 		i++;
 	}
 
-	transition[i] = guilang_makepair(ENDOFSTRING, "EOS", NULL);
+	transition[i] = guilang_parseword("ENDOFSTRING", NULL);
 	return transition;
 }
 
@@ -34,14 +150,14 @@ void prntphr(void* d)
 	_guilang_tokenpair** phrase = (_guilang_tokenpair **) d;
 	if (GUILANG_PRINTTOKENSTRINGS) {
 		_guilang_tokenpair* t = *phrase;
-		while (t->token != ENDOFSTRING) {
-			printf("%s ", t->string);
+		while (t->token != GUILANGSPEC_ENDOFSTRING) {
+			printf("\"%s\" ", t->string);
 			t = *(++phrase);
 		}
 	} else {
 		_guilang_tokenpair* t =*(_guilang_tokenpair**)d;
-		while (t->token != ENDOFSTRING) {
-			printf("%s ", _P_guilang_tokenstrings[t->token]);
+		while (t->token != GUILANGSPEC_ENDOFSTRING) {
+			printf("%s ", _P_guilang_spec_tokenstrings[t->token]);
 			t = *(++phrase);
 		}
 	}	

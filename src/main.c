@@ -36,13 +36,13 @@ int main(int argc, char** argv) {
 	
 	Mlog = errorlog_init("Main", "errorlog.txt", 0);
 	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
-	
-	guilang_specification *sss = guilang_initspecification("guilang spec.txt");
-	
+		
 	Mms = mouse_init(Meb);
 	
 	Mfms = audio_system_init();
-
+	
+	guilang_compile();
+	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
 	//audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);

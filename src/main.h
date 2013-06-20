@@ -6,6 +6,7 @@
 #include <string.h>
 #include <memory.h>
 #include <stdbool.h>
+#include <ctype.h>
 
 #define GLEW_STATIC
 #include "glew/glew.c"
