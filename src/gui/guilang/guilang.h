@@ -9,6 +9,11 @@
 	#define GUILANG_DEFAULTSPEC ("guilang spec.txt")
 #endif
 
+#ifdef GUILANG_DEBUG
+#define GUILANG_SPEC_PRINTRESULT 1
+#endif //GUILANG_DEBUG
+#define GUILANG_PARSER_MAXNESTINGDEPTH 256
+
 const int _guilang_tokencount = 12;
 typedef enum
 _E_guilang_token
@@ -74,5 +79,6 @@ const char _guilang_specialchars[] = {
 #include "guilang.c"
 #include "guilang_specification.c"
 #include "guilang_tokenizer.c"
+#include "guilang_parser.c"
 
 #include "guilang_compile.c"

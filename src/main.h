@@ -27,7 +27,7 @@ double TIME, DTIME;
 #include "math/vector.h"
 #include "math.c"
 
-
+#include "stack.c"
 #include "list.c"
 #include "hashtable.c"
 

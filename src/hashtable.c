@@ -1,4 +1,4 @@
-#define HASHTABLE_MAXSIZE	256
+#define HASHTABLE_MAXSIZE	1024
 #define HASHTABLEDATA void
 #define HASHTABLEPROBE 0
 
@@ -114,12 +114,10 @@ hashtable_insert
 {
 
 	if (hashtable_isfull(table)) return;
-	
 	_hashtable_bucket** data = table->data;
 	unsigned int hash = _hashtable_hash(key);
 	unsigned int place = hash%table->size;
 	int free = table->size - table->load;
-
 	for (int i = 0; i < free; i++) {
 		if (data[place] == NULL) {
 			data[place] = _hashtable_initbucket(key, value);
@@ -139,13 +137,13 @@ _hashtable_getbucket
 )
 {
 	_hashtable_bucket** data = table->data;
-	int hash = _hashtable_hash(key);
-	int place = hash%table->size;
+	unsigned int hash = _hashtable_hash(key);
+	unsigned int place = hash%table->size;
 	_hashtable_bucket* bucket = NULL;
 	float loadfactor = (float)table->load/(float)table->size;
 	for (int i = 0; i < table->size; i++) {
 		bucket = data[place];
-		if (bucket == NULL || (loadfactor > table->lfthreshold && _hashtable_hash(bucket->key) ^ hash)) {
+		if (bucket == NULL || (_hashtable_hash(bucket->key) ^ hash)) {
 			return NULL;
 		} else if (strcmp(bucket->key, key) == 0) {
 			return bucket;

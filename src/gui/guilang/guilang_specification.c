@@ -18,14 +18,13 @@ _E_guilang_spec_token
 	GUILANGSPEC_SETPARENOPEN,
 	GUILANGSPEC_SETPARENCLOSE,
 	GUILANGSPEC_SETSEP,
-	GUILANGSPEC_KLEENESTAR,
 	GUILANGSPEC_NONTERMINAL,
 	GUILANGSPEC_ENDOFSTRING
 } _guilang_spec_token;
 
 const char* _P_guilang_spec_tokenstrings[] = 
 {
-	"GUILANGSPEC_GUIHEAD",
+	"GUIHEAD",
 	"WINDOWHEAD",
 	"CELLHEAD",
 	"HEADERPARENOPEN",
@@ -41,7 +40,6 @@ const char* _P_guilang_spec_tokenstrings[] =
 	"SETPARENOPEN",
 	"SETPARENCLOSE",
 	"SETSEP",
-	"KLEENESTAR",
 	"NONTERMINAL",
 	"ENDOFSTRING"
 };
@@ -50,6 +48,7 @@ typedef struct
 _S_guilang_specification
 {
 	hashtable* grammar;
+	const char*	startkey;
 	int version;
 } guilang_specification;
 
@@ -61,7 +60,7 @@ guilang_parseword
 )
 {
 	char* keywords[] = {"x", "y", "w", "h", "active", "inactive", "horizontal", "vertical"};
-	char* operators[] = {":"};
+	char* operators[] = {":", ","};
 	_guilang_spec_token token;
 	if (strcmp(word, "\'GUI\'") == 0) {
 		token = GUILANGSPEC_GUIHEAD;
@@ -90,11 +89,11 @@ guilang_parseword
 	if (strcmp(word, "NUMBER") == 0 || atoi(word) || atof(word)) {
 		token = GUILANGSPEC_NUMBER;
 	} else
+	if (_guilang_comparewords(word, operators, 2) == 0) {
+		token = GUILANGSPEC_OPERATOR;
+	} else
 	if (strcmp(word, "STRING") == 0 || word[0] == '\'') {
 		token = GUILANGSPEC_STRING;
-	} else
-	if (_guilang_comparewords(word, operators, 1) == 0) {
-		token = GUILANGSPEC_OPERATOR;
 	} else
 	if (strcmp(word, "[") == 0) {
 		token = GUILANGSPEC_OPTPARENOPEN;
@@ -110,9 +109,6 @@ guilang_parseword
 	} else
 	if (strcmp(word, "|") == 0) {
 		token = GUILANGSPEC_SETSEP;
-	} else
-	if (strcmp(word, "*") == 0) {
-		token = GUILANGSPEC_KLEENESTAR;
 	} else
 	if (strcmp(word, "ENDOFSTRING") == 0) {
 		token = GUILANGSPEC_ENDOFSTRING;
@@ -172,6 +168,7 @@ guilang_initspecification
 	guilang_specification* state = malloc(sizeof(guilang_specification));
 	
 	state->grammar = hashtable_init(0);
+	state->startkey = "GUI";
 	
 	FILE* langfile = fopen(langspec, "r");
 	
@@ -184,8 +181,10 @@ guilang_initspecification
 		hashtable_insert(state->grammar, key, _guilang_buildphrase(transitionstring));
 	}
 	
-	if (GUILANG_DEBUG) hashtable_print(state->grammar, prntphr);
-
+	#if GUILANG_SPEC_PRINTRESULT
+		hashtable_print(state->grammar, prntphr);
+	#endif
+	
 	return state;
 
 }
