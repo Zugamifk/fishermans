@@ -63,23 +63,17 @@ guilang_parse
 )
 {
 
+	
 	guilang_parser_error err = GUILANG_PARSER_ERROR_NOERROR;
 	_guilang_tokenpair** in_curr = tokens;
 	
 	_guilang_tokenpair** grammar_curr = hashtable_get(spec->grammar, (char*)spec->startkey);
 	
-	_guilang_tokenpair** parenstack[GUILANG_PARSER_MAXNESTINGDEPTH];
-	_guilang_tokenpair*** parenstackpointer = &parenstack[0];
-	_guilang_tokenpair*** lastsafeparen = parenstackpointer;
+	stack* parenstack = stack_init(0);
+	stack* nonterminalstack = stack_init(0);
+	stack* setfindstack = stack_init(0);
 	
-	_guilang_tokenpair** nonterminalstack[GUILANG_PARSER_MAXNESTINGDEPTH];
-	_guilang_tokenpair*** nonterminalstackpointer = &nonterminalstack[0];
-	_guilang_tokenpair*** lastsafenonterminal = nonterminalstackpointer;
-	
-	bool setfindstack[GUILANG_PARSER_MAXNESTINGDEPTH];
-	bool* setfindstackpointer = &setfindstack[0];
-	
-	_guilang_tokenpair*** seqfail = NULL;
+	_guilang_tokenpair** seqfail = NULL;
 
 	bool endofinputreached = false;
 
@@ -96,96 +90,75 @@ guilang_parse
 			case GUILANGSPEC_KEYWORDPARAM:
 			case GUILANGSPEC_NUMBER:
 			case GUILANGSPEC_STRING:
-			case GUILANGSPEC_OPERATOR:
-				if (guilang_parser_matchtoken(*in_curr, *grammar_curr)) {
-					in_curr++;
-					grammar_curr++;
-				} else
-				if (parenstackpointer > parenstack) {
-					if (seqfail == NULL && *(setfindstackpointer-1) == false) {
-						printf("!...");
-						seqfail = parenstackpointer;
-						grammar_curr = (*lastsafeparen)+1;
-						parenstackpointer = lastsafeparen + 1;
-						nonterminalstackpointer = lastsafenonterminal;
-					}
-					grammar_curr++;
-				} else
-				{
-					err = GUILANG_PARSER_ERROR_TOKENMISMATCH;
-				} break;
-			case GUILANGSPEC_SETPARENOPEN:
-				*setfindstackpointer = false;
-				setfindstackpointer++;
-			case GUILANGSPEC_OPTPARENOPEN: {
-				*parenstackpointer = grammar_curr;
-				lastsafeparen = parenstackpointer;
-				parenstackpointer++;
-				grammar_curr++;
-				} break;
-			case GUILANGSPEC_SETPARENCLOSE: {	
-				parenstackpointer--;
-				lastsafeparen = parenstackpointer - 1;
-				setfindstackpointer--;
-				grammar_curr++;
-				if (seqfail != NULL) {
-					if (parenstackpointer > parenstack) {
-					printf ("FAIL!");
-						// seqfail stays true for current sequence
+			case GUILANGSPEC_OPERATOR: {
+				if (seqfail == NULL) {
+					if (guilang_parser_matchtoken(*in_curr, *grammar_curr)) {
+						in_curr++;
+						grammar_curr++;
 					} else
-					{
+					if (stack_isempty(parenstack)) {
 						err = GUILANG_PARSER_ERROR_TOKENMISMATCH;
-					} 
+					} else 
+					if (stack_peek(setfindstack)) {
+						grammar_curr++;
+					} else{
+						seqfail = stack_peek(parenstack);
+						grammar_curr++;
+					}
+				} else {
+					grammar_curr++;
 				}
 			} break;
-			case GUILANGSPEC_OPTPARENCLOSE: {
-				parenstackpointer--;
-				lastsafeparen = parenstackpointer - 1;
+			case GUILANGSPEC_SETPARENOPEN:
+				stack_push(setfindstack, false);
+			case GUILANGSPEC_OPTPARENOPEN: {
 				grammar_curr++;
-				if (seqfail != NULL && seqfail > parenstackpointer) {
+				stack_push(parenstack, grammar_curr);
+			} break;
+			case GUILANGSPEC_SETPARENCLOSE: {
+				stack_pop(setfindstack);
+				stack_pop(parenstack);
+				grammar_curr++;
+			} break;
+			case GUILANGSPEC_OPTPARENCLOSE: {
+				_guilang_tokenpair** lastparen = stack_pop(parenstack);
+				grammar_curr++;
+				if (seqfail >= lastparen) {
 					seqfail = NULL;
 				}
 			} break;
 			case GUILANGSPEC_SETSEP: {
-				if (parenstackpointer > parenstack) {
-					if (seqfail != NULL ) {
-						printf("!!!!\n");
-						seqfail = NULL;
-					} else {
-						*(setfindstackpointer-1) = true;
-					}
-					*(parenstackpointer-1) = grammar_curr;
-					lastsafeparen = parenstackpointer-1;
-					grammar_curr++;
-				} else {
-					err = GUILANG_PARSER_ERROR_TOKENMISMATCH;
+				stack_pop(parenstack);
+				stack_push(parenstack, grammar_curr);
+				grammar_curr++;
+				if (seqfail == NULL) {
+					stack_pop(setfindstack);
+					stack_push(setfindstack, (void *)true);
 				}
 			} break;
 			case GUILANGSPEC_NONTERMINAL: {
 				char* key = (*grammar_curr)->string;
 				_guilang_tokenpair** ruledef = hashtable_get(spec->grammar, key);
-				if (seqfail != NULL) {
+				if (stack_peek(setfindstack)) {
 					grammar_curr++;
 				} else
 				if (ruledef == NULL) {
-					printf("%s\t", key);
 					err = GUILANG_PARSER_ERROR_NONTERMINALUNDEFINED;
-				} else {
-					*nonterminalstackpointer = grammar_curr + 1;
-					lastsafenonterminal = nonterminalstackpointer;
-					nonterminalstackpointer++;
+				} else
+				if (seqfail == NULL) {
+					grammar_curr++;
+					stack_push(nonterminalstack, grammar_curr);
 					grammar_curr = ruledef;
+				} else {
+					grammar_curr++;
 				}
 			} break;
 			case GUILANGSPEC_ENDOFSTRING: {
-				if (nonterminalstackpointer > nonterminalstack) {
-					nonterminalstackpointer--;
-					grammar_curr = *(nonterminalstackpointer-1);
-					printf("?!?!");
-				} else
-				if (guilang_parser_matchtoken(*in_curr, *grammar_curr)) {
+				_guilang_tokenpair** last = stack_pop(nonterminalstack);
+				if (last == NULL) {
 					endofinputreached = true;
-					printf("!!!");
+				} else {
+					grammar_curr = last;
 				}
 			} break;
 		}
