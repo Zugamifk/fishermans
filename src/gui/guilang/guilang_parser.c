@@ -11,10 +11,25 @@ void
 guilang_parser_printerror
 (
 	guilang_parser_error e
-,	void*	data
+,	errorlog*	log
 )
-{
-
+{    
+	char* errortypestring = "PARSER ERROR";
+	switch(e) {
+		case GUILANG_PARSER_ERROR_NOERROR:
+			break;
+		case GUILANG_PARSER_ERROR_TOKENMISMATCH:
+			errorlog_logdef(log, errortypestring, "TOKEN MISMATCH");
+			break;
+		case GUILANG_PARSER_ERROR_MAXNESTINGDEPTHEXCEEDED:
+			errorlog_logdef(log, errortypestring, "MAXIMUM PAREN NESTING DEPTH EXCEEDED");
+			break;
+		case GUILANG_PARSER_ERROR_NONTERMINALUNDEFINED:
+			errorlog_logdef(log, errortypestring, "NONTERMINAL UNDEFINED");
+			break;
+		default:
+			break;
+	}
 }
 
 bool
@@ -55,11 +70,13 @@ guilang_parser_matchtoken
 	return false;
 }
 
+
 guilang_parser_error
 guilang_parse
 (
 	_guilang_tokenpair** tokens
 ,	guilang_specification* spec
+,	errorlog*	log
 )
 {
 
@@ -70,15 +87,16 @@ guilang_parse
 	_guilang_tokenpair** grammar_curr = hashtable_get(spec->grammar, (char*)spec->startkey);
 	
 	stack* parenstack = stack_init(0);
+	stack* inputrecallstack = stack_init(0);
 	stack* nonterminalstack = stack_init(0);
 	stack* setfindstack = stack_init(0);
 	
 	_guilang_tokenpair** seqfail = NULL;
 
 	bool endofinputreached = false;
-
+					_guilang_tokenizer_prntphr(in_curr);
+printf("\n---\n");
 	while(!endofinputreached && err == GUILANG_PARSER_ERROR_NOERROR) {
-		printf("%s\t%s\t %s\n", (*grammar_curr)->string, _P_guilang_spec_tokenstrings[(*grammar_curr)->token], (*in_curr)->string);
 		switch ((*grammar_curr)->token) {
 			case GUILANGSPEC_GUIHEAD:
 			case GUILANGSPEC_WINDOWHEAD:
@@ -93,6 +111,9 @@ guilang_parse
 			case GUILANGSPEC_OPERATOR: {
 				if (seqfail == NULL) {
 					if (guilang_parser_matchtoken(*in_curr, *grammar_curr)) {
+										_guilang_tokenizer_prntphr(in_curr);
+printf("\n---\n");
+
 						in_curr++;
 						grammar_curr++;
 					} else
@@ -109,11 +130,15 @@ guilang_parse
 					grammar_curr++;
 				}
 			} break;
-			case GUILANGSPEC_SETPARENOPEN:
+			case GUILANGSPEC_SETPARENOPEN: {
 				stack_push(setfindstack, false);
+				grammar_curr++;
+				stack_push(parenstack, grammar_curr);
+			} break;
 			case GUILANGSPEC_OPTPARENOPEN: {
 				grammar_curr++;
 				stack_push(parenstack, grammar_curr);
+				stack_push(inputrecallstack, in_curr);
 			} break;
 			case GUILANGSPEC_SETPARENCLOSE: {
 				stack_pop(setfindstack);
@@ -125,6 +150,7 @@ guilang_parse
 				grammar_curr++;
 				if (seqfail >= lastparen) {
 					seqfail = NULL;
+					in_curr = stack_pop(inputrecallstack);
 				}
 			} break;
 			case GUILANGSPEC_SETSEP: {
@@ -155,6 +181,10 @@ guilang_parse
 			} break;
 			case GUILANGSPEC_ENDOFSTRING: {
 				_guilang_tokenpair** last = stack_pop(nonterminalstack);
+				
+				if (!guilang_parser_matchtoken(*in_curr, *grammar_curr)) {
+					err = GUILANG_PARSER_ERROR_TOKENMISMATCH;
+					} else
 				if (last == NULL) {
 					endofinputreached = true;
 				} else {
@@ -163,6 +193,9 @@ guilang_parse
 			} break;
 		}
 	}
-	printf("YAY!!!!!! %d \n", err);
+	printf("\n---\n");
+										_guilang_tokenizer_prntphr(in_curr);
+
+	guilang_parser_printerror(err, log);
 	return err;
 }

@@ -1,39 +1,23 @@
 <NotepadPlus>
     <Session activeView="0">
-        <mainView activeIndex="7">
-            <File firstVisibleLine="27" xOffset="0" scrollWidth="534" startPos="1409" endPos="1409" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\main.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="216" startPos="474" endPos="474" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\main.h" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="3010" startPos="1323" endPos="1323" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui.c">
-                <Mark line="90" />
+        <mainView activeIndex="6">
+            <File firstVisibleLine="12" xOffset="0" scrollWidth="756" startPos="737" endPos="737" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\main.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="182" startPos="119" endPos="119" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\main.h" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="427" startPos="402" endPos="402" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\gui.h" />
+            <File firstVisibleLine="26" xOffset="0" scrollWidth="462" startPos="279" endPos="279" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\gui.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="364" startPos="14" endPos="14" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\gui_window.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="259" startPos="60" endPos="60" selMode="0" lang="Normal Text" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\testgui.txt" />
+            <File firstVisibleLine="79" xOffset="0" scrollWidth="644" startPos="3144" endPos="3144" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\guilang\guilang_specification.c" />
+            <File firstVisibleLine="22" xOffset="0" scrollWidth="462" startPos="114" endPos="114" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\guilang\guilang.h" />
+            <File firstVisibleLine="94" xOffset="0" scrollWidth="889" startPos="1043" endPos="1043" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\guilang\guilang_tokenizer.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="644" startPos="92" endPos="92" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\guilang\guilang.c" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="651" startPos="271" endPos="271" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\guilang\guilang_compile.c" />
+            <File firstVisibleLine="76" xOffset="1" scrollWidth="917" startPos="4295" endPos="4295" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\gui\guilang\guilang_parser.c" />
+            <File firstVisibleLine="130" xOffset="0" scrollWidth="840" startPos="2339" endPos="2339" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\hashtable.c" />
+            <File firstVisibleLine="29" xOffset="0" scrollWidth="343" startPos="739" endPos="739" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\src\stack.c">
+                <Mark line="22" />
             </File>
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="329" startPos="524" endPos="524" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\shapes.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="371" startPos="230" endPos="230" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\color.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="350" startPos="151" endPos="151" selMode="0" lang="Normal Text" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\vshader.sdr" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="315" startPos="84" endPos="84" selMode="0" lang="Normal Text" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\shader\fshader.sdr" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="588" startPos="120" endPos="120" selMode="0" lang="Makefile" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\makefile" />
         </mainView>
-        <subView activeIndex="16">
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="798" startPos="124" endPos="124" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui_elements.c">
-                <Mark line="7" />
-            </File>
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="441" startPos="394" endPos="394" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\font\fchar.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="518" startPos="0" endPos="0" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\event\bus.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="651" startPos="856" endPos="856" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui_textbox.c" />
-            <File firstVisibleLine="48" xOffset="0" scrollWidth="722" startPos="1327" endPos="1327" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui_container.c" />
-            <File firstVisibleLine="9" xOffset="0" scrollWidth="686" startPos="795" endPos="795" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui_button.c" />
-            <File firstVisibleLine="24" xOffset="0" scrollWidth="651" startPos="886" endPos="886" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui_box.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="637" startPos="644" endPos="644" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\font\font.h" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="476" startPos="322" endPos="322" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\font\charset.c" />
-            <File firstVisibleLine="36" xOffset="0" scrollWidth="476" startPos="1513" endPos="1513" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\gui\gui_div.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="497" startPos="371" endPos="371" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\loader.c">
-                <Mark line="23" />
-            </File>
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="336" startPos="383" endPos="383" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\math.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="133" startPos="76" endPos="76" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\shader\shader.h" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="238" startPos="47" endPos="47" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\shader\shader.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="721" startPos="0" endPos="0" selMode="0" lang="Makefile" encoding="-1" filename="C:\Users\Limez\Desktop\glew\glew-1.9.0\Makefile" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="399" startPos="4684" endPos="0" selMode="0" lang="C" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\math\vector.c" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="413" startPos="827" endPos="827" selMode="0" lang="C++" encoding="-1" filename="C:\Users\Limez\Dropbox\Code\C\audio\math\vector.h" />
-        </subView>
+        <subView activeIndex="0" />
     </Session>
 </NotepadPlus>

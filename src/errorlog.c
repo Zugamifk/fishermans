@@ -68,7 +68,7 @@ _errorlog_flushbuffer
 	errorlog*	log
 )
 {
-	for (int i = 0; i < log->bufferlen; i--) {
+	for (int i = 0; i < log->bufferlen; i++) {
 		fputs(log->buffer[i], log->log);
 	}
 	log->bufferlen = 0;
@@ -114,7 +114,7 @@ errorlog_pusherror
 	if (log->bufferlen  == ERRORLOG_BUFFERLEN) _errorlog_flushbuffer(log);
 	int place = log->bufferlen;
 	log->formaterror(log->buffer[place], messages, messagect); 
-	log->bufferlen++;
+	log->bufferlen = log->bufferlen + 1;
 }	
 
 void

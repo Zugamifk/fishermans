@@ -1,3 +1,4 @@
+#define HASHTABLE
 #define HASHTABLE_MAXSIZE	1024
 #define HASHTABLEDATA void
 #define HASHTABLEPROBE 0
@@ -140,7 +141,6 @@ _hashtable_getbucket
 	unsigned int hash = _hashtable_hash(key);
 	unsigned int place = hash%table->size;
 	_hashtable_bucket* bucket = NULL;
-	float loadfactor = (float)table->load/(float)table->size;
 	for (int i = 0; i < table->size; i++) {
 		bucket = data[place];
 		if (bucket == NULL || (_hashtable_hash(bucket->key) ^ hash)) {

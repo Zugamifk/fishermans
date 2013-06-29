@@ -170,7 +170,11 @@ guilang_initspecification
 	state->grammar = hashtable_init(0);
 	state->startkey = "GUI";
 	
-	FILE* langfile = fopen(langspec, "r");
+	#ifdef GUILANG_DEFAULTSPEC
+		FILE* langfile = fopen(GUILANG_DEFAULTSPEC, "r");
+	#else
+		FILE* langfile = fopen(langspec, "r");
+	#endif
 	
 	while(!feof(langfile)) {
 		char line[GUILANG_LINELEN];
