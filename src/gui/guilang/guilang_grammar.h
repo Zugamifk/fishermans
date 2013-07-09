@@ -2,7 +2,7 @@
 // GUILANG GRAMMAR DEFINITIONS
 // // ==========================================================
 
-const int _guilang_tokencount = 6;
+const int _guilang_tokencount = 7;
 typedef enum
 _E_guilang_tokentype
 {
@@ -11,6 +11,7 @@ _E_guilang_tokentype
 	GUILANG_KEYWORD,
 	GUILANG_NONTERMINAL,
 	GUILANG_ENDOFSTRING,
+	GUILANG_ENDOFINPUT,
 	GUILANG_EPSILON
 } _guilang_tokentype;
 
@@ -20,6 +21,7 @@ const char* _guilang_tokentypestrings[] ={
 	"KEYWORD",
 	"NONTERMINAL",
 	"ENDOFSTRING",
+	"ENDOFINPUT",
 	"EPSILON"
 };
 

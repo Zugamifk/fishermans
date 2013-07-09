@@ -260,10 +260,8 @@ _guilangspec_readline
 	_guilangspec_token* curr = tokens[i];
 	
 	int childct = 0;
-	
-	if (tokens[0]->type == GUILANGSPEC_OPTPARENOPEN) {
-		_guilangspec_addepsilontransition(rule);
-	}
+
+	bool addedepsilon = false;
 	
 	do {
 		if (inparens > 0) {
@@ -281,9 +279,11 @@ _guilangspec_readline
 			}
 		} else {
 			if (	curr->type == GUILANGSPEC_TERMINAL ||
-					curr->type == GUILANGSPEC_NONTERMINAL
+					curr->type == GUILANGSPEC_NONTERMINAL ||
+					curr->type == GUILANGSPEC_EPSILON
 				) 
 			{
+				if ( curr->type == GUILANGSPEC_EPSILON) addedepsilon = true;
 				prod[prodpos] = _guilangspec_translatetoken(curr, log);
 				prodpos++;
 			} else
@@ -316,6 +316,9 @@ _guilangspec_readline
 		curr = tokens[i];
 	} while(inparens >= 0);
 	
+	if (!addedepsilon && (prodpos == 0 || tokens[0]->type == GUILANGSPEC_OPTPARENOPEN) ) {
+		_guilangspec_addepsilontransition(rule);
+	}
 	prod[prodpos] = _guilang_inittoken(GUILANG_ENDOFSTRING, "$$");
 	int prodlen = prodpos + 1;
 	_guilang_rule_addproduction(rule, prod, prodlen);

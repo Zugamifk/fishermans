@@ -8,6 +8,7 @@ guilang_compile
 	char *guidata;
 	int len;
 	load("testgui.txt", &guidata, &len);
-//	_guilang_tokenpair** tokens = guilang_tokenize(guidata, len);
+	
+	char** lex = guilang_scan(guidata);
 //	guilang_parse(tokens, spec, log);
 }

@@ -2,7 +2,7 @@ GUI(x:0, y:0.0, w:1, h:1)
 WINDOW(x:0, y:0, w:0.5, h:0.5)
 {
 	CELL {
-		(horizontal,2, 3, 4)
+		(horizontal,2, 3, 4 )
 		CELL {
 		
 		}
