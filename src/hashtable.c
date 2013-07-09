@@ -3,6 +3,8 @@
 #define HASHTABLEDATA void
 #define HASHTABLEPROBE 0
 
+typedef void (*hashtable_printcb)(HASHTABLEDATA*);
+
 typedef struct
 _S_hashtable_bucket
 {
@@ -197,7 +199,7 @@ void
 hashtable_print
 (
 	hashtable*	table,
-	void (*datatostring)(void*)
+	hashtable_printcb datatostring
 )
 {
 	printf("LOAD: %d\tCAPACITY: %d\tLOAD FACTOR THRESHOLD: %.2f\nDATA:{", table->load, table->size, table->lfthreshold);

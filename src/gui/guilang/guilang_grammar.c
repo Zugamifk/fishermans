@@ -54,7 +54,7 @@ guilang_initgrammar
 	}
 	
 	#if GUILANG_SPEC_PRINTRESULT
-		hashtable_print(grammar->rules, _guilang_rule_print);
+		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
 	#endif
 	
 	return grammar;

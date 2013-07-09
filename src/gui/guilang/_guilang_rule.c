@@ -99,7 +99,7 @@ _guilang_rule_print
 {
 	printf("RULE \"%s\":\n", rule->nonterminal);
 	for (int i = 0; i < rule->transitionct; i++) {
-		printf("\t");
+		printf("-->\t");
 		_guilang_rule_printproduction(list_get(rule->transitions, i)->data);
 		printf("\n");
 	}

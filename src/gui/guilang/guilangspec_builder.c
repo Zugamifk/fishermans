@@ -229,16 +229,100 @@ _guilangspec_translatetoken
 	}
 }
 
+void
+_guilangspec_addepsilontransition
+(
+	_guilang_rule* rule
+)
+{
+	_guilang_token* prod[2] = {
+		_guilang_inittoken(GUILANG_EPSILON, "EPSILON"),
+		_guilang_inittoken(GUILANG_ENDOFSTRING, "$$")
+	};
+	_guilang_rule_addproduction(rule, prod, 2);
+}
+
 _guilang_token*
 _guilangspec_readline
 (
 	hashtable* grammar
+,	char* name
 ,	_guilangspec_token** tokens
 ,	errorlog* log
 )
 {
-	// TODO: RECURSIVELY TRANSLATE EMBEDDED RULES
-	return _guilang_inittoken(GUILANG_NONTERMINAL, "TEST");
+	_guilang_rule* rule = _guilang_rule_init(name);
+	_guilang_token* prod[GUILANG_LINELEN];
+	int prodpos = 0;
+	
+	int inparens = 0;
+	int i = 1;
+	_guilangspec_token* curr = tokens[i];
+	
+	int childct = 0;
+	
+	if (tokens[0]->type == GUILANGSPEC_OPTPARENOPEN) {
+		_guilangspec_addepsilontransition(rule);
+	}
+	
+	do {
+		if (inparens > 0) {
+			if (	curr->type == GUILANGSPEC_OPTPARENOPEN ||
+					curr->type == GUILANGSPEC_SETPARENOPEN
+				)
+			{
+				inparens++;
+			} else 
+			if (	curr->type == GUILANGSPEC_OPTPARENCLOSE ||
+					curr->type == GUILANGSPEC_SETPARENCLOSE
+				)
+			{
+				inparens--;
+			}
+		} else {
+			if (	curr->type == GUILANGSPEC_TERMINAL ||
+					curr->type == GUILANGSPEC_NONTERMINAL
+				) 
+			{
+				prod[prodpos] = _guilangspec_translatetoken(curr, log);
+				prodpos++;
+			} else
+			if (	curr->type == GUILANGSPEC_OPTPARENOPEN ||
+					curr->type == GUILANGSPEC_SETPARENOPEN
+				) 
+			{
+				char childname[GUILANG_WORDLEN];
+				sprintf(childname, "%s-%d", rule->nonterminal, childct);
+				childct++;
+				prod[prodpos] = _guilangspec_readline(grammar, childname, tokens+i, log);
+				prodpos++;
+				inparens++;
+			} else
+			if (	curr->type == GUILANGSPEC_OPTPARENCLOSE ||
+					curr->type == GUILANGSPEC_SETPARENCLOSE
+				)
+			{
+				inparens--;
+			} else
+			if (curr->type == GUILANGSPEC_SETSEP)
+			{
+				prod[prodpos] = _guilang_inittoken(GUILANG_ENDOFSTRING, "$$");
+				int prodlen = prodpos + 1;
+				_guilang_rule_addproduction(rule, prod, prodlen);
+				prodpos = 0;
+			}
+		}
+		i++;
+		curr = tokens[i];
+	} while(inparens >= 0);
+	
+	prod[prodpos] = _guilang_inittoken(GUILANG_ENDOFSTRING, "$$");
+	int prodlen = prodpos + 1;
+	_guilang_rule_addproduction(rule, prod, prodlen);
+		
+	hashtable_insert(grammar, rule->nonterminal, rule);
+	
+	return _guilang_inittoken(GUILANG_NONTERMINAL, name);
 }
 
 void
@@ -257,6 +341,7 @@ _guilangspec_generaterules
 	int i = 2;
 	_guilangspec_token* curr = tokens[i];
 	
+	int childct = 0;
 	while(curr->type != GUILANGSPEC_ENDOFSTRING) {
 		if (inparens > 0) {
 			if (	curr->type == GUILANGSPEC_OPTPARENOPEN ||
@@ -283,7 +368,10 @@ _guilangspec_generaterules
 					curr->type == GUILANGSPEC_SETPARENOPEN
 				) 
 			{
-				firstprod[prodpos] = _guilangspec_interpretrule(grammar, tokens, log);
+				char childname[GUILANG_WORDLEN];
+				sprintf(childname, "%s-%d", firstrule->nonterminal, childct);
+				childct++;
+				firstprod[prodpos] = _guilangspec_readline(grammar, childname, tokens+i, log);
 				prodpos++;
 				inparens++;
 			}
@@ -297,6 +385,5 @@ _guilangspec_generaterules
 	_guilang_rule_addproduction(firstrule, firstprod, prodlen);
 	
 	hashtable_insert(grammar, firstrule->nonterminal, firstrule);
-	
-	_guilang_rule_print(firstrule);
+
 }
