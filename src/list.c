@@ -1,3 +1,4 @@
+typedef void (*list_deletedatacb)(void *);
 typedef struct
 list 
 {
@@ -18,6 +19,15 @@ list_delete(list *l) {
 	if (l->next) {
 		list_delete(l->next);
 	}
+	free(l);
+}
+
+void
+list_deepdelete(list *l, void (*freecb)(void *)) {
+	if (l->next) {
+		list_delete(l->next);
+	}
+	freecb(l->data);
 	free(l);
 }
 

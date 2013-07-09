@@ -1,49 +1,3 @@
-// TOKEN TYPES
-typedef enum
-_E_guilang_spec_token
-{
-	GUILANGSPEC_GUIHEAD,
-	GUILANGSPEC_WINDOWHEAD,
-	GUILANGSPEC_CELLHEAD,
-	GUILANGSPEC_HEADERPARENOPEN,
-	GUILANGSPEC_HEADERPARENCLOSE,
-	GUILANGSPEC_BODYPARENOPEN,
-	GUILANGSPEC_BODYPARENCLOSE,
-	GUILANGSPEC_KEYWORDPARAM,
-	GUILANGSPEC_NUMBER,
-	GUILANGSPEC_STRING,
-	GUILANGSPEC_OPERATOR,
-	GUILANGSPEC_OPTPARENOPEN,
-	GUILANGSPEC_OPTPARENCLOSE,
-	GUILANGSPEC_SETPARENOPEN,
-	GUILANGSPEC_SETPARENCLOSE,
-	GUILANGSPEC_SETSEP,
-	GUILANGSPEC_NONTERMINAL,
-	GUILANGSPEC_ENDOFSTRING
-} _guilang_spec_token;
-
-const char* _P_guilang_spec_tokenstrings[] = 
-{
-	"GUIHEAD",
-	"WINDOWHEAD",
-	"CELLHEAD",
-	"HEADERPARENOPEN",
-	"HEADERPARENCLOSE",
-	"BODYPARENOPEN",
-	"BODYPARENCLOSE",
-	"KEYWORDPARAM",
-	"NUMBER",
-	"STRING",
-	"OPERATOR",
-	"OPTPARENOPEN",
-	"OPTPARENCLOSE",
-	"SETPARENOPEN",
-	"SETPARENCLOSE",
-	"SETSEP",
-	"NONTERMINAL",
-	"ENDOFSTRING"
-};
-
 typedef struct
 _S_guilang_specification
 {
@@ -118,13 +72,30 @@ guilang_parseword
 	return guilang_makepair(token, word, holder);
 }
 
-_guilang_tokenpair**
-_guilang_buildphrase
+void
+_guilang_buildrules
 (
-	char*	phrase
+	_guilang_tokenpair** rule
+,	hashtable* grammar
 )
 {
-	_guilang_tokenpair** transition = malloc(sizeof(_guilang_tokenpair)*GUILANG_LINELEN);
+	_guilang_tokenpair** newrule = malloc(sizeof(_guilang_tokenpair)*GUILANG_LINELEN);
+	_guilang_tokenpair* curr = rule[0];
+	int i = 0;
+	while(curr->token != GUILANGSPEC_ENDOFSTRING)
+	{
+		if (curr->token
+	}
+}
+	
+void
+_guilang_parserule
+(
+	char*	phrase
+,	hashtable*	grammar
+)
+{
+	_guilang_tokenpair *rule[GUILANG_LINELEN];
 	int i = 0;
 	
 	while (*phrase != '\0') {
@@ -133,12 +104,12 @@ _guilang_buildphrase
 		int wordlen = strlen(word);
 		phrase += wordlen==strlen(phrase)?wordlen:wordlen+1;
 		
-		transition[i] = guilang_parseword(word, NULL);
+		rule[i] = guilang_parseword(word, NULL);
 		i++;
 	}
 
-	transition[i] = guilang_parseword("ENDOFSTRING", NULL);
-	return transition;
+	rule[i] = guilang_parseword("ENDOFSTRING", NULL);
+	_guilang_buildrules(rule, grammar);
 }
 
 void prntphr(void* d) 
@@ -182,7 +153,7 @@ guilang_initspecification
 		char key[GUILANG_LINELEN];
 		char transitionstring[GUILANG_LINELEN];
 		sscanf(line, "%s -> %[^\n]", key, transitionstring);
-		hashtable_insert(state->grammar, key, _guilang_buildphrase(transitionstring));
+	//	hashtable_insert(state->grammar, key, _guilang_buildphrase(transitionstring));
 	}
 	
 	#if GUILANG_SPEC_PRINTRESULT

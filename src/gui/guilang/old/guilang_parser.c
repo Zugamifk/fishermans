@@ -113,11 +113,12 @@ printf("\n---\n");
 					if (guilang_parser_matchtoken(*in_curr, *grammar_curr)) {
 										_guilang_tokenizer_prntphr(in_curr);
 printf("\n---\n");
-
+						
 						in_curr++;
 						grammar_curr++;
 					} else
 					if (stack_isempty(parenstack)) {
+						
 						err = GUILANG_PARSER_ERROR_TOKENMISMATCH;
 					} else 
 					if (stack_peek(setfindstack)) {
