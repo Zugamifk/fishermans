@@ -43,6 +43,8 @@ int main(int argc, char** argv) {
 	
 	guilang_compile(Mlog);
 	
+	
+	set_test();
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
 	//audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);

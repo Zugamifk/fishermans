@@ -30,6 +30,7 @@ double TIME, DTIME;
 #include "stack.c"
 #include "list.c"
 #include "hashtable.c"
+#include "set.c"
 
 #include "event/bus.h"
 

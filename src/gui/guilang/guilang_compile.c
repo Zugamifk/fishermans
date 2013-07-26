@@ -10,7 +10,6 @@ guilang_compile
 	load("testgui.txt", &guidata, &len);
 	
 	char** lex = guilang_scan(guidata);
-	printf("%s %s\n", *lex, *(lex+1));
 	
 	_guilang_token** tokens = guilang_tokenize(lex);
 	
