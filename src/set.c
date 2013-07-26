@@ -65,6 +65,15 @@ set_free
 	free(s);
 }
 
+void
+set_clear
+(
+	set* s
+)
+{
+	s->size = 0;
+}
+
 int
 set_has
 (

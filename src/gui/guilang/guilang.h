@@ -25,6 +25,6 @@
 
 #include "guilang_scanner.c"
 #include "guilang_tokenizer.c"
-//#include "guilang_parser.c"
+#include "guilang_parser.c"
 
 #include "guilang_compile.c"

@@ -89,9 +89,9 @@ guilang_initgrammar
 		}
 	
 	#if GUILANG_SPEC_PRINTRESULT
-		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
-		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
 		set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
+		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
 	#endif
 	
 	return grammar;

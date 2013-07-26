@@ -13,5 +13,5 @@ guilang_compile
 	
 	_guilang_token** tokens = guilang_tokenize(lex);
 	
-//	guilang_parse(tokens, spec, log);
+	guilang_parse(spec, tokens);
 }
