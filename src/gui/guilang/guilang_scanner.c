@@ -45,7 +45,7 @@ guilang_scan
 	_guilang_scanner_state currstate, oldstate;
 	currstate = oldstate = _guilang_scanner_getstate(*curr);
 	
-	char* currword = *lexemes;
+	char** currword = lexemes;
 	
 	bool decimal = false;
 	
@@ -72,18 +72,19 @@ guilang_scan
 		
 			// make a new word
 			unsigned int len = curr - wordptr;
-			currword = malloc(GUILANG_WORDLEN);
-			memcpy(currword, wordptr, len);
-			*(currword+len) = '\0';
-			
+			*currword = malloc(GUILANG_WORDLEN);
+			memcpy(*currword, wordptr, len);
+			*((*currword)+len) = '\0';
+
 			// advance pointers
-			printf("-- >%s< --\n", currword);
 			decimal = false;
-			lexemes++;
-			currword = *lexemes;
+			currword++;
 			wordptr = curr;
 		}
 	} while (*curr != '\0');
+	
+	*currword = "$$";
+	
 	
 	return lexemes;
 }

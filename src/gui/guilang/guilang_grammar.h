@@ -25,6 +25,15 @@ const char* _guilang_tokentypestrings[] ={
 	"EPSILON"
 };
 
+const int _guilang_keywordcount = 9;
+const char* _guilang_keywords[] = {
+	"x", "y",
+	"w", "h",
+	"active", "inactive",
+	"dimensions",
+	"horizontal", "vertical"
+};
+
 // ==========================================================
 //	GUILANG SPECIFICATION DEFINITIONS
 // ==========================================================

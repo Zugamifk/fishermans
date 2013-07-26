@@ -383,8 +383,9 @@ _guilangspec_generaterules
 		curr = tokens[i];
 	}
 	
-	firstprod[prodpos] = _guilang_inittoken(GUILANG_ENDOFSTRING, curr->value);
-	int prodlen = prodpos + 1;
+	firstprod[prodpos] = _guilang_inittoken(GUILANG_ENDOFINPUT, curr->value);
+	firstprod[prodpos+1] = _guilang_inittoken(GUILANG_ENDOFSTRING, curr->value);
+	int prodlen = prodpos + 2;
 	_guilang_rule_addproduction(firstrule, firstprod, prodlen);
 	
 	hashtable_insert(grammar, firstrule->nonterminal, firstrule);

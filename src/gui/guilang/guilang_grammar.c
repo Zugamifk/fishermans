@@ -1,4 +1,19 @@
 //=============================================================================
+bool
+guilang_iskeyword
+(
+	const char* word
+)
+{
+	for (int i = 0; i < _guilang_keywordcount; i++) {
+		if (strcmp(_guilang_keywords[i], word) == 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
 //=============================================================================
 
 typedef struct
