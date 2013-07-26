@@ -21,6 +21,7 @@ S_hashtable
 	_hashtable_bucket**	data;
 	int (*probecb)(int);
 	float lfthreshold;
+	unsigned int i;
 }
 hashtable;
 
@@ -94,6 +95,7 @@ hashtable_init
 	
 	table->data = calloc(table->size, sizeof(_hashtable_bucket*));
 	table->load = 0;
+	table->i = 0;
 	
 	return table;
 }
@@ -196,6 +198,56 @@ hashtable_remove
 }
 
 void
+hashtable_begin
+(
+	hashtable* t,
+	char** key,
+	HASHTABLEDATA** d
+)
+{
+	int i = 0;
+	while (i < t->size && t->data[i] == NULL) {
+		i++;
+	}
+	t->i = i;
+	_hashtable_bucket* b = t->data[i];
+	*key = b->key;
+	*d = b->value;
+}
+
+bool
+hashtable_end
+(
+	hashtable* t
+)
+{
+	return t->i < t->size;
+}
+
+void
+hashtable_next
+(
+	hashtable* t,
+	char** key,
+	HASHTABLEDATA** d
+)
+{	
+	int i = t->i + 1;
+	while (i < t->size && t->data[i] == NULL) {
+		i++;
+	}
+	t->i = i;
+	if (t->i < t->size) {
+		_hashtable_bucket* b = t->data[t->i];
+		*key = b->key;
+		*d = b->value;
+		return;
+	}
+	*key = NULL;
+	*d = NULL;
+}
+	
+void
 hashtable_print
 (
 	hashtable*	table,
@@ -203,12 +255,12 @@ hashtable_print
 )
 {
 	printf("LOAD: %d\tCAPACITY: %d\tLOAD FACTOR THRESHOLD: %.2f\nDATA:{", table->load, table->size, table->lfthreshold);
-	for (int i = 0; i < table->size; i++) {
-		if (table->data[i] != NULL) {
-			printf("\t%s : ", table->data[i]->key);
-			datatostring(table->data[i]->value);
-			printf("\n");
-		}
+	HASHTABLEDATA* d;
+	char* k;
+	for(hashtable_begin(table, &k, &d); hashtable_end(table); hashtable_next(table, &k, &d)) {
+		printf("\t%s : ", k);
+		datatostring(d);
+		printf("\n");
 	}
 	printf("}\n");
 }

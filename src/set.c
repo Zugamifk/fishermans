@@ -2,13 +2,25 @@
 #define SETMAXSIZE 1<<8
 typedef void SETDATA;
 typedef void (*set_printcb)(SETDATA*);
+typedef int (*set_cmpcb)(SETDATA*, SETDATA*);
 
 typedef struct
 _S_set
 {
 	SETDATA** items;
 	int size;
+	set_cmpcb cmp;
 } set;
+
+int
+_set_defaultcmp
+(
+	SETDATA* a,
+	SETDATA* b
+)
+{
+	return a - b;
+}
 
 set*
 set_init()
@@ -16,7 +28,31 @@ set_init()
 	set *nset = malloc(sizeof(set));
 	nset->items = malloc(sizeof(SETDATA*)*SETMAXSIZE);
 	nset->size = 0;
+	nset->cmp = _set_defaultcmp;
 	return nset;
+}
+
+set*
+set_initcb
+(
+	set_cmpcb cb
+)
+{
+	set *nset = malloc(sizeof(set));
+	nset->items = malloc(sizeof(SETDATA*)*SETMAXSIZE);
+	nset->size = 0;
+	nset->cmp = cb;
+	return nset;
+}
+
+void
+set_cmp
+(
+	set* s,
+	set_cmpcb cb
+)
+{
+	s->cmp = cb;
 }
 
 void
@@ -29,7 +65,7 @@ set_free
 	free(s);
 }
 
-bool
+int
 set_has
 (
 	set* s,
@@ -37,11 +73,11 @@ set_has
 )
 {
 	for(int i = 0; i < s->size; i++) {
-		if (d == s->items[i]) {
-			return true;
+		if (s->cmp(d, s->items[i]) == 0) {
+			return 1;
 		}
 	}
-	return false;
+	return 0;
 }
 
 void
@@ -65,7 +101,7 @@ set_remove
 {
 	bool shifting = false;
 	for(int i = 0; i < s->size; i++) {
-		if (d == s->items[i]) {
+		if (s->cmp(d, s->items[i]) == 0) {
 			shifting = true;
 		}
 		if(shifting) {

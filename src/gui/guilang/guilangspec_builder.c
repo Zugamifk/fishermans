@@ -217,6 +217,7 @@ _guilangspec_translatetoken
 				return _guilang_inittoken(GUILANG_NUMBER, str);
 			} else
 			{
+				//sscanf(str, "\'%[^\']\'", str);
 				return _guilang_inittoken(GUILANG_STRING, str);
 			}
 		} break;

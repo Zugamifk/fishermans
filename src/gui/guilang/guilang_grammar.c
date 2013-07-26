@@ -13,12 +13,14 @@ guilang_iskeyword
 	return false;
 }
 
-
+void _guilang_printstr(char* s) {printf("%s", s);}
 //=============================================================================
 
 typedef struct
 _S_guilang_grammar
 {
+	set* terminals;
+	set* nonterminals;
 	hashtable* rules;
 	const char*	startkey;
 	int version;
@@ -32,6 +34,8 @@ guilang_initgrammar
 )
 {
 	guilang_grammar* grammar = malloc(sizeof(guilang_grammar));
+	grammar->terminals = set_initcb((set_cmpcb)strcmp);
+	grammar->nonterminals = set_initcb((set_cmpcb)strcmp);
 	grammar->rules = hashtable_init(0);
 	grammar->startkey = "GUI";
 	grammar->version = 2;
@@ -55,6 +59,13 @@ guilang_initgrammar
 		// tokenize the lexemes		
 		_guilangspec_token** tokens = _guilangspec_tokenize(lexemes);
 		
+		//get terminals out of tokens
+		for (int i = 0; tokens[i]->type != GUILANGSPEC_ENDOFSTRING; i++) {
+			if (tokens[i]->type == GUILANGSPEC_TERMINAL) {
+				set_add(grammar->terminals, tokens[i]->value);
+			}
+		}
+		
 		// parse the tokens
 		int success = _guilangspec_parse(tokens, log);
 		
@@ -68,9 +79,23 @@ guilang_initgrammar
 		_guilangspec_freelexemes(lexemes);
 	}
 	
+	HASHTABLEDATA* r;
+	char* k;
+	for(	hashtable_begin(grammar->rules, &k, &r); 
+			hashtable_end(grammar->rules); 
+			hashtable_next(grammar->rules, &k, &r))
+		{
+			set_add(grammar->nonterminals, k);
+		}
+	
 	#if GUILANG_SPEC_PRINTRESULT
 		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
+		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
+		set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 	#endif
 	
 	return grammar;
 }
+
+//=============================================================================
+
