@@ -19,8 +19,8 @@ _guilang_parser_initparsingtable
 	guilang_grammar* grammar
 )
 {
-	
 	hashtable* ntfirst = hashtable_init(0);
+	
 	set* temp = set_init();
 	set* eps = set_init();
 	set_add(eps, "EPSILON");
@@ -34,9 +34,8 @@ _guilang_parser_initparsingtable
 	{
 		hashtable_insert(ntfirst, k, set_initcb((set_cmpcb)strcmp));
 	}
-	// generate first sets
+	// generate nonterminal first sets
 	while(changed) {
-		hashtable_print(ntfirst, (hashtable_printcb)_guilang_parser_printset);
 		changed = false;
 		for (	hashtable_begin(grammar->rules, &k, &r);
 				hashtable_end(grammar->rules);
@@ -64,7 +63,7 @@ _guilang_parser_initparsingtable
 							case GUILANG_NONTERMINAL: {
 								set* fA = hashtable_get(ntfirst, first->value);
 								if (set_has(fA, "EPSILON")) {
-									set_intersection(temp, fA, eps);
+									set_difference(temp, fA, eps);
 									set_union(firstset, firstset, temp);
 									set_clear(temp);
 									inseq = true;
@@ -73,8 +72,7 @@ _guilang_parser_initparsingtable
 								}
 								} break;
 							case GUILANG_ENDOFSTRING:
-								set_add(firstset, "EPSILON");
-								break;
+							break;
 						}
 						i++;
 					}
@@ -83,7 +81,45 @@ _guilang_parser_initparsingtable
 				if (oldsize != firstset->size) changed = true;
 			}
 	}
+	
+	// generate production first sets
+	hashtable* firstsets = hashtable_init(0);
+	for (	hashtable_begin(grammar->rules, &k, &r);
+			hashtable_end(grammar->rules);
+			hashtable_next(grammar->rules, &k, &r))
+	{
+		list* fl = list_new();
+		hashtable_insert(firstsets, k, fl); 
+		list* l = ((_guilang_rule*)r)->transitions;
+		while (l->data != NULL) {
+			set* pfs = set_init();
+			list_add(fl, pfs);
+			_guilang_rule_production* p = (_guilang_rule_production*)l->data;
+			_guilang_token* first = p->production[0];
+			
+			switch (first->type) {
+				case GUILANG_STRING:
+				case GUILANG_NUMBER:
+				case GUILANG_KEYWORD:
+				case GUILANG_EPSILON:
+				case GUILANG_ENDOFINPUT:
+					set_add(pfs, first->value);
+					break;
+				case GUILANG_NONTERMINAL: {
+					set* fA = hashtable_get(ntfirst, first->value);
+					set_union(pfs, pfs, fA);
+					} break;
+				case GUILANG_ENDOFSTRING:
+				break;
+			}
+			fl = fl->next;
+			l = l->next;
+		}
+	}
+	
 	set_free(temp);
+	hashtable_print(ntfirst, (hashtable_printcb)_guilang_parser_printset);
+	//hashtable_print(firstsets, (hashtable_printcb)_guilang_parser_printset);
 }
 
 int
