@@ -227,6 +227,10 @@ set_test()
 	set_difference(d, s, t);
 	set_print(d, set_testcb);
 	
+	printf("CLEAR S: ");
+	set_clear(s);
+	set_print(s, set_testcb);
+	
 	set_free(s);
 	set_free(t);
 	set_free(u);
