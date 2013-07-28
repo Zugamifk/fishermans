@@ -1,3 +1,35 @@
+// ==================================================
+// GUILANG PARSER : 
+// Builds a parsing table with an pre-constructed grammar.
+// Does checks for ambiguities in the grammar.
+// ==================================================
+
+// DEFINITIONS
+// ==================================================
+typedef struct
+_S_guilang_parsingtable
+{
+	hashtable* nti;
+} _guilang_parsingtable;
+
+// PRINT FUNCTIONS
+// ==================================================
+
+void
+_guilang_parser_shtstr
+(
+	char* w
+)
+{
+	int l = strlen(w);
+	if (l < 4) {
+		printf("%s", w);
+	} else {
+		int m = l/2;
+		printf("%c%c%c", w[0], w[m], w[l-1]);
+	}
+}
+
 void
 _guilang_parser_printset
 (
@@ -22,12 +54,39 @@ _guilang_parser_printsetlist
 	}
 }
 
-typedef struct
-_S_guilang_parsingtable
+void
+_guilang_parser_printparsingtable
+(
+	_guilang_parsingtable* t
+)
 {
-	hashtable* table;
-} _guilang_parsingtable;
+	HASHTABLEDATA* ti;
+	char* nt;
+	for(hashtable_begin(t->nti, &nt, &ti);
+		hashtable_end(t->nti);
+		hashtable_next(t->nti, &nt, &ti))
+	{
+		_guilang_parser_shtstr(nt);
+		HASHTABLEDATA* predict;
+		char* tt;
+		for(hashtable_begin((hashtable*)ti, &tt, &predict);
+			hashtable_end((hashtable*)ti);
+			hashtable_next((hashtable*)ti, &tt, &predict))
+		{
+			_guilang_rule_production* rule = (_guilang_rule_production*)predict;
+			printf("\t[");
+			if (rule != NULL) {
+				char* str = rule->production[0]->value;
+				_guilang_parser_shtstr(str);
+			}
+			printf("]");
+		}
+		printf("\n");
+	}
+}
 
+// PARSING TABLE
+// ==================================================
 _guilang_parsingtable*
 _guilang_parser_initparsingtable
 (
@@ -107,7 +166,7 @@ _guilang_parser_initparsingtable
 		hashtable_insert(firstsets, k, fl); 
 		list* l = ((_guilang_rule*)r)->transitions;
 		while (l->data != NULL) {
-			set* pfs = set_init();
+			set* pfs = set_initcb((set_cmpcb)strcmp);
 			list_add(fl, pfs);
 			_guilang_rule_production* p = (_guilang_rule_production*)l->data;
 			_guilang_token* first = p->production[0];
@@ -135,7 +194,7 @@ _guilang_parser_initparsingtable
 	// generate nonterminal follow sets
 	// initialize each follow set with the empty set
 	hashtable* followsets = hashtable_init(0);
-		for (	hashtable_begin(grammar->rules, &k, &r);
+	for (	hashtable_begin(grammar->rules, &k, &r);
 			hashtable_end(grammar->rules);
 			hashtable_next(grammar->rules, &k, &r))
 	{
@@ -184,6 +243,56 @@ _guilang_parser_initparsingtable
 		}
 	}
 	
+	// build a new parsing table
+	_guilang_parsingtable* ptable = malloc(sizeof(_guilang_parsingtable));
+	
+	// hashtable of hashtable, indexed but nonterminal, then terminal
+	ptable->nti = hashtable_init(0);
+	// get set of terminals
+	set* terminals = grammar->terminals;
+	
+	// iterate over nonterminals
+	for (	hashtable_begin(grammar->rules, &k, &r);
+		hashtable_end(grammar->rules);
+		hashtable_next(grammar->rules, &k, &r))
+	{
+		// build new hashtable for each nonterminal
+		hashtable* ti = hashtable_init(0);
+		hashtable_insert(ptable->nti, k, ti);
+		
+		SETDATA* v;
+		_guilang_rule_production* rule;
+		set* follow = hashtable_get(followsets, k);
+				
+		// iterate over terminals
+		for(set_begin(terminals, &v); set_end(terminals); set_next(terminals, &v)){
+			list* flist = hashtable_get(firstsets, k); // list of first sets
+			list* prods = ((_guilang_rule*)r)->transitions; // list of transitions
+			
+			rule = NULL;
+			
+			// iterate over lists
+			while(flist->data != NULL) {
+
+				// get the first set for this transition
+				set* f = flist->data;
+				
+				// if the current terminal is in this first set, set this rule as the current transition
+				if (set_has(f, v) ||
+					(set_has(f, "EPSILON") && set_has(follow, v))
+					) {
+					if (rule != NULL) printf("!!!!!!!!!!!ERRORR!!!!!!!\n"); //error here, means ambiguous grammar
+					rule = prods->data;
+				}
+			
+				// iter
+				prods = prods->next;
+				flist = flist->next;
+			}
+			hashtable_insert(ti, (char*)v, (HASHTABLEDATA*)rule);
+		}
+	}
+	
 	set_free(temp);
 	printf("NTFIRST:\n");
 	hashtable_print(ntfirst, (hashtable_printcb)_guilang_parser_printset);
@@ -191,6 +300,8 @@ _guilang_parser_initparsingtable
 	hashtable_print(firstsets, (hashtable_printcb)_guilang_parser_printsetlist);
 	printf("FOLLOW:\n");
 	hashtable_print(followsets, (hashtable_printcb)_guilang_parser_printset);
+	printf("TABLE:\n");
+	_guilang_parser_printparsingtable(ptable);
 }
 
 int

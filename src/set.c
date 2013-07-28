@@ -10,6 +10,7 @@ _S_set
 	SETDATA** items;
 	int size;
 	set_cmpcb cmp;
+	int i;
 } set;
 
 int
@@ -29,6 +30,7 @@ set_init()
 	nset->items = malloc(sizeof(SETDATA*)*SETMAXSIZE);
 	nset->size = 0;
 	nset->cmp = _set_defaultcmp;
+	nset->i = 0;
 	return nset;
 }
 
@@ -42,6 +44,7 @@ set_initcb
 	nset->items = malloc(sizeof(SETDATA*)*SETMAXSIZE);
 	nset->size = 0;
 	nset->cmp = cb;
+	nset->i = 0;
 	return nset;
 }
 
@@ -163,6 +166,37 @@ set_difference
 		if (!set_has(b, a->items[i]))
 			set_add(result, a->items[i]);
 	}
+}
+
+void
+set_begin
+(
+	set* s,
+	SETDATA** v
+)
+{
+	s->i = 0;
+	*v = s->items[s->i];
+}
+
+int
+set_end
+(
+	set* s
+)
+{
+	return s->i < s->size;
+}
+
+void
+set_next
+(
+	set* s,
+	SETDATA** v
+)
+{
+	s->i = s->i + 1;
+	*v = s->items[s->i];
 }
 
 void
