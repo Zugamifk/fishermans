@@ -22,7 +22,7 @@ _S_guilang_grammar
 	set* terminals;
 	set* nonterminals;
 	hashtable* rules;
-	const char*	startkey;
+	_guilang_token*	startsymbol;
 	int version;
 } guilang_grammar;
 
@@ -37,7 +37,7 @@ guilang_initgrammar
 	grammar->terminals = set_initcb((set_cmpcb)strcmp);
 	grammar->nonterminals = set_initcb((set_cmpcb)strcmp);
 	grammar->rules = hashtable_init(0);
-	grammar->startkey = "GUI";
+	grammar->startsymbol = _guilang_inittoken(GUILANG_NONTERMINAL, GUILANG_STARTSYMBOL);
 	grammar->version = 2;
 	
 	#ifdef GUILANG_DEFAULTSPEC
@@ -62,7 +62,11 @@ guilang_initgrammar
 		//get terminals out of tokens
 		for (int i = 0; tokens[i]->type != GUILANGSPEC_ENDOFSTRING; i++) {
 			if (tokens[i]->type == GUILANGSPEC_TERMINAL) {
+				printf("%s\n", tokens[i]->value);
+								set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+
 				set_add(grammar->terminals, tokens[i]->value);
+				set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 			}
 		}
 		
@@ -75,7 +79,7 @@ guilang_initgrammar
 		// generate rules from the string
 		_guilangspec_generaterules(grammar->rules, tokens, log);
 		
-		_guilangspec_deletetoken(tokens[0]);
+	//	_guilangspec_deletetoken(tokens[0]);
 		_guilangspec_freelexemes(lexemes);
 	}
 	
@@ -88,7 +92,7 @@ guilang_initgrammar
 			set_add(grammar->nonterminals, k);
 		}
 	
-	#if GUILANG_SPEC_PRINTRESULT
+	#ifdef GUILANG_SPEC_PRINTRESULT
 		set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
 		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);

@@ -24,7 +24,6 @@ guilang_tokenize
 		} else {
 			*curr = _guilang_inittoken(GUILANG_STRING, *word);
 		}
-		_guilang_printtoken(*curr);
 		curr++;
 		word++;
 		

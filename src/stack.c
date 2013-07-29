@@ -1,4 +1,4 @@
-#define STACK_MAXCAP 256
+#define STACK_MAXCAP (1<<8)
 #define STACK_DATA void
 typedef struct
 _S_stack

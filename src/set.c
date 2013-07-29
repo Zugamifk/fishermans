@@ -100,6 +100,7 @@ set_add
 )
 {
 	if (set_has(s, d)) return;
+	printf("!!!");
 	s->items[s->size] = d;
 	s->size = s->size + 1;
 }

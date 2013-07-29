@@ -4,6 +4,7 @@
 #define HASHTABLEPROBE 0
 
 typedef void (*hashtable_printcb)(HASHTABLEDATA*);
+typedef void (*hashtable_freecb)(HASHTABLEDATA*);
 
 typedef struct
 _S_hashtable_bucket
@@ -198,6 +199,27 @@ hashtable_remove
 }
 
 void
+hashtable_deepremove
+(
+	hashtable*	table,
+	char*		key,
+	hashtable_freecb cb
+)
+{
+
+	_hashtable_bucket* bucket = _hashtable_getbucket(table, key);
+	
+	if (bucket == NULL) {
+		// ERROR!!
+	} else
+	{
+		free(bucket->key);
+		cb(bucket->value);
+		free(bucket);
+	}
+}
+
+void
 hashtable_begin
 (
 	hashtable* t,
@@ -247,6 +269,25 @@ hashtable_next
 	*d = NULL;
 }
 	
+void
+hashtable_deepfree
+(
+	hashtable* table,
+	hashtable_freecb cb
+)
+{
+	HASHTABLEDATA* v;
+	char* k;
+	for(hashtable_begin(table, &k, &v); 
+		hashtable_end(table); 
+		hashtable_next(table, &k, &v)) 
+	{
+		hashtable_deepremove(table, k, cb);
+	}
+	free(table->data);
+	free(table);
+}
+
 void
 hashtable_print
 (

@@ -60,6 +60,7 @@ _guilangspec_tokenize
 		char fc = word[0];
 		// maybe it's a string
 		if ( fc == '\'') {
+			sscanf(word, "\'%[^\']\'", word);
 			tokens[ti] = _guilangspec_inittoken(GUILANGSPEC_TERMINAL, word);
 		} else 
 		// it's a nonterminal

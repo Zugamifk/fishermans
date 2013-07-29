@@ -10,6 +10,7 @@ typedef struct
 _S_guilang_parsingtable
 {
 	hashtable* nti;
+	guilang_grammar* grammar;
 } _guilang_parsingtable;
 
 // PRINT FUNCTIONS
@@ -22,11 +23,11 @@ _guilang_parser_shtstr
 )
 {
 	int l = strlen(w);
-	if (l < 4) {
+	if (l < 6) {
 		printf("%s", w);
 	} else {
 		int m = l/2;
-		printf("%c%c%c", w[0], w[m], w[l-1]);
+		printf("%c%c%c%c%c", w[0], w[1], w[2], w[m], w[l-1]);
 	}
 }
 
@@ -60,6 +61,14 @@ _guilang_parser_printparsingtable
 	_guilang_parsingtable* t
 )
 {
+	set* terminals = t->grammar->terminals;
+	SETDATA* v;
+	for (set_begin(terminals, &v); set_end(terminals); set_next(terminals, &v)) {
+		char* term = (char*)v;
+		_guilang_parser_shtstr(term);
+		printf("\t");
+	}
+	printf("%d\n", terminals->size);
 	HASHTABLEDATA* ti;
 	char* nt;
 	for(hashtable_begin(t->nti, &nt, &ti);
@@ -83,6 +92,15 @@ _guilang_parser_printparsingtable
 		}
 		printf("\n");
 	}
+}
+
+void
+_guilang_parser_freelist
+(
+	list* d
+)
+{
+	list_deepdelete(d, (list_deletedatacb)set_free);
 }
 
 // PARSING TABLE
@@ -189,7 +207,7 @@ _guilang_parser_printparsingtable
 							} break;
 						// The end of string is effectively empty and counts as an epsilon
 						case GUILANG_ENDOFSTRING:
-							set_add(firstset, "EPSILON");
+						//	set_add(firstset, "EPSILON");
 							break;
 					}
 					i++;
@@ -303,7 +321,6 @@ _guilang_parser_printparsingtable
 							case GUILANG_STRING:
 							case GUILANG_NUMBER:
 							case GUILANG_KEYWORD:
-							case GUILANG_EPSILON:
 							case GUILANG_ENDOFINPUT:
 								set_add(fs, follow->value);
 								break;
@@ -319,6 +336,7 @@ _guilang_parser_printparsingtable
 								// Add fA to Follow(curr)
 								set_union(fs, fs, fA);
 								} break;
+							case GUILANG_EPSILON:
 							case GUILANG_ENDOFSTRING:
 							break;
 						}
@@ -336,6 +354,7 @@ _guilang_parser_printparsingtable
 
 	// Allocate space
 	_guilang_parsingtable* ptable = malloc(sizeof(_guilang_parsingtable));
+	ptable->grammar = grammar;
 	
 	// hashtable of hashtables, indexed by [nonterminal, terminal]
 	ptable->nti = hashtable_init(0);
@@ -398,16 +417,55 @@ _guilang_parser_printparsingtable
 	
 	// Print test stuff
 	set_free(temp);
+	#ifdef GUILANG_PRINTNTFIRST
 	printf("NTFIRST:\n");
 	hashtable_print(ntfirst, (hashtable_printcb)_guilang_parser_printset);
+	#endif
+	
+	#ifdef GUILANG_PRINTFIRST
 	printf("FIRST:\n");
 	hashtable_print(firstsets, (hashtable_printcb)_guilang_parser_printsetlist);
+	#endif
+	
+	#ifdef GUILANG_PRINTFOLLOW
 	printf("FOLLOW:\n");
 	hashtable_print(followsets, (hashtable_printcb)_guilang_parser_printset);
+	#endif
+	
+	#ifdef GUILANG_PRINTPARSINGTABLE
 	printf("TABLE:\n");
 	_guilang_parser_printparsingtable(ptable);
+	#endif
+
+	hashtable_deepfree(ntfirst, (hashtable_freecb)set_free);
+	hashtable_deepfree(firstsets, (hashtable_freecb)_guilang_parser_freelist);
+	hashtable_deepfree(followsets, (hashtable_freecb)set_free);
+	
+	return ptable;
 }
 /*============================================================================*/
+// Parsing table operations
+_guilang_rule_production*
+_guilang_parser_getproduction
+(
+	_guilang_parsingtable* pt,
+	_guilang_token* nt,
+	_guilang_token* t
+)
+{
+	hashtable* ti = hashtable_get(pt->nti, nt->value);
+	return hashtable_get(ti, t->value);
+}
+
+void
+_guilang_parser_ARGGGH
+(	_guilang_token* nt,
+	_guilang_token* t)
+{
+					_guilang_printtoken(nt);
+					_guilang_printtoken(t);
+					printf("ERROR!\n");
+}
 
 int
 guilang_parse
@@ -417,4 +475,72 @@ guilang_parse
 )
 {
 	_guilang_parsingtable* pt = _guilang_parser_initparsingtable(g);
+	
+	_guilang_token* eoi = _guilang_inittoken(GUILANG_ENDOFINPUT, "$$");
+	
+	stack* s = stack_init(0); 
+	stack_push(s, eoi);
+	stack_push(s, g->startsymbol);
+	
+	_guilang_token* top;
+	_guilang_token* in;
+	_guilang_token** cursor = t;
+	while (!stack_isempty(s)) {
+		top = (_guilang_token*)stack_pop(s);
+		in = *cursor;
+		
+		switch (top->type) {
+			case GUILANG_NONTERMINAL: {
+				_guilang_rule_production* prod = _guilang_parser_getproduction(pt, top, in);
+				if (prod == NULL) {
+					printf ("REALLY?");
+					_guilang_parser_ARGGGH(in, top);
+					break;
+				};
+				for (int i = prod->len-2; i >= 0; i--) {
+					stack_push(s, prod->production[i]);
+				}
+			} break;
+			case GUILANG_STRING: {
+				if (in->type == GUILANG_STRING || 
+					(strcmp(in->value, top->value) == 0)) 
+				{
+					cursor++;
+				} else {
+					_guilang_parser_ARGGGH(in, top);
+				}
+			} break;
+			case GUILANG_NUMBER: {
+				if (in->type == GUILANG_NUMBER) {
+					cursor++;
+				} else {
+					_guilang_parser_ARGGGH(in, top);
+				}
+			} break;
+			case GUILANG_KEYWORD: {
+				if (in->type == GUILANG_KEYWORD) {
+					cursor++;
+				} else {
+					_guilang_parser_ARGGGH(in, top);
+				}
+			} break;
+			case GUILANG_ENDOFINPUT: {
+				if (in->type == GUILANG_ENDOFINPUT) {
+					cursor++;
+				} else {
+					_guilang_parser_ARGGGH(in, top);
+				}
+			} break;
+			case GUILANG_ENDOFSTRING:
+			case GUILANG_EPSILON:
+			printf("oops\n");
+			break;
+		}
+		_guilang_printtoken(in);
+		printf(" -- ");
+		_guilang_printtoken(top);
+		printf("\n");
+	}
+	
+	return 0;
 }

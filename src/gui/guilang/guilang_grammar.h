@@ -2,6 +2,7 @@
 // GUILANG GRAMMAR DEFINITIONS
 // // ==========================================================
 
+#define GUILANG_STARTSYMBOL ("GUI")
 const int _guilang_tokencount = 7;
 typedef enum
 _E_guilang_tokentype
