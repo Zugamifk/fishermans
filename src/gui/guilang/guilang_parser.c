@@ -284,6 +284,8 @@ _guilang_parser_freelist
 		hashtable_insert(followsets, k, set_initcb((set_cmpcb)strcmp));
 	}
 	
+	set_add(hashtable_get(followsets, grammar->startsymbol->value), "$$");
+	
 	// Loop until unchanged
 	changed = true;
 	while (changed) {
@@ -466,6 +468,33 @@ _guilang_parser_freelist
 }
 /*============================================================================*/
 // Parsing table operations
+void
+_guilang_parser_error
+(
+	errorlog* log,
+	const char* message,
+	const char* a1,
+	const char* a2
+)
+{
+	char errorstring[GUILANG_LINELEN]; 
+	sprintf(errorstring, message, a1, a2);
+	errorlog_logdef(log, "GUILANG PARSER", errorstring);
+}
+
+void
+_guilang_parser_mismatch
+(
+	errorlog* log,
+	const char* a1,
+	const char* a2
+)
+{
+	char errorstring[GUILANG_LINELEN]; 
+	sprintf(errorstring, "Token mismatch: expected [ %s ], got [ %s ]", a1, a2);
+	errorlog_logdef(log, "GUILANG PARSER", errorstring);
+}
+
 _guilang_rule_production*
 _guilang_parser_getproduction
 (
@@ -483,21 +512,13 @@ _guilang_parser_getproduction
 	} else return hashtable_get(ti, t->value);
 }
 
-void
-_guilang_parser_ARGGGH
-(	_guilang_token* nt,
-	_guilang_token* t)
-{
-					_guilang_printtoken(nt);
-					_guilang_printtoken(t);
-					printf("ERROR!\n");
-}
 
 int
 guilang_parse
 (
 	guilang_grammar* g,
-	_guilang_token** t
+	_guilang_token** t,
+	errorlog* log
 )
 {
 	_guilang_parsingtable* pt = _guilang_parser_initparsingtable(g);
@@ -519,8 +540,7 @@ guilang_parse
 			case GUILANG_NONTERMINAL: {
 				_guilang_rule_production* prod = _guilang_parser_getproduction(pt, top, in);
 				if (prod == NULL) {
-					printf ("REALLY?");
-					_guilang_parser_ARGGGH(in, top);
+					_guilang_parser_error(log, "No production in [ %s ] for terminal [ %s ]", top->value, in->value);
 					break;
 				};
 				for (int i = prod->len-2; i >= 0; i--) {
@@ -528,33 +548,36 @@ guilang_parse
 				}
 			} break;
 			case GUILANG_STRING: {
-				if (in->type == GUILANG_STRING || 
-					(strcmp(in->value, top->value) == 0)) 
+				if (in->type == GUILANG_STRING) 
 				{
-					cursor++;
+					if (strcmp(in->value, top->value) == 0) {
+						cursor++;
+					} else {
+						_guilang_parser_error(log, "String token mismatch: expected [ %s ], got [ %s ]", top->value, in->value);
+					}
 				} else {
-					_guilang_parser_ARGGGH(in, top);
+					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
 				}
 			} break;
 			case GUILANG_NUMBER: {
 				if (in->type == GUILANG_NUMBER) {
 					cursor++;
 				} else {
-					_guilang_parser_ARGGGH(in, top);
+					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
 				}
 			} break;
 			case GUILANG_KEYWORD: {
 				if (in->type == GUILANG_KEYWORD) {
 					cursor++;
 				} else {
-					_guilang_parser_ARGGGH(in, top);
+					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
 				}
 			} break;
 			case GUILANG_ENDOFINPUT: {
 				if (in->type == GUILANG_ENDOFINPUT) {
 					cursor++;
 				} else {
-					_guilang_parser_ARGGGH(in, top);
+					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
 				}
 			} break;
 			case GUILANG_ENDOFSTRING:
@@ -562,10 +585,7 @@ guilang_parse
 			printf("oops\n");
 			break;
 		}
-		_guilang_printtoken(in);
-		printf(" -- ");
-		_guilang_printtoken(top);
-		printf("\n");
+
 	}
 	
 	return 0;

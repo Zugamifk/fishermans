@@ -37,7 +37,6 @@ guilang_initgrammar
 	grammar->terminals = set_initcb((set_cmpcb)strcmp);
 	grammar->nonterminals = set_initcb((set_cmpcb)strcmp);
 	grammar->rules = hashtable_init(0);
-	grammar->startsymbol = _guilang_inittoken(GUILANG_NONTERMINAL, GUILANG_STARTSYMBOL);
 	grammar->version = 2;
 	
 	#ifdef GUILANG_DEFAULTSPEC
@@ -46,6 +45,8 @@ guilang_initgrammar
 		FILE* langfile = fopen(filename, "r");
 	#endif
 
+	bool startsymbolset = false;
+	
 	// parse specification
 	while(!feof(langfile)) {
 	
@@ -59,6 +60,7 @@ guilang_initgrammar
 		// tokenize the lexemes		
 		_guilangspec_token** tokens = _guilangspec_tokenize(lexemes);
 		
+		
 		//get terminals out of tokens
 		for (int i = 0; tokens[i]->type != GUILANGSPEC_ENDOFSTRING; i++) {
 			if (tokens[i]->type == GUILANGSPEC_TERMINAL) {
@@ -69,20 +71,21 @@ guilang_initgrammar
 		
 		// parse the tokens
 		int success = _guilangspec_parse(tokens, log);
-						set_print(grammar->terminals, (set_printcb)_guilang_printstr);
-
+		
 		//check semantics
 		success &= _guilangspec_analyse(tokens, log);
-				set_print(grammar->terminals, (set_printcb)_guilang_printstr);
-
+		
 		// generate rules from the string
 		_guilangspec_generaterules(grammar->rules, tokens, log);
-						set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+		
+		// set the start token
+		if (!startsymbolset) {
+			grammar->startsymbol = _guilang_inittoken(GUILANG_NONTERMINAL, tokens[0]->value);
+			startsymbolset = true;
+		}
 
 	//	_guilangspec_deletetoken(tokens[0]);
 	//	_guilangspec_freelexemes(lexemes);
-						set_print(grammar->terminals, (set_printcb)_guilang_printstr);
-
 	}
 	
 	HASHTABLEDATA* r;

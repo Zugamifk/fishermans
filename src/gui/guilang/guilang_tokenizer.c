@@ -6,7 +6,7 @@ _guilang_tokenizer_isnum
 {
 	bool decimal = false;
 	for (int i = 0; i < strlen(word); i++) {
-		if (word[i] == '.') {
+		if (word[i] == '.' && !decimal) {
 			decimal = true;
 		} else
 		if (!isdigit(word[i])) {
