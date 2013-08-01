@@ -49,6 +49,20 @@ set_initcb
 }
 
 void
+set_copy
+(
+	set* src,
+	set* dst
+)
+{
+	for (int i =0; i < src->size; i++) {
+		dst->items[i] = src->items[i];
+	}
+	dst->size = src->size;
+	dst->cmp = src->cmp;
+}
+
+void
 set_cmp
 (
 	set* s,
@@ -100,7 +114,6 @@ set_add
 )
 {
 	if (set_has(s, d)) return;
-	printf("!!!");
 	s->items[s->size] = d;
 	s->size = s->size + 1;
 }

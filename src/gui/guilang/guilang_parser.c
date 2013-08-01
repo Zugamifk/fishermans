@@ -196,7 +196,8 @@ _guilang_parser_freelist
 							set* fA = hashtable_get(ntfirst, term->value);
 							// If it has an epsilon, skip the epsilon and add the first set of the next term as well
 							if (set_has(fA, "EPSILON")) {
-								set_difference(temp, fA, eps);
+								set_copy(temp, fA);
+								set_remove(temp, "EPSILON");
 								set_union(firstset, firstset, temp);
 								set_clear(temp);
 								inseq = true;
@@ -303,43 +304,63 @@ _guilang_parser_freelist
 				// -1: ignore ENDOFSTRING
 				// -1: last term has no Follow
 				_guilang_rule_production* p = (_guilang_rule_production*)l->data;
-				for (unsigned int i = 0; i < p->len - 2; i++) {
+				for (unsigned int i = 0; i < p->len - 1; i++) {
 					// If the current term is a nonterminal, find a follow set
 					_guilang_token* curr = p->production[i];
 					if (curr->type == GUILANG_NONTERMINAL) {
-						// get the next term
-						_guilang_token* follow = p->production[i+1];
-						
 						// get the follow set for the current term
 						set* fs = hashtable_get(followsets, curr->value);
 						
 						// sentinal for changes
 						int osz = fs->size;
-						// act based on next term type
-						switch (follow->type) {
-							// Add terminals to current's follow set
-							case GUILANG_STRING:
-							case GUILANG_NUMBER:
-							case GUILANG_KEYWORD:
-							case GUILANG_ENDOFINPUT:
-								set_add(fs, follow->value);
+							
+						int seqi = i+1;
+						for(;seqi<p->len; seqi++) {
+							// get the next term
+							_guilang_token* follow = p->production[seqi];
+							
+							// act based on next term type
+							switch (follow->type) {
+								// Add terminals to current's follow set
+								case GUILANG_STRING:
+								case GUILANG_NUMBER:
+								case GUILANG_KEYWORD:
+								case GUILANG_ENDOFINPUT:
+									set_add(fs, follow->value);
+									goto nextprod;
+								// Nonterminals are complicated
+								case GUILANG_NONTERMINAL: {
+									// Get the first set of the next term
+									set* fA = hashtable_get(ntfirst, follow->value);
+									// If fA has an epsilon, Follow(curr) += Follow(k), where k is the current rule's NONTERMINAL
+									// This may be incorrect!
+									
+									if (set_has(fA, "EPSILON")) {
+										set_copy(temp, fA);
+										set_remove(temp, "EPSILON");
+										set_union(fs, fs, temp);
+																		set_print(temp, (set_printcb)_guilang_printstr);
+										set_clear(temp);
+									} else {
+										// Add fA to Follow(curr)
+										set_union(fs, fs, fA);
+										goto nextprod;
+									}
+									set_print(fs, (set_printcb)_guilang_printstr);
+									} break;
+								case GUILANG_EPSILON:
+								goto nextprod;
 								break;
-							// Nonterminals are complicated
-							case GUILANG_NONTERMINAL: {
-								// Get the first set of the next term
-								set* fA = hashtable_get(ntfirst, follow->value);
-								// If fA has an epsilon, Follow(curr) += Follow(k), where k is the current rule's NONTERMINAL
-								// This may be incorrect!
-								if (set_has(fA, "EPSILON")) {
-									set_union(fs, hashtable_get(followsets, k), fs);
-								}
-								// Add fA to Follow(curr)
-								set_union(fs, fs, fA);
+								case GUILANG_ENDOFSTRING: {
+									set* fPROD = hashtable_get(followsets, k);
+									set_print(fPROD, (set_printcb)_guilang_printstr);
+									printf("EOS %s %s\n", k, follow->value);
+									set_union(fs, fs, fPROD);
+									goto nextprod;
 								} break;
-							case GUILANG_EPSILON:
-							case GUILANG_ENDOFSTRING:
-							break;
+							}
 						}
+						nextprod:
 						// Check sentinal
 						if (osz != fs->size) changed = true;
 					}

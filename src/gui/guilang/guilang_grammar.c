@@ -43,7 +43,7 @@ guilang_initgrammar
 	#ifdef GUILANG_DEFAULTSPEC
 		FILE* langfile = fopen(GUILANG_DEFAULTSPEC, "r");
 	#else
-		FILE* langfile = fopen(langspec, "r");
+		FILE* langfile = fopen(filename, "r");
 	#endif
 
 	// parse specification
@@ -62,9 +62,6 @@ guilang_initgrammar
 		//get terminals out of tokens
 		for (int i = 0; tokens[i]->type != GUILANGSPEC_ENDOFSTRING; i++) {
 			if (tokens[i]->type == GUILANGSPEC_TERMINAL) {
-				printf("%s\n", tokens[i]->value);
-								set_print(grammar->terminals, (set_printcb)_guilang_printstr);
-
 				set_add(grammar->terminals, tokens[i]->value);
 				set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 			}
@@ -72,15 +69,20 @@ guilang_initgrammar
 		
 		// parse the tokens
 		int success = _guilangspec_parse(tokens, log);
-		
+						set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+
 		//check semantics
 		success &= _guilangspec_analyse(tokens, log);
+				set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 
 		// generate rules from the string
 		_guilangspec_generaterules(grammar->rules, tokens, log);
-		
+						set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+
 	//	_guilangspec_deletetoken(tokens[0]);
-		_guilangspec_freelexemes(lexemes);
+	//	_guilangspec_freelexemes(lexemes);
+						set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+
 	}
 	
 	HASHTABLEDATA* r;
@@ -97,7 +99,8 @@ guilang_initgrammar
 		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
 		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
 	#endif
-	
+					set_print(grammar->terminals, (set_printcb)_guilang_printstr);
+
 	return grammar;
 }
 
