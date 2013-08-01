@@ -3,6 +3,9 @@
 // // ==========================================================
 
 #define GUILANG_STARTSYMBOL ("GUI")
+#define GUILANG_GENERICWORD ("@")
+#define GUILANG_GENERICNUM ("#")
+
 const int _guilang_tokencount = 7;
 typedef enum
 _E_guilang_tokentype

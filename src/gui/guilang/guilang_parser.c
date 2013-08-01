@@ -475,7 +475,12 @@ _guilang_parser_getproduction
 )
 {
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
-	return hashtable_get(ti, t->value);
+	if (t->type == GUILANG_KEYWORD) {
+		return hashtable_get(ti, GUILANG_GENERICWORD);
+	} else 
+	if (t->type == GUILANG_NUMBER) {
+		return hashtable_get(ti, GUILANG_GENERICNUM);
+	} else return hashtable_get(ti, t->value);
 }
 
 void

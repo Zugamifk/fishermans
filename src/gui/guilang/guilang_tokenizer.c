@@ -1,3 +1,21 @@
+bool
+_guilang_tokenizer_isnum
+(
+	char* word
+)
+{
+	bool decimal = false;
+	for (int i = 0; i < strlen(word); i++) {
+		if (word[i] == '.') {
+			decimal = true;
+		} else
+		if (!isdigit(word[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
 _guilang_token**
 guilang_tokenize
 (
@@ -15,7 +33,7 @@ guilang_tokenize
 		if (guilang_iskeyword(*word)) {
 			*curr = _guilang_inittoken(GUILANG_KEYWORD, *word);
 		} else
-		if (strtol(*word, NULL, 10) || strtof(*word, NULL)) {
+		if (_guilang_tokenizer_isnum(*word)) {
 			*curr = _guilang_inittoken(GUILANG_NUMBER, *word);
 		} else 
 		if (strcmp(*word, "$$") == 0) {
