@@ -23,13 +23,12 @@
 #define LANG_GENERICWORD ("@")
 #define LANG_GENERICNUM ("#")
 
-const int _lang_tokencount = 7;
+const int _lang_tokencount = 6;
 typedef enum
 _E_lang_tokentype
 {
 	LANG_STRING,
 	LANG_NUMBER,
-	LANG_KEYWORD,
 	LANG_NONTERMINAL,
 	LANG_ENDOFSTRING,
 	LANG_ENDOFINPUT,
@@ -39,20 +38,10 @@ _E_lang_tokentype
 const char* _lang_tokentypestrings[] ={
 	"STRING",
 	"NUMBER",
-	"KEYWORD",
 	"NONTERMINAL",
 	"ENDOFSTRING",
 	"ENDOFINPUT",
 	"EPSILON"
-};
-
-const int _lang_keywordcount = 0; // fuck this shit
-const char* _lang_keywords[] = {
-	"x", "y",
-	"w", "h",
-	"active", "inactive",
-	"dimensions",
-	"horizontal", "vertical"
 };
 
 // ==========================================================

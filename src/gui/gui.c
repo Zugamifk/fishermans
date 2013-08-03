@@ -1,79 +1,82 @@
 typedef struct
-t_gui
+_S_gui
 {
-	gui_dimensions*	dim;
-	gui_position*	pos;
-	gui_window**	windows;
-	int				windownum;
+	_gui_dimension* dim;
+	vec2* pos;
+	double aspectratio;
+	hashtable* windows;
+	set* activewindows;
+	errorlog* log;
+	#ifdef GUI_DEBUGCOLORS
+	color* debugcolor;
+	#endif
 } gui;
-
-void
-gui_drawdefault
-(
-	void* data,
-	float t,
-	float dt
-)
-{}
-
 
 gui*
 gui_init
 (
-//	event_bus	*events,
-	gui_dimensions*	dims,
-	gui_position*	pos
+	double x,
+	double y,
+	double w,
+	double h
 )
 {
-	gui*	newgui = malloc(sizeof(gui));
-	
-	newgui->dim 	= dims;
-	newgui->pos 	= pos;
-	newgui->windows = malloc(sizeof(gui_window *)*GUI_MAXWINDOWS);
-	newgui->windownum = 0;
-	
-	return newgui;
+	gui* g = malloc(sizeof(gui));
+	g->dim = _gui_dimension_init(w, h);
+	g->pos = vec2_new(x, y);
+	g->aspectratio = 1.0;
+	g->windows = hashtable_init(0);
+	g->activewindows = set_init();
+	#ifdef GUI_DEBUGCOLORS
+	g->debugcolor = color_new4(1.0, 0.0, 0.0, 1.0);
+	#endif
+	return g;
 }
 
-gui_WindowID
-gui_addwindow
+void
+gui_update
 (
-	gui*		g,
-	gui_window*	w
+	gui* g,
+	double t,
+	double dt
 )
 {
-	if (g->windownum == GUI_MAXWINDOWS) {
-		return -1;
-	} else {
-		gui_WindowID id = g->windownum;
-		g->windows[id] = w;
-		g->windownum++;
-		return id;
-	}
+
 }
 
 void
 gui_draw
 (
-	gui*	g,
-	float 	t,
-	float	dt
+	gui* g,
+	double t,
+	double dt
 )
 {
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-	gluOrtho2D(
-		0, g->dim->x,
-		0, g->dim->y
-		);
-
+	gluOrtho2D(0.0, g->aspectratio, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
-	for (int i = 0; i < g->windownum; i++) {
-		gui_window *w = g->windows[i];
-		gui_window_draw(w, t, dt);
-	}
+	glPushMatrix();
+	
+	#ifdef GUI_DEBUGDRAWGUI
+	color_apply(g->debugcolor);
+	shapes_box(g->dim->w, g->dim->h);
+	#endif
+	
+	glPopMatrix();
+}
+
+void
+gui_resize
+(
+	gui* g,
+	int x,
+	int y
+)
+{
+	g->aspectratio = (double)x/(double)y;
 }

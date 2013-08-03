@@ -2,7 +2,7 @@
 
 #define DEBUGMAIN
 #ifdef DEBUGMAIN
-	#define DEBUG_DONTOPENWINDOW
+//	#define DEBUG_DONTOPENWINDOW
 	#define DEBUG_KEEPLOG
 #endif
 
@@ -22,6 +22,7 @@ errorlog *Mlog;
 mouse_state *Mms;
 audio_system *Mfms;
 shaderprogram *Msp;
+gui* Mgui;
 
 int main(int argc, char** argv) {
 	
@@ -41,7 +42,7 @@ int main(int argc, char** argv) {
 	
 	Mfms = audio_system_init();
 	
-	guilang_compile(Mlog);
+	Mgui = guilang_compile(Mlog);
 	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
@@ -93,11 +94,11 @@ initglut()
 	// Set up shaders
 	glewInit();
 	
-	const GLchar *shaders[] = {
-		"shaders/vshader.sdr",
-		"shaders/fshader.sdr"
-	};
-	Msp = shader_init(shaders);
+	// const GLchar *shaders[] = {
+		// "shaders/vshader.sdr",
+		// "shaders/fshader.sdr"
+	// };
+//	Msp = shader_init(shaders);
 	
 	printf("init done!\n");
 	glutMainLoop();
@@ -110,10 +111,10 @@ update(int v)
 	glutPostRedisplay();
 	TIME += DTIME;
 
-	shader_update1f(Msp, "time", TIME);
+	//shader_update1f(Msp, "time", TIME);
 	//shader_update1fv(Msp, "dials", SDR_NUMDIALS, gui_dials);
 	
-	//gui_update(TIME, DTIME);
+	gui_update(Mgui, TIME, DTIME);
 	
 	glutTimerFunc(16, update, v);
 }
@@ -122,11 +123,11 @@ void
 draw()
 {	
 	
-	glActiveTexture(GL_TEXTURE0);
-	shader_update1i(Msp, "tex", 0);
-	glBindTexture(GL_TEXTURE_2D, Msp->texture);
+	//glActiveTexture(GL_TEXTURE0);
+//	shader_update1i(Msp, "tex", 0);
+//	glBindTexture(GL_TEXTURE_2D, Msp->texture);
 	
-	//gui_draw(TIME, DTIME);
+	gui_draw(Mgui, TIME, DTIME);
  //     gluPerspective( 60.0, aspectratio, 1.0, 30.0 );
 
   //  gluLookAt(0.0, 5.0, -7.0,
@@ -144,7 +145,7 @@ resize(int w, int h)
 	glViewport( 0, 0, w, h );	// View port uses whole window
 	aspectratio = (float)w/(float)h;
 	
-	//gui_resize(w, h);
+	gui_resize(Mgui, w, h);
 
 	// Set up the projection view matrix (not very well!)
     glMatrixMode( GL_PROJECTION );
@@ -171,7 +172,7 @@ skeys(int key, int x, int y)
 {
 	switch(key) {
 		case GLUT_KEY_UP:
-			shader_gentex(&(Msp->texture));
+		//	shader_gentex(&(Msp->texture));
 		break;
 		case GLUT_KEY_DOWN:
 		break;

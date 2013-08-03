@@ -1,4 +1,19 @@
 void
+shapes_box
+(
+	double w,
+	double h
+)
+{
+	glBegin(GL_LINE_LOOP);
+	glVertex2d(0.0, 0.0);
+	glVertex2d(w, 0.0);
+	glVertex2d(w, h);
+	glVertex2d(0.0, h);
+	glEnd();
+}
+
+void
 shapes_ring(double r, double t, int segnum)
 {
 	double a = 0.0;

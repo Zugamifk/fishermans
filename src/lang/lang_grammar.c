@@ -1,18 +1,3 @@
-//=============================================================================
-bool
-lang_iskeyword
-(
-	const char* word
-)
-{
-	for (int i = 0; i < _lang_keywordcount; i++) {
-		if (strcmp(_lang_keywords[i], word) == 0) {
-			return true;
-		}
-	}
-	return false;
-}
-
 void _lang_printstr(char* s) {printf("%s", s);}
 //=============================================================================
 

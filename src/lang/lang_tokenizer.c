@@ -30,9 +30,6 @@ lang_tokenize
 	int endtoken = 0;
 	while (!endtoken) {
 
-		if (lang_iskeyword(*word)) {
-			*curr = _lang_inittoken(LANG_KEYWORD, *word);
-		} else
 		if (_lang_tokenizer_isnum(*word)) {
 			*curr = _lang_inittoken(LANG_NUMBER, *word);
 		} else 

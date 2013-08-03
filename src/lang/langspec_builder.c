@@ -211,9 +211,6 @@ _langspec_translatetoken
 	switch (token->type) {
 		case LANGSPEC_TERMINAL: {
 			char* str = token->value;
-			if (strcmp(str, "@") == 0) {
-				return _lang_inittoken(LANG_KEYWORD, str);
-			} else
 			if (strcmp(str, "#") == 0) {
 				return _lang_inittoken(LANG_NUMBER, str);
 			} else

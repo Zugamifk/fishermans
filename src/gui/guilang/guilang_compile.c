@@ -15,5 +15,5 @@ guilang_compile
 	
 	lang_parse(spec, tokens, log);
 	
-	return guilang_buildgui(lex);
+	return guilang_buildgui(lex, log);
 }

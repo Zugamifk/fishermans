@@ -1,24 +1,10 @@
-typedef	vec2	gui_position;
-typedef vec2	gui_dimensions;
+#ifndef GUI_RELEASE
+#define GUI_DEBUGDRAWGUI
+#define GUI_DEBUGCOLORS
+#endif
 
-typedef enum
-e_gui_state
-{
-	GUI_STATE_INACTIVE,
-	GUI_STATE_ACTIVE
-} gui_state;
+#include "_gui_dimension.c"
 
-typedef void (*gui_drawcallback)(void*, float, float);
-
-typedef int		gui_WindowID;
-
-#define GUI_MAXWINDOWS	256
-
-void gui_drawdefault(void*, float, float);
-
-#include "gui_object.c"
-#include "gui_cell.c"
-#include "gui_window.c"
 #include "gui.c"
 
 #include "guilang/guilang.h"

@@ -204,7 +204,6 @@ _lang_parser_freeparsingtable
 						// Add terminals to the first set
 						case LANG_STRING:
 						case LANG_NUMBER:
-						case LANG_KEYWORD:
 						case LANG_EPSILON:
 						case LANG_ENDOFINPUT:
 							set_add(firstset, term->value);
@@ -274,7 +273,6 @@ _lang_parser_freeparsingtable
 				// Add terminal as items
 				case LANG_STRING:
 				case LANG_NUMBER:
-				case LANG_KEYWORD:
 				case LANG_EPSILON:
 				case LANG_ENDOFINPUT:
 					set_add(pfs, first->value);
@@ -346,7 +344,6 @@ _lang_parser_freeparsingtable
 								// Add terminals to current's follow set
 								case LANG_STRING:
 								case LANG_NUMBER:
-								case LANG_KEYWORD:
 								case LANG_ENDOFINPUT:
 									set_add(fs, follow->value);
 									goto nextprod;
@@ -525,10 +522,7 @@ _lang_parser_getproduction
 {
 	// Get the nonterminal entry
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
-	// Get keywords and numbers by a generic value, otherwise use the given terminal's value
-	if (t->type == LANG_KEYWORD) {
-		return hashtable_get(ti, LANG_GENERICWORD);
-	} else 
+	// Get numbers by a generic value, otherwise use the given terminal's value
 	if (t->type == LANG_NUMBER) {
 		return hashtable_get(ti, LANG_GENERICNUM);
 	} else return hashtable_get(ti, t->value);
@@ -614,7 +608,6 @@ _lang_parser_getproduction
 			} break;
 			// Other terminals: match ttype, otehrwise syntax error
 			case LANG_NUMBER: 
-			case LANG_KEYWORD: 
 			case LANG_ENDOFINPUT: {
 				if (in->type == top->type) {
 					cursor++;
