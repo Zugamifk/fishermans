@@ -1,5 +1,5 @@
 // ==================================================
-// GUILANG PARSER : 
+// LANG PARSER : 
 // Builds a parsing table with an pre-constructed grammar.
 // Does checks for ambiguities in the grammar.
 // ==================================================
@@ -7,17 +7,17 @@
 // DEFINITIONS
 // ==================================================
 typedef struct
-_S_guilang_parsingtable
+_S_lang_parsingtable
 {
 	hashtable* nti;
-	guilang_grammar* grammar;
-} _guilang_parsingtable;
+	lang_grammar* grammar;
+} _lang_parsingtable;
 
 // PRINT FUNCTIONS
 // ==================================================
 
 void
-_guilang_parser_shtstr
+_lang_parser_shtstr
 (
 	char* w
 )
@@ -32,16 +32,16 @@ _guilang_parser_shtstr
 }
 
 void
-_guilang_parser_printset
+_lang_parser_printset
 (
 	void* d
 )
 {
-	set_print((set*)d, (set_printcb)_guilang_printstr);
+	set_print((set*)d, (set_printcb)_lang_printstr);
 }
 
 void
-_guilang_parser_printsetlist
+_lang_parser_printsetlist
 (
 	void* d
 )
@@ -50,22 +50,22 @@ _guilang_parser_printsetlist
 	printf("\n");
 	while(l->data!=NULL) {
 	printf("\t\t");
-		set_print((set*)l->data, (set_printcb)_guilang_printstr);
+		set_print((set*)l->data, (set_printcb)_lang_printstr);
 		l = l->next;
 	}
 }
 
 void
-_guilang_parser_printparsingtable
+_lang_parser_printparsingtable
 (
-	_guilang_parsingtable* t
+	_lang_parsingtable* t
 )
 {
 	set* terminals = t->grammar->terminals;
 	SETDATA* v;
 	for (set_begin(terminals, &v); set_end(terminals); set_next(terminals, &v)) {
 		char* term = (char*)v;
-		_guilang_parser_shtstr(term);
+		_lang_parser_shtstr(term);
 		printf("\t");
 	}
 	printf("%d\n", terminals->size);
@@ -75,18 +75,18 @@ _guilang_parser_printparsingtable
 		hashtable_end(t->nti);
 		hashtable_next(t->nti, &nt, &ti))
 	{
-		_guilang_parser_shtstr(nt);
+		_lang_parser_shtstr(nt);
 		HASHTABLEDATA* predict;
 		char* tt;
 		for(hashtable_begin((hashtable*)ti, &tt, &predict);
 			hashtable_end((hashtable*)ti);
 			hashtable_next((hashtable*)ti, &tt, &predict))
 		{
-			_guilang_rule_production* rule = (_guilang_rule_production*)predict;
+			_lang_rule_production* rule = (_lang_rule_production*)predict;
 			printf("\t[");
 			if (rule != NULL) {
 				char* str = rule->production[0]->value;
-				_guilang_parser_shtstr(str);
+				_lang_parser_shtstr(str);
 			}
 			printf("]");
 		}
@@ -95,7 +95,7 @@ _guilang_parser_printparsingtable
 }
 
 void
-_guilang_parser_freelist
+_lang_parser_freelist
 (
 	list* d
 )
@@ -104,7 +104,7 @@ _guilang_parser_freelist
 }
 
 void
-_guilang_parser_freeparsingtableentry
+_lang_parser_freeparsingtableentry
 (
 	hashtable* t
 )
@@ -113,12 +113,12 @@ _guilang_parser_freeparsingtableentry
 }
 
 void
-_guilang_parser_freeparsingtable
+_lang_parser_freeparsingtable
 (
-	_guilang_parsingtable* p
+	_lang_parsingtable* p
 )
 {
-	hashtable_deepfree(p->nti, (hashtable_freecb)_guilang_parser_freeparsingtableentry);
+	hashtable_deepfree(p->nti, (hashtable_freecb)_lang_parser_freeparsingtableentry);
 }
 
 // PARSING TABLE
@@ -132,11 +132,11 @@ _guilang_parser_freeparsingtable
 	any other necessary analysis.
 */
 // ===========================================================================*/
-/**/	_guilang_parsingtable*				//	A fully built parsing table
-/**/	_guilang_parser_initparsingtable	//
+/**/	_lang_parsingtable*				//	A fully built parsing table
+/**/	_lang_parser_initparsingtable	//
 /*============================================================================*/
 (
-	guilang_grammar* grammar	// The grammar to build the parsing table from
+	lang_grammar* grammar	// The grammar to build the parsing table from
 )
 /*============================================================================*/
 {	
@@ -176,7 +176,7 @@ _guilang_parser_freeparsingtable
 				hashtable_next(grammar->rules, &k, &r))
 		{
 			// Pull out list of productions
-			list* l = ((_guilang_rule*)r)->transitions;
+			list* l = ((_lang_rule*)r)->transitions;
 			
 			// Get First(K) = {}
 			set* firstset = hashtable_get(ntfirst, k);
@@ -188,7 +188,7 @@ _guilang_parser_freeparsingtable
 			while (l->data != NULL) {
 			
 				// Pull out production
-				_guilang_rule_production* p = (_guilang_rule_production*)l->data;
+				_lang_rule_production* p = (_lang_rule_production*)l->data;
 				
 				// Iterate over production terms
 				int i = 0;
@@ -197,20 +197,20 @@ _guilang_parser_freeparsingtable
 					inseq = false;
 					
 					// get term
-					_guilang_token* term = p->production[i];
+					_lang_token* term = p->production[i];
 					
 					// Act based on token type
 					switch (term->type) {
 						// Add terminals to the first set
-						case GUILANG_STRING:
-						case GUILANG_NUMBER:
-						case GUILANG_KEYWORD:
-						case GUILANG_EPSILON:
-						case GUILANG_ENDOFINPUT:
+						case LANG_STRING:
+						case LANG_NUMBER:
+						case LANG_KEYWORD:
+						case LANG_EPSILON:
+						case LANG_ENDOFINPUT:
 							set_add(firstset, term->value);
 							break;
 						// Merge first sets of nonterminals
-						case GUILANG_NONTERMINAL: {
+						case LANG_NONTERMINAL: {
 							set* fA = hashtable_get(ntfirst, term->value);
 							// If it has an epsilon, skip the epsilon and add the first set of the next term as well
 							if (set_has(fA, "EPSILON")) {
@@ -225,7 +225,7 @@ _guilang_parser_freeparsingtable
 							}
 							} break;
 						// The end of string is effectively empty and counts as an epsilon
-						case GUILANG_ENDOFSTRING:
+						case LANG_ENDOFSTRING:
 						//	set_add(firstset, "EPSILON");
 							break;
 					}
@@ -258,7 +258,7 @@ _guilang_parser_freeparsingtable
 		hashtable_insert(firstsets, k, fl);
 		
 		// Pull out productions and iterate over them
-		list* l = ((_guilang_rule*)r)->transitions;
+		list* l = ((_lang_rule*)r)->transitions;
 		while (l->data != NULL) {
 		
 			// Initialize First(B)
@@ -266,25 +266,25 @@ _guilang_parser_freeparsingtable
 			list_add(fl, pfs);
 			
 			// Get the first term of the production
-			_guilang_rule_production* p = (_guilang_rule_production*)l->data;
-			_guilang_token* first = p->production[0];
+			_lang_rule_production* p = (_lang_rule_production*)l->data;
+			_lang_token* first = p->production[0];
 			
 			// Add to First(B) based on type
 			switch (first->type) {
 				// Add terminal as items
-				case GUILANG_STRING:
-				case GUILANG_NUMBER:
-				case GUILANG_KEYWORD:
-				case GUILANG_EPSILON:
-				case GUILANG_ENDOFINPUT:
+				case LANG_STRING:
+				case LANG_NUMBER:
+				case LANG_KEYWORD:
+				case LANG_EPSILON:
+				case LANG_ENDOFINPUT:
 					set_add(pfs, first->value);
 					break;
 				// First(B) = First(B) U First(p)
-				case GUILANG_NONTERMINAL: {
+				case LANG_NONTERMINAL: {
 					set* fA = hashtable_get(ntfirst, first->value);
 					set_union(pfs, pfs, fA);
 					} break;
-				case GUILANG_ENDOFSTRING:
+				case LANG_ENDOFSTRING:
 				break;
 			}
 			fl = fl->next;
@@ -319,17 +319,17 @@ _guilang_parser_freeparsingtable
 				hashtable_next(grammar->rules, &k, &r))
 		{
 			// Pull out productions and iterate
-			list* l = ((_guilang_rule*)r)->transitions;
+			list* l = ((_lang_rule*)r)->transitions;
 			while (l->data != NULL) {
 			
 				// Get production and iterate
 				// -1: ignore ENDOFSTRING
 				// -1: last term has no Follow
-				_guilang_rule_production* p = (_guilang_rule_production*)l->data;
+				_lang_rule_production* p = (_lang_rule_production*)l->data;
 				for (unsigned int i = 0; i < p->len - 1; i++) {
 					// If the current term is a nonterminal, find a follow set
-					_guilang_token* curr = p->production[i];
-					if (curr->type == GUILANG_NONTERMINAL) {
+					_lang_token* curr = p->production[i];
+					if (curr->type == LANG_NONTERMINAL) {
 						// get the follow set for the current term
 						set* fs = hashtable_get(followsets, curr->value);
 						
@@ -339,19 +339,19 @@ _guilang_parser_freeparsingtable
 						int seqi = i+1;
 						for(;seqi<p->len; seqi++) {
 							// get the next term
-							_guilang_token* follow = p->production[seqi];
+							_lang_token* follow = p->production[seqi];
 							
 							// act based on next term type
 							switch (follow->type) {
 								// Add terminals to current's follow set
-								case GUILANG_STRING:
-								case GUILANG_NUMBER:
-								case GUILANG_KEYWORD:
-								case GUILANG_ENDOFINPUT:
+								case LANG_STRING:
+								case LANG_NUMBER:
+								case LANG_KEYWORD:
+								case LANG_ENDOFINPUT:
 									set_add(fs, follow->value);
 									goto nextprod;
 								// Nonterminals are complicated
-								case GUILANG_NONTERMINAL: {
+								case LANG_NONTERMINAL: {
 									// Get the first set of the next term
 									set* fA = hashtable_get(ntfirst, follow->value);
 									// If fA has an epsilon, Follow(curr) += Follow(k), where k is the current rule's NONTERMINAL
@@ -368,10 +368,10 @@ _guilang_parser_freeparsingtable
 										goto nextprod;
 									}
 									} break;
-								case GUILANG_EPSILON:
+								case LANG_EPSILON:
 								goto nextprod;
 								break;
-								case GUILANG_ENDOFSTRING: {
+								case LANG_ENDOFSTRING: {
 									set* fPROD = hashtable_get(followsets, k);
 									set_union(fs, fs, fPROD);
 									goto nextprod;
@@ -392,7 +392,7 @@ _guilang_parser_freeparsingtable
 	// Build a new parsing table
 
 	// Allocate space
-	_guilang_parsingtable* ptable = malloc(sizeof(_guilang_parsingtable));
+	_lang_parsingtable* ptable = malloc(sizeof(_lang_parsingtable));
 	ptable->grammar = grammar;
 	
 	// hashtable of hashtables, indexed by [nonterminal, terminal]
@@ -415,7 +415,7 @@ _guilang_parser_freeparsingtable
 		SETDATA* v;
 		
 		// pointer for predict set
-		_guilang_rule_production* rule;
+		_lang_rule_production* rule;
 		
 		// get follow set for current nonterminal
 		set* follow = hashtable_get(followsets, k);
@@ -424,7 +424,7 @@ _guilang_parser_freeparsingtable
 		// v := terminal
 		for(set_begin(terminals, &v); set_end(terminals); set_next(terminals, &v)){
 			list* flist = hashtable_get(firstsets, k); // list of first sets
-			list* prods = ((_guilang_rule*)r)->transitions; // list of transitions
+			list* prods = ((_lang_rule*)r)->transitions; // list of transitions
 			
 			// Reset current production
 			rule = NULL;
@@ -456,28 +456,28 @@ _guilang_parser_freeparsingtable
 
 	// Print test stuff
 	set_free(temp);
-	#ifdef GUILANG_PRINTNTFIRST
+	#ifdef LANG_PRINTNTFIRST
 	printf("NTFIRST:\n");
-	hashtable_print(ntfirst, (hashtable_printcb)_guilang_parser_printset);
+	hashtable_print(ntfirst, (hashtable_printcb)_lang_parser_printset);
 	#endif
 	
-	#ifdef GUILANG_PRINTFIRST
+	#ifdef LANG_PRINTFIRST
 	printf("FIRST:\n");
-	hashtable_print(firstsets, (hashtable_printcb)_guilang_parser_printsetlist);
+	hashtable_print(firstsets, (hashtable_printcb)_lang_parser_printsetlist);
 	#endif
 	
-	#ifdef GUILANG_PRINTFOLLOW
+	#ifdef LANG_PRINTFOLLOW
 	printf("FOLLOW:\n");
-	hashtable_print(followsets, (hashtable_printcb)_guilang_parser_printset);
+	hashtable_print(followsets, (hashtable_printcb)_lang_parser_printset);
 	#endif
 	
-	#ifdef GUILANG_PRINTPARSINGTABLE
+	#ifdef LANG_PRINTPARSINGTABLE
 	printf("TABLE:\n");
-	_guilang_parser_printparsingtable(ptable);
+	_lang_parser_printparsingtable(ptable);
 	#endif
 
 	hashtable_deepfree(ntfirst, (hashtable_freecb)set_free);
-	hashtable_deepfree(firstsets, (hashtable_freecb)_guilang_parser_freelist);
+	hashtable_deepfree(firstsets, (hashtable_freecb)_lang_parser_freelist);
 	hashtable_deepfree(followsets, (hashtable_freecb)set_free);
 	
 	return ptable;
@@ -487,7 +487,7 @@ _guilang_parser_freeparsingtable
 
 // Generic error, takes two strings, probably token mismatch related
 void
-_guilang_parser_error
+_lang_parser_error
 (
 	errorlog* log,
 	const char* message,
@@ -495,42 +495,42 @@ _guilang_parser_error
 	const char* a2
 )
 {
-	char errorstring[GUILANG_LINELEN]; 
+	char errorstring[LANG_LINELEN]; 
 	sprintf(errorstring, message, a1, a2);
-	errorlog_logdef(log, "GUILANG PARSER", errorstring);
+	errorlog_logdef(log, "LANG PARSER", errorstring);
 }
 
 // General token mismatch error
 void
-_guilang_parser_mismatch
+_lang_parser_mismatch
 (
 	errorlog* log,
 	const char* a1,
 	const char* a2
 )
 {
-	char errorstring[GUILANG_LINELEN]; 
+	char errorstring[LANG_LINELEN]; 
 	sprintf(errorstring, "Token mismatch: expected [ %s ], got [ %s ]", a1, a2);
-	errorlog_logdef(log, "GUILANG PARSER", errorstring);
+	errorlog_logdef(log, "LANG PARSER", errorstring);
 }
 
 // Get a production from the parsing table
-_guilang_rule_production*
-_guilang_parser_getproduction
+_lang_rule_production*
+_lang_parser_getproduction
 (
-	_guilang_parsingtable* pt,	// Parsing table
-	_guilang_token* nt,			// Nonterminal
-	_guilang_token* t			// Terminal
+	_lang_parsingtable* pt,	// Parsing table
+	_lang_token* nt,			// Nonterminal
+	_lang_token* t			// Terminal
 )
 {
 	// Get the nonterminal entry
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
 	// Get keywords and numbers by a generic value, otherwise use the given terminal's value
-	if (t->type == GUILANG_KEYWORD) {
-		return hashtable_get(ti, GUILANG_GENERICWORD);
+	if (t->type == LANG_KEYWORD) {
+		return hashtable_get(ti, LANG_GENERICWORD);
 	} else 
-	if (t->type == GUILANG_NUMBER) {
-		return hashtable_get(ti, GUILANG_GENERICNUM);
+	if (t->type == LANG_NUMBER) {
+		return hashtable_get(ti, LANG_GENERICNUM);
 	} else return hashtable_get(ti, t->value);
 }
 
@@ -549,20 +549,20 @@ _guilang_parser_getproduction
 */
 /*============================================================================*/
 /**/	int				// Success indicator to pass onto code translator
-/**/	guilang_parse	// 
+/**/	lang_parse	// 
 /*============================================================================*/
 (
-	guilang_grammar* g,		// The grammar containing all productions
-	_guilang_token** t,		// Input token stream
+	lang_grammar* g,		// The grammar containing all productions
+	_lang_token** t,		// Input token stream
 	errorlog* log			// Error log
 )
 /*============================================================================*/
 {
 	// Build a parsing taken for the given grammar
-	_guilang_parsingtable* pt = _guilang_parser_initparsingtable(g);
+	_lang_parsingtable* pt = _lang_parser_initparsingtable(g);
 
 	// Initialize the end of input token for the stack
-	_guilang_token* eoi = _guilang_inittoken(GUILANG_ENDOFINPUT, "$$");
+	_lang_token* eoi = _lang_inittoken(LANG_ENDOFINPUT, "$$");
 	
 	// Initialize the stack, push the start and end tokens onto it
 	stack* s = stack_init(0); 
@@ -570,28 +570,28 @@ _guilang_parser_getproduction
 	stack_push(s, g->startsymbol);
 	
 	// Current stack token
-	_guilang_token* top;
+	_lang_token* top;
 	
 	// Current input token
-	_guilang_token* in;
-	_guilang_token** cursor = t;
+	_lang_token* in;
+	_lang_token** cursor = t;
 	
 	// Loop until stack is empty
 	while (!stack_isempty(s)) {
 	
 		// Pop the stack and get current input token
-		top = (_guilang_token*)stack_pop(s);
+		top = (_lang_token*)stack_pop(s);
 		in = *cursor;
 		
 		// Act depending on stack value
 		switch (top->type) {
 			// Nonterminal: get a production and push it onto the stack
-			case GUILANG_NONTERMINAL: {
+			case LANG_NONTERMINAL: {
 				// Get a production from the table
-				_guilang_rule_production* prod = _guilang_parser_getproduction(pt, top, in);
+				_lang_rule_production* prod = _lang_parser_getproduction(pt, top, in);
 				// If no production, syntax error
 				if (prod == NULL) {
-					_guilang_parser_error(log, "No production in [ %s ] for terminal [ %s ]", top->value, in->value);
+					_lang_parser_error(log, "No production in [ %s ] for terminal [ %s ]", top->value, in->value);
 					break;
 				};
 				// Otherwise push each token in the production onto the stack
@@ -600,36 +600,36 @@ _guilang_parser_getproduction
 				}
 			} break;
 			// String terminal: match token type and value, otherwise syntax error
-			case GUILANG_STRING: {
-				if (in->type == GUILANG_STRING) 
+			case LANG_STRING: {
+				if (in->type == LANG_STRING) 
 				{
 					if (strcmp(in->value, top->value) == 0) {
 						cursor++;
 					} else {
-						_guilang_parser_error(log, "String token mismatch: expected [ %s ], got [ %s ]", top->value, in->value);
+						_lang_parser_error(log, "String token mismatch: expected [ %s ], got [ %s ]", top->value, in->value);
 					}
 				} else {
-					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
+					_lang_parser_mismatch(log,  _lang_tokentypestrings[top->type], _lang_tokentypestrings[in->type]);
 				}
 			} break;
 			// Other terminals: match ttype, otehrwise syntax error
-			case GUILANG_NUMBER: 
-			case GUILANG_KEYWORD: 
-			case GUILANG_ENDOFINPUT: {
+			case LANG_NUMBER: 
+			case LANG_KEYWORD: 
+			case LANG_ENDOFINPUT: {
 				if (in->type == top->type) {
 					cursor++;
 				} else {
-					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
+					_lang_parser_mismatch(log,  _lang_tokentypestrings[top->type], _lang_tokentypestrings[in->type]);
 				}
 			} break;
-			case GUILANG_ENDOFSTRING:
-			case GUILANG_EPSILON:
+			case LANG_ENDOFSTRING:
+			case LANG_EPSILON:
 			break;
 		}
 
 	}
-	_guilang_parser_freeparsingtable(pt);
+	_lang_parser_freeparsingtable(pt);
 	stack_free(s);
-	_guilang_deletetoken(eoi);
+	_lang_deletetoken(eoi);
 	return 0;
 }

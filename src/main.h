@@ -49,4 +49,5 @@ double TIME, DTIME;
 
 #include "shader/shader.h"
 
+#include "lang/lang_tools.h"
 #include "gui/gui.h"

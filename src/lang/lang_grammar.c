@@ -1,46 +1,46 @@
 //=============================================================================
 bool
-guilang_iskeyword
+lang_iskeyword
 (
 	const char* word
 )
 {
-	for (int i = 0; i < _guilang_keywordcount; i++) {
-		if (strcmp(_guilang_keywords[i], word) == 0) {
+	for (int i = 0; i < _lang_keywordcount; i++) {
+		if (strcmp(_lang_keywords[i], word) == 0) {
 			return true;
 		}
 	}
 	return false;
 }
 
-void _guilang_printstr(char* s) {printf("%s", s);}
+void _lang_printstr(char* s) {printf("%s", s);}
 //=============================================================================
 
 typedef struct
-_S_guilang_grammar
+_S_lang_grammar
 {
 	set* terminals;
 	set* nonterminals;
 	hashtable* rules;
-	_guilang_token*	startsymbol;
+	_lang_token*	startsymbol;
 	int version;
-} guilang_grammar;
+} lang_grammar;
 
-guilang_grammar*
-guilang_initgrammar
+lang_grammar*
+lang_initgrammar
 (
 	const char* filename
 ,	errorlog* log
 )
 {
-	guilang_grammar* grammar = malloc(sizeof(guilang_grammar));
+	lang_grammar* grammar = malloc(sizeof(lang_grammar));
 	grammar->terminals = set_initcb((set_cmpcb)strcmp);
 	grammar->nonterminals = set_initcb((set_cmpcb)strcmp);
 	grammar->rules = hashtable_init(0);
 	grammar->version = 2;
 	
-	#ifdef GUILANG_DEFAULTSPEC
-		FILE* langfile = fopen(GUILANG_DEFAULTSPEC, "r");
+	#ifdef LANG_DEFAULTSPEC
+		FILE* langfile = fopen(LANG_DEFAULTSPEC, "r");
 	#else
 		FILE* langfile = fopen(filename, "r");
 	#endif
@@ -51,43 +51,43 @@ guilang_initgrammar
 	while(!feof(langfile)) {
 	
 		// scan one line at a time
-		char line[GUILANG_LINELEN];
+		char line[LANG_LINELEN];
 		fscanf(langfile, "%[^\n]\n", line);
 		
 		// separate line into lexemes (words)
-		char** lexemes = _guilangspec_scan(line);
+		char** lexemes = _langspec_scan(line);
 
 		// tokenize the lexemes		
-		_guilangspec_token** tokens = _guilangspec_tokenize(lexemes);
+		_langspec_token** tokens = _langspec_tokenize(lexemes);
 		
 		
 		//get terminals out of tokens
-		for (int i = 0; tokens[i]->type != GUILANGSPEC_ENDOFSTRING; i++) {
-			if (tokens[i]->type == GUILANGSPEC_TERMINAL) {
+		for (int i = 0; tokens[i]->type != LANGSPEC_ENDOFSTRING; i++) {
+			if (tokens[i]->type == LANGSPEC_TERMINAL) {
 				set_add(grammar->terminals, tokens[i]->value);
 			}
 		}
 		
 		// parse the tokens
-		int success = _guilangspec_parse(tokens, log);
+		int success = _langspec_parse(tokens, log);
 		
 		//check semantics
-		success &= _guilangspec_analyse(tokens, log);
+		success &= _langspec_analyse(tokens, log);
 		
 		// generate rules from the string
-		_guilangspec_generaterules(grammar->rules, tokens, log);
+		_langspec_generaterules(grammar->rules, tokens, log);
 		
 		// set the start token
 		if (!startsymbolset) {
-			grammar->startsymbol = _guilang_inittoken(GUILANG_NONTERMINAL, tokens[0]->value);
+			grammar->startsymbol = _lang_inittoken(LANG_NONTERMINAL, tokens[0]->value);
 			startsymbolset = true;
 		}
 
-	//	_guilangspec_deletetoken(tokens[0]);
-	//	_guilangspec_freelexemes(lexemes);
+	//	_langspec_deletetoken(tokens[0]);
+	//	_langspec_freelexemes(lexemes);
 	}
 	
-	set_add(grammar->terminals, GUILANG_ENDOFINPUTSTRING);
+	set_add(grammar->terminals, LANG_ENDOFINPUTSTRING);
 	
 	HASHTABLEDATA* r;
 	char* k;
@@ -98,10 +98,10 @@ guilang_initgrammar
 			set_add(grammar->nonterminals, k);
 		}
 	
-	#ifdef GUILANG_SPEC_PRINTRESULT
-		set_print(grammar->terminals, (set_printcb)_guilang_printstr);
-		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
-		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
+	#ifdef LANG_SPEC_PRINTRESULT
+		set_print(grammar->terminals, (set_printcb)_lang_printstr);
+		set_print(grammar->nonterminals, (set_printcb)_lang_printstr);
+		hashtable_print(grammar->rules, (hashtable_printcb)_lang_rule_print);
 	#endif
 
 	return grammar;

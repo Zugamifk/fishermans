@@ -1,29 +1,29 @@
 typedef struct
-_S_guilang_token
+_S_lang_token
 {
-	_guilang_tokentype type;
+	_lang_tokentype type;
 	char*	value;
-} _guilang_token;
+} _lang_token;
 
-_guilang_token*
-_guilang_inittoken
+_lang_token*
+_lang_inittoken
 (
-	_guilang_tokentype type,
+	_lang_tokentype type,
 	char* value
 )
 {
-	_guilang_token* token = malloc(sizeof(_guilang_token));
+	_lang_token* token = malloc(sizeof(_lang_token));
 	token->type = type;
-	token->value = malloc(GUILANG_WORDLEN);
+	token->value = malloc(LANG_WORDLEN);
 	strcpy(token->value, value);
 	
 	return token;
 }	
 
 void
-_guilang_deletetoken
+_lang_deletetoken
 (
-	_guilang_token* token
+	_lang_token* token
 )
 {
 	free(token->value);
@@ -31,9 +31,9 @@ _guilang_deletetoken
 }
 
 void
-_guilang_printtoken
+_lang_printtoken
 (
-	_guilang_token* token
+	_lang_token* token
 )
 {
 	const char* type;
@@ -42,7 +42,7 @@ _guilang_printtoken
 		type = "NULL";
 		value = "NULL";
 	} else {
-		type = _guilang_tokentypestrings[token->type];
+		type = _lang_tokentypestrings[token->type];
 		value = token->value;
 	}
 	printf("[ %s, ", type);

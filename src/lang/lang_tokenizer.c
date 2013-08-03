@@ -1,5 +1,5 @@
 bool
-_guilang_tokenizer_isnum
+_lang_tokenizer_isnum
 (
 	char* word
 )
@@ -16,31 +16,31 @@ _guilang_tokenizer_isnum
 	return true;
 }
 
-_guilang_token**
-guilang_tokenize
+_lang_token**
+lang_tokenize
 (
 	char** lexemes
 )
 {
 	char** word = lexemes;
 	
-	_guilang_token** tokens = malloc(GUILANG_BIGCAP);
-	_guilang_token** curr = tokens;
+	_lang_token** tokens = malloc(LANG_BIGCAP);
+	_lang_token** curr = tokens;
 	
 	int endtoken = 0;
 	while (!endtoken) {
 
-		if (guilang_iskeyword(*word)) {
-			*curr = _guilang_inittoken(GUILANG_KEYWORD, *word);
+		if (lang_iskeyword(*word)) {
+			*curr = _lang_inittoken(LANG_KEYWORD, *word);
 		} else
-		if (_guilang_tokenizer_isnum(*word)) {
-			*curr = _guilang_inittoken(GUILANG_NUMBER, *word);
+		if (_lang_tokenizer_isnum(*word)) {
+			*curr = _lang_inittoken(LANG_NUMBER, *word);
 		} else 
 		if (strcmp(*word, "$$") == 0) {
-			*curr = _guilang_inittoken(GUILANG_ENDOFINPUT, "EOI");
+			*curr = _lang_inittoken(LANG_ENDOFINPUT, "EOI");
 			endtoken = true;
 		} else {
-			*curr = _guilang_inittoken(GUILANG_STRING, *word);
+			*curr = _lang_inittoken(LANG_STRING, *word);
 		}
 		
  		curr++;

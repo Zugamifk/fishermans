@@ -214,7 +214,9 @@ hashtable_deepremove
 	} else
 	{
 		free(bucket->key);
-		cb(bucket->value);
+		if (cb != NULL) { 
+			cb(bucket->value);
+		}
 		free(bucket);
 	}
 }
