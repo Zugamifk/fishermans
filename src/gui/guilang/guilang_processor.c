@@ -5,13 +5,15 @@ _S_guilang_processor
 	char** cursor;
 	char* current;
 	errorlog* log;
+	event_bus* bus;
 } guilang_processor;
 
 guilang_processor*
 guilang_processor_init
 (
 	char** stream,
-	errorlog* log
+	errorlog* log, 
+	event_bus* bus
 )
 {
 	guilang_processor* processor = malloc(sizeof(guilang_processor));
@@ -19,6 +21,7 @@ guilang_processor_init
 	processor->cursor = stream;
 	processor->current = *stream;
 	processor->log = log;
+	processor->bus = bus;
 	return processor;	
 }
 

@@ -5,6 +5,7 @@
 
 #include "_gui_dimension.c"
 
+#include "gui_window.c"
 #include "gui.c"
 
 #include "guilang/guilang.h"

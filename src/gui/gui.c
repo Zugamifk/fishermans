@@ -54,18 +54,23 @@ gui_draw
 {
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-	gluOrtho2D(0.0, g->aspectratio, 0.0, 1.0);
+	gluOrtho2D(0.0, 1.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
 	glPushMatrix();
-	
+	vec2_translate(g->pos);
 	#ifdef GUI_DEBUGDRAWGUI
 	color_apply(g->debugcolor);
 	shapes_box(g->dim->w, g->dim->h);
 	#endif
+	
+	void* gw;
+	for(set_begin(g->activewindows, &gw); set_end(g->activewindows); set_next(g->activewindows, &gw)) {
+		gui_window_draw(gw, t, dt);
+	}
 	
 	glPopMatrix();
 }
@@ -79,4 +84,15 @@ gui_resize
 )
 {
 	g->aspectratio = (double)x/(double)y;
+}
+
+void
+gui_openwindow
+(
+	gui* g,
+	gui_window* w
+)
+{
+	hashtable_insert(g->windows, w->name, w);
+	set_add(g->activewindows, w);
 }

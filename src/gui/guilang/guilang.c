@@ -16,14 +16,54 @@
 void
 guilang_error
 (
-	errorlog* log,
+	guilang_processor* processor,
 	const char* message,
 	const char* word
 )
 {
 	char errorstring[LANG_LINELEN]; 
 	sprintf(errorstring, message, word);
-	errorlog_logdef(log, "GUILANG TRANSLATOR", errorstring);
+	errorlog_logdef(processor->log, "GUILANG TRANSLATOR", errorstring);
+}
+
+// WINDOW
+// ========================================================================= //
+// WINDOW[([[x, y, w, h]:#]* )]{ $CELL* }
+gui_window*
+guilang_buildwindow
+(
+	guilang_processor* processor
+)
+{
+	if (strcmp(processor->current, "WINDOW") != 0) return NULL;
+	float x = 0.0;
+	float y = 0.0;
+	float w = 1.0;
+	float h = 1.0;
+	
+	guilang_processor_match(processor, "WINDOW");
+	char* curr = guilang_processor_consume(processor);
+	
+	if (curr[0] == '(') {
+		float* param;
+		do {
+			curr = guilang_processor_consume(processor);
+			switch(curr[0]) {
+				case 'x': param = &x; break;
+				case 'y': param = &y; break;
+				case 'w': param = &w; break;
+				case 'h': param = &h; break;
+				default: guilang_error(processor, "Bad parameter! WINDOW object does not accept \'%s\'!", curr);
+			}
+			guilang_processor_match(processor, ":");
+			curr = guilang_processor_consume(processor);
+			*param = strtod(curr, NULL);
+			curr = guilang_processor_consume(processor);
+		} while(curr[0] != ')');
+	}
+	
+	gui_window* gw = gui_window_init(x, y, w, h);
+	return gw;
 }
 
 // GUI
@@ -33,17 +73,16 @@ gui*
 guilang_buildgui
 (
 	char** stream,
-	errorlog* log
+	errorlog* log,
+	event_bus* bus
 )
 {
-	float x = 0.3;
+	float x = 0.0;
 	float y = 0.0;
-	float w = 0.7;
+	float w = 1.0;
 	float h = 1.0;
-	
-	
-	
-	guilang_processor* processor = guilang_processor_init(stream, log);
+
+	guilang_processor* processor = guilang_processor_init(stream, log, bus);
 	
 	guilang_processor_match(processor, "GUI");
 	
@@ -58,7 +97,7 @@ guilang_buildgui
 				case 'y': param = &y; break;
 				case 'w': param = &w; break;
 				case 'h': param = &h; break;
-				default: guilang_error(log, "Bad parameter! GUI object does not accept \'%s\'!", curr);
+				default: guilang_error(processor, "Bad parameter! GUI object does not accept \'%s\'!", curr);
 			}
 			guilang_processor_match(processor, ":");
 			curr = guilang_processor_consume(processor);
@@ -68,5 +107,11 @@ guilang_buildgui
 	}
 	
 	gui* g = gui_init(x, y, w, h);
+	gui_window* gw = guilang_buildwindow(processor);
+	while(gw != NULL) {
+		gui_openwindow(g, gw);
+		gw = guilang_buildwindow(processor);
+	}
+		
 	return g;
 }

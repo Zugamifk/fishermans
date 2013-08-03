@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
 	
 	Mfms = audio_system_init();
 	
-	Mgui = guilang_compile(Mlog);
+	Mgui = guilang_compile(Mlog, Meb);
 	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
