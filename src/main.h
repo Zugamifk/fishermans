@@ -22,6 +22,8 @@
 double aspectratio;
 double TIME, DTIME;
 
+#define DATAPATH data/
+
 #include "lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"

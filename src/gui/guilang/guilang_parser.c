@@ -219,7 +219,7 @@ _guilang_parser_freelist
 			if (oldsize != firstset->size) changed = true;
 		}
 	}
-	
+
 	/* -----------------------------------------------------------------------*/
 	// generate production first sets
 	
@@ -271,7 +271,7 @@ _guilang_parser_freelist
 			l = l->next;
 		}
 	}
-	
+
 	/* -----------------------------------------------------------------------*/
 	// generate follow sets
 
@@ -284,7 +284,7 @@ _guilang_parser_freelist
 		hashtable_insert(followsets, k, set_initcb((set_cmpcb)strcmp));
 	}
 	
-	set_add(hashtable_get(followsets, grammar->startsymbol->value), "$$");
+	set_add(hashtable_get(followsets, grammar->startsymbol->value), "EOI");
 	
 	// Loop until unchanged
 	changed = true;
@@ -341,22 +341,18 @@ _guilang_parser_freelist
 										set_copy(temp, fA);
 										set_remove(temp, "EPSILON");
 										set_union(fs, fs, temp);
-																		set_print(temp, (set_printcb)_guilang_printstr);
 										set_clear(temp);
 									} else {
 										// Add fA to Follow(curr)
 										set_union(fs, fs, fA);
 										goto nextprod;
 									}
-									set_print(fs, (set_printcb)_guilang_printstr);
 									} break;
 								case GUILANG_EPSILON:
 								goto nextprod;
 								break;
 								case GUILANG_ENDOFSTRING: {
 									set* fPROD = hashtable_get(followsets, k);
-									set_print(fPROD, (set_printcb)_guilang_printstr);
-									printf("EOS %s %s\n", k, follow->value);
 									set_union(fs, fs, fPROD);
 									goto nextprod;
 								} break;
@@ -371,7 +367,7 @@ _guilang_parser_freelist
 			}
 		}
 	}
-	
+
 	/* -----------------------------------------------------------------------*/
 	// Build a new parsing table
 
@@ -468,6 +464,8 @@ _guilang_parser_freelist
 }
 /*============================================================================*/
 // Parsing table operations
+
+// Generic error, takes two strings, probably token mismatch related
 void
 _guilang_parser_error
 (
@@ -482,6 +480,7 @@ _guilang_parser_error
 	errorlog_logdef(log, "GUILANG PARSER", errorstring);
 }
 
+// General token mismatch error
 void
 _guilang_parser_mismatch
 (
@@ -495,15 +494,18 @@ _guilang_parser_mismatch
 	errorlog_logdef(log, "GUILANG PARSER", errorstring);
 }
 
+// Get a production from the parsing table
 _guilang_rule_production*
 _guilang_parser_getproduction
 (
-	_guilang_parsingtable* pt,
-	_guilang_token* nt,
-	_guilang_token* t
+	_guilang_parsingtable* pt,	// Parsing table
+	_guilang_token* nt,			// Nonterminal
+	_guilang_token* t			// Terminal
 )
 {
+	// Get the nonterminal entry
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
+	// Get keywords and numbers by a generic value, otherwise use the given terminal's value
 	if (t->type == GUILANG_KEYWORD) {
 		return hashtable_get(ti, GUILANG_GENERICWORD);
 	} else 
@@ -512,41 +514,72 @@ _guilang_parser_getproduction
 	} else return hashtable_get(ti, t->value);
 }
 
-
-int
-guilang_parse
+// PARSER
+/*	Standard LL(1) Parser
+	Builds a parsing table and initializes a stack with the start and end
+	symbols. The loop iterates as long as there are tokens on the stack and pops
+	one value every iteration. 
+	Every loop, one of two things happens:
+	1.	If there is a terminal on top of the stack, compare it to the current 
+		input token. If their types and values match, consume both.
+	2.	If there is a nonterminal on the stack, reference the parsing table with
+		the nonterminal and the current input token. Push all of the tokens from
+		ther table's entry onto the stack.
+	In either case, if the required conditions fail, a syntax error is thrown.
+*/
+/*============================================================================*/
+/**/	int				// Success indicator to pass onto code translator
+/**/	guilang_parse	// 
+/*============================================================================*/
 (
-	guilang_grammar* g,
-	_guilang_token** t,
-	errorlog* log
+	guilang_grammar* g,		// The grammar containing all productions
+	_guilang_token** t,		// Input token stream
+	errorlog* log			// Error log
 )
+/*============================================================================*/
 {
+	// Build a parsing taken for the given grammar
 	_guilang_parsingtable* pt = _guilang_parser_initparsingtable(g);
 	
+	// Initialize the end of input token for the stack
 	_guilang_token* eoi = _guilang_inittoken(GUILANG_ENDOFINPUT, "$$");
 	
+	// Initialize the stack, push the start and end tokens onto it
 	stack* s = stack_init(0); 
 	stack_push(s, eoi);
 	stack_push(s, g->startsymbol);
 	
+	// Current stack token
 	_guilang_token* top;
+	
+	// Current input token
 	_guilang_token* in;
 	_guilang_token** cursor = t;
+	
+	// Loop until stack is empty
 	while (!stack_isempty(s)) {
+	
+		// Pop the stack and get current input token
 		top = (_guilang_token*)stack_pop(s);
 		in = *cursor;
 		
+		// Act depending on stack value
 		switch (top->type) {
+			// Nonterminal: get a production and push it onto the stack
 			case GUILANG_NONTERMINAL: {
+				// Get a production from the table
 				_guilang_rule_production* prod = _guilang_parser_getproduction(pt, top, in);
+				// If no production, syntax error
 				if (prod == NULL) {
 					_guilang_parser_error(log, "No production in [ %s ] for terminal [ %s ]", top->value, in->value);
 					break;
 				};
+				// Otherwise push each token in the production onto the stack
 				for (int i = prod->len-2; i >= 0; i--) {
 					stack_push(s, prod->production[i]);
 				}
 			} break;
+			// String terminal: match token type and value, otherwise syntax error
 			case GUILANG_STRING: {
 				if (in->type == GUILANG_STRING) 
 				{
@@ -559,22 +592,11 @@ guilang_parse
 					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
 				}
 			} break;
-			case GUILANG_NUMBER: {
-				if (in->type == GUILANG_NUMBER) {
-					cursor++;
-				} else {
-					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
-				}
-			} break;
-			case GUILANG_KEYWORD: {
-				if (in->type == GUILANG_KEYWORD) {
-					cursor++;
-				} else {
-					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
-				}
-			} break;
+			// Other terminals: match ttype, otehrwise syntax error
+			case GUILANG_NUMBER: 
+			case GUILANG_KEYWORD: 
 			case GUILANG_ENDOFINPUT: {
-				if (in->type == GUILANG_ENDOFINPUT) {
+				if (in->type == top->type) {
 					cursor++;
 				} else {
 					_guilang_parser_mismatch(log,  _guilang_tokentypestrings[top->type], _guilang_tokentypestrings[in->type]);
@@ -582,7 +604,6 @@ guilang_parse
 			} break;
 			case GUILANG_ENDOFSTRING:
 			case GUILANG_EPSILON:
-			printf("oops\n");
 			break;
 		}
 

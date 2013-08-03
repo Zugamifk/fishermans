@@ -37,12 +37,13 @@ guilang_tokenize
 			*curr = _guilang_inittoken(GUILANG_NUMBER, *word);
 		} else 
 		if (strcmp(*word, "$$") == 0) {
-			*curr = _guilang_inittoken(GUILANG_ENDOFINPUT, *word);
+			*curr = _guilang_inittoken(GUILANG_ENDOFINPUT, "EOI");
 			endtoken = true;
 		} else {
 			*curr = _guilang_inittoken(GUILANG_STRING, *word);
 		}
-		curr++;
+		
+ 		curr++;
 		word++;
 		
 	}

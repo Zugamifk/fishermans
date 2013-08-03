@@ -4,10 +4,10 @@ guilang_compile
 	errorlog*	log
 )
 {
-	guilang_grammar *spec = guilang_initgrammar("guilangspec1", log);
+	guilang_grammar *spec = guilang_initgrammar("data/guilangspec1", log);
 	char *guidata;
 	int len;
-	load("testgui.txt", &guidata, &len);
+	load("data/testgui.txt", &guidata, &len);
 	
 	char** lex = guilang_scan(guidata);
 	

@@ -1,4 +1,12 @@
 ERROR: ARE YOU READY TO GET DOWN
 	DOWN
 ERROR: GUILANG PARSER
-	No production in [ WINDOWLIST-0 ] for terminal [ $$ ]
+	No production in [ CELLLIST-0 ] for terminal [ STINKYFARTS ]
+ERROR: GUILANG PARSER
+	String token mismatch: expected [ } ], got [ STINKYFARTS ]
+ERROR: GUILANG PARSER
+	String token mismatch: expected [ } ], got [ STINKYFARTS ]
+ERROR: GUILANG PARSER
+	No production in [ WINDOWLIST-0 ] for terminal [ STINKYFARTS ]
+ERROR: GUILANG PARSER
+	Token mismatch: expected [ ENDOFINPUT ], got [ STRING ]

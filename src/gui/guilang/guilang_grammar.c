@@ -65,7 +65,6 @@ guilang_initgrammar
 		for (int i = 0; tokens[i]->type != GUILANGSPEC_ENDOFSTRING; i++) {
 			if (tokens[i]->type == GUILANGSPEC_TERMINAL) {
 				set_add(grammar->terminals, tokens[i]->value);
-				set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 			}
 		}
 		
@@ -88,6 +87,8 @@ guilang_initgrammar
 	//	_guilangspec_freelexemes(lexemes);
 	}
 	
+	set_add(grammar->terminals, GUILANG_ENDOFINPUTSTRING);
+	
 	HASHTABLEDATA* r;
 	char* k;
 	for(	hashtable_begin(grammar->rules, &k, &r); 
@@ -102,7 +103,6 @@ guilang_initgrammar
 		set_print(grammar->nonterminals, (set_printcb)_guilang_printstr);
 		hashtable_print(grammar->rules, (hashtable_printcb)_guilang_rule_print);
 	#endif
-					set_print(grammar->terminals, (set_printcb)_guilang_printstr);
 
 	return grammar;
 }

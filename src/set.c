@@ -51,8 +51,8 @@ set_initcb
 void
 set_copy
 (
-	set* src,
-	set* dst
+	set* dst,
+	set* src
 )
 {
 	for (int i =0; i < src->size; i++) {

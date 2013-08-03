@@ -3,6 +3,7 @@
 // // ==========================================================
 
 #define GUILANG_STARTSYMBOL ("GUI")
+#define GUILANG_ENDOFINPUTSTRING ("EOI")
 #define GUILANG_GENERICWORD ("@")
 #define GUILANG_GENERICNUM ("#")
 

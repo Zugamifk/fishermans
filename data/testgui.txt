@@ -6,8 +6,7 @@ WINDOW(x:0, y:0, w:0.5, h:0.5)
 		CELL {
 		
 		}
-		CELL {
-		
+		STINKYFARTS
 		}
 		CELL {
 		
