@@ -1,4 +1,4 @@
-void
+gui*
 guilang_compile
 (
 	errorlog*	log
@@ -14,4 +14,6 @@ guilang_compile
 	_lang_token** tokens = lang_tokenize(lex);
 	
 	lang_parse(spec, tokens, log);
+	
+	return guilang_buildgui(lex);
 }

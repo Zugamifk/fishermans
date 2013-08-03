@@ -20,7 +20,7 @@ gui_drawdefault
 gui*
 gui_init
 (
-	event_bus	*events,
+//	event_bus	*events,
 	gui_dimensions*	dims,
 	gui_position*	pos
 )

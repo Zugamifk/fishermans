@@ -9,15 +9,6 @@
 #define LANG_DEBUG 1
 #define LANG_PRINTTOKENSTRINGS 0
 
-//#define LANG_USEDEFAULTSPEC 1
-#ifdef LANG_USEDEFAULTSPEC
-	#define LANG_VERSION 1
-	
-	#if LANG_VERSION == 1
-		#define LANG_DEFAULTSPEC ("langspec1")
-	#endif
-#endif
-
 #ifdef LANG_DEBUG
 //	#define LANG_SPEC_PRINTRESULT 1
 //	#define LANG_PRINTPARSINGTABLE
@@ -55,7 +46,7 @@ const char* _lang_tokentypestrings[] ={
 	"EPSILON"
 };
 
-const int _lang_keywordcount = 9;
+const int _lang_keywordcount = 0; // fuck this shit
 const char* _lang_keywords[] = {
 	"x", "y",
 	"w", "h",
