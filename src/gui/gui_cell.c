@@ -118,7 +118,6 @@ gui_cell_move
 )
 {	
 	vec4_addto(cell->pos, step);
-	vec2_print(cell->pos);
 }
 
 void

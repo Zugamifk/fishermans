@@ -58,8 +58,10 @@ guilang_buildcell
 		list* positions = list_new();
 		do {
 			curr = guilang_processor_consume(processor);
-			double pos = strtod(curr, NULL);
-			list_add(positions, &pos);
+			double* pos = malloc(sizeof(double));
+			*pos = strtod(curr, NULL);
+			printf("%f\n", *pos);
+			list_add(positions, pos);
 			curr = guilang_processor_consume(processor);
 		} while (curr[0] != ')');
 		
@@ -70,15 +72,16 @@ guilang_buildcell
 		for(list* l = positions; l->data!=NULL; l = l->next) {
 			gui_cell* cell = guilang_buildcell(processor, gw);
 			double* step = (double*)(l->data);
-			if (orientation == GUI_CELL_HORIZONTALCELLS) {
-				pos->x += (*step)*gw->dim->w;
+			if (orientation == GUI_CELL_HORIZONTALCELLS) { 
+				pos->x = (*step)*gw->dim->w;
 			} else {
-				pos->y += (*step)*gw->dim->h;
+				pos->y = (*step)*gw->dim->h;
+				printf("%f %f %f\n", pos->y, (*step), gw->dim->h);
 			}
 			gui_cell_move(cell, pos);
 			gui_cell_addcell(gc, cell, orientation);
 		}
-		list_delete(positions);
+		list_deepdelete(positions, free);
 	} else
 	if(curr[0] == '}') {
 	
