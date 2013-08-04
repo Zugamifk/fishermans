@@ -54,7 +54,7 @@ gui_draw
 {
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-	gluOrtho2D(0.0, 1.0, 0.0, 1.0);
+	gluOrtho2D(0.0, g->dim->w, 0.0, g->dim->h);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glMatrixMode(GL_MODELVIEW);
@@ -83,7 +83,8 @@ gui_resize
 	int y
 )
 {
-	g->aspectratio = (double)x/(double)y;
+	g->dim->w = x;
+	g->dim->h = y;
 }
 
 void

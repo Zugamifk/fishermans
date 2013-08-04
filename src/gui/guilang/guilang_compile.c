@@ -2,7 +2,8 @@ gui*
 guilang_compile
 (
 	errorlog*	log,
-	event_bus* bus
+	event_bus* bus,
+	screeninfo* info
 )
 {
 	lang_grammar *spec = lang_initgrammar("data/guilangspec1", log);
@@ -16,5 +17,5 @@ guilang_compile
 	
 	lang_parse(spec, tokens, log);
 	
-	return guilang_buildgui(lex, log, bus);
+	return guilang_buildgui(lex, log, bus, info);
 }

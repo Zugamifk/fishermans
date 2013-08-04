@@ -21,6 +21,13 @@
 
 double aspectratio;
 double TIME, DTIME;
+typedef struct
+_S_screeninfo
+{
+	int w;
+	int h;
+	int ar;
+} screeninfo;
 
 #define DATAPATH data/
 

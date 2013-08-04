@@ -4,7 +4,7 @@ _S_gui_window
 	char* name;
 	_gui_dimension* dim;
 	vec2* pos;
-	list* cells;
+	gui_cell* cell;
 	bool ishorz;
 	#ifdef GUI_DEBUGCOLORS
 	color* debugcolor;
@@ -24,17 +24,28 @@ gui_window_init
 	gw->name = "FIX THIS SHIT";
 	gw->dim = _gui_dimension_init(w, h);
 	gw->pos = vec2_new(x, y);
-	gw->cells = list_new();
+	gw->cell = NULL;
 	#ifdef GUI_DEBUGCOLORS
-	gw->debugcolor = color_new4(1.0, 0.0, 0.0, 1.0);
+	gw->debugcolor = color_new4(0.0, 0.0, 1.0, 1.0);
 	#endif
 	return gw;
 }
 
 void
+gui_window_setcell
+(
+	gui_window* w,
+	gui_cell* cell
+)
+{
+	w->cell = cell;
+	gui_cell_resize(cell, w->dim->w, w->dim->h);
+}
+
+void
 gui_window_update
 (
-	gui_window* g,
+	gui_window* w,
 	double t,
 	double dt
 )
@@ -53,6 +64,8 @@ gui_window_draw
 	
 	glPushMatrix();
 	vec2_translate(gw->pos);
+	gui_cell_draw(gw->cell, t, dt);
+	
 	#ifdef GUI_DEBUGDRAWGUI
 	color_apply(gw->debugcolor);
 	shapes_box(gw->dim->w, gw->dim->h);

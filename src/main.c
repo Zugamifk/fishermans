@@ -42,7 +42,8 @@ int main(int argc, char** argv) {
 	
 	Mfms = audio_system_init();
 	
-	Mgui = guilang_compile(Mlog, Meb);
+	screeninfo si = {SCREENW, SCREENH, aspectratio};
+	Mgui = guilang_compile(Mlog, Meb, &si);
 	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
