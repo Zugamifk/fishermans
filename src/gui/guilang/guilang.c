@@ -36,7 +36,9 @@ guilang_buildcell
 	gui_window* gw
 )
 {
-	if (strcmp(processor->current, "CELL") != 0) return NULL;
+	if (strcmp(processor->current, "CELL") != 0) {
+		return NULL;
+	}
 	
 	guilang_processor_match(processor, "CELL");
 	guilang_processor_match(processor, "{");
@@ -60,7 +62,6 @@ guilang_buildcell
 			curr = guilang_processor_consume(processor);
 			double* pos = malloc(sizeof(double));
 			*pos = strtod(curr, NULL);
-			printf("%f\n", *pos);
 			list_add(positions, pos);
 			curr = guilang_processor_consume(processor);
 		} while (curr[0] != ')');
@@ -76,17 +77,15 @@ guilang_buildcell
 				pos->x = (*step)*gw->dim->w;
 			} else {
 				pos->y = (*step)*gw->dim->h;
-				printf("%f %f %f\n", pos->y, (*step), gw->dim->h);
 			}
 			gui_cell_move(cell, pos);
 			gui_cell_addcell(gc, cell, orientation);
 		}
+		guilang_processor_match(processor, "}");
 		list_deepdelete(positions, free);
 	} else
 	if(curr[0] == '}') {
-	
 	}
-	
 	
 	return gc;
 }
@@ -201,5 +200,6 @@ guilang_buildgui
 		gw = guilang_buildwindow(processor, g);
 	}
 		
+	gui_print(g);
 	return g;
 }

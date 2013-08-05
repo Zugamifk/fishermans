@@ -2,9 +2,10 @@ GUI(x:0.0, y:0.0, w:1.0, h:1.0)
 WINDOW(x:0.7, y:0.2, w:0.28, h:0.78)
 {
 	CELL {
-		(vertical,0.1, 0.6 )
+		(horizontal,0.1, 0.6 )
 		CELL {
-		
+			(vertical, 0.5)
+			CELL { } CELL { }
 		}
 		CELL {
 		

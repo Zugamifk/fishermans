@@ -26,3 +26,12 @@ _gui_dimension_free
 {
 	free(dim);
 }
+
+void
+_gui_dimension_print
+(
+	_gui_dimension* dim
+)
+{
+	printf("[%.2f, %.2f]\n", dim->w, dim->h);
+}

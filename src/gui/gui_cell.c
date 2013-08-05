@@ -6,6 +6,13 @@ _E_gui_cell_content
 	GUI_CELL_VERTICALCELLS
 } gui_cell_content;
 
+const char* gui_cell_contentstrs[] =
+{
+	"EMPTY",
+	"HORIZONTAL CELLS",
+	"VERTICAL CELLS"
+};
+
 typedef struct
 _S_gui_cell
 {
@@ -56,13 +63,13 @@ gui_cell_draw
 	if (gc == NULL) return;
 	glPushMatrix();
 	vec2_translate(gc->pos);
-	
+
 	switch (gc->content) {
 		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS: {
 			list* l = gc->cells;
 			gui_cell_draw(l->data, t, dt);
-			for(l = l->next; l!= NULL; l = l->next) {
+			for(l = l->next; l->data!= NULL; l = l->next) {
 				gui_cell* cell = l->data;	
 				gui_cell_draw(cell, t, dt);
 				
@@ -142,4 +149,24 @@ gui_cell_resize
 	}
 	gc->dim->w = w;
 	gc->dim->h = h;
+}
+
+void
+gui_cell_print
+(
+	gui_cell* gc
+)
+{
+	printf("CELL:\n");
+	printf("\tPOS:\t");
+	vec2_print(gc->pos);
+	printf("\tDIM:\t");
+	_gui_dimension_print(gc->dim);
+	printf("\tCONTENT:\t%s\n", gui_cell_contentstrs[gc->content]);
+	if(gc->content != GUI_CELL_EMPTY) {
+		printf("\tCELLS:\n");
+		for(list* l = gc->cells; l->data != NULL; l = l->next) {
+			gui_cell_print(l->data);
+		}
+	}
 }

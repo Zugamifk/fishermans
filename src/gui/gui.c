@@ -97,3 +97,24 @@ gui_openwindow
 	hashtable_insert(g->windows, w->name, w);
 	set_add(g->activewindows, w);
 }
+
+void
+gui_print
+(
+	gui* g
+)
+{
+	printf("GUI:\n");
+	printf("\tPOS:\t");
+	vec2_print(g->pos);
+	printf("\tDIM:\t");
+	_gui_dimension_print(g->dim);
+	char* k;
+	void* v;
+	for(	hashtable_begin(g->windows, &k, &v);
+			hashtable_end(g->windows); 
+			hashtable_next(g->windows, &k, &v)) 
+	{
+		gui_window_print(v);
+	}
+}

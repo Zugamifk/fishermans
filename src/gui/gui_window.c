@@ -5,7 +5,6 @@ _S_gui_window
 	_gui_dimension* dim;
 	vec2* pos;
 	gui_cell* cell;
-	bool ishorz;
 	#ifdef GUI_DEBUGCOLORS
 	color* debugcolor;
 	#endif
@@ -72,4 +71,20 @@ gui_window_draw
 	#endif
 	
 	glPopMatrix();
+}
+
+void
+gui_window_print
+(
+	gui_window* gw
+)
+{
+	printf("WINDOW \'%s\':\n", gw->name);
+	printf("\tPOS:\t");
+	vec2_print(gw->pos);
+	printf("\tDIM:\t");
+	_gui_dimension_print(gw->dim);
+	if(gw->cell != NULL) {
+		gui_cell_print(gw->cell);
+	}
 }
