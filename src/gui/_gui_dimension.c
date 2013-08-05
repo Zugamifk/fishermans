@@ -1,15 +1,15 @@
 typedef struct
 _S_gui_dimension
 {
-	float w;
-	float h;
+	double w;
+	double h;
 } _gui_dimension;
 
 _gui_dimension*
 _gui_dimension_init
 (
-	float w,
-	float h
+	double w,
+	double h
 )
 {
 	_gui_dimension* dim = malloc(sizeof(_gui_dimension));

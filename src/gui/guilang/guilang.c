@@ -44,7 +44,7 @@ guilang_buildcell
 	guilang_processor_match(processor, "{");
 	
 	char* curr = guilang_processor_consume(processor);
-	gui_cell* gc = gui_cell_init();;
+	gui_cell* gc = gui_cell_init();
 	if(curr[0] == '(') {
 		curr = guilang_processor_consume(processor);
 		gui_cell_content orientation;
@@ -66,23 +66,28 @@ guilang_buildcell
 			curr = guilang_processor_consume(processor);
 		} while (curr[0] != ')');
 		
-		
 		gui_cell* cell = guilang_buildcell(processor, gw);
-		gui_cell_addcell(gc, cell, orientation);
 		vec2* pos = vec2_new(0.0, 0.0);
+		double* step;
 		for(list* l = positions; l->data!=NULL; l = l->next) {
-			gui_cell* cell = guilang_buildcell(processor, gw);
-			double* step = (double*)(l->data);
+			step = (double*)(l->data);
+			gui_cell_addcell(gc, cell, orientation, step);
 			if (orientation == GUI_CELL_HORIZONTALCELLS) { 
 				pos->x = (*step)*gw->dim->w;
 			} else {
 				pos->y = (*step)*gw->dim->h;
 			}
+			cell = guilang_buildcell(processor, gw);
 			gui_cell_move(cell, pos);
-			gui_cell_addcell(gc, cell, orientation);
+			
 		}
+		double* end = malloc(sizeof(double));
+		*end = 1.0 - *step;
+		gui_cell_addcell(gc, cell, orientation, end);
 		guilang_processor_match(processor, "}");
-		list_deepdelete(positions, free);
+		printf("--%f\n", gc->partitions->data);
+		list_delete(positions);
+		
 	} else
 	if(curr[0] == '}') {
 	}

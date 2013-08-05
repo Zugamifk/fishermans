@@ -20,6 +20,7 @@ _S_gui_cell
 	_gui_dimension* dim;
 	gui_cell_content content;
 	list* cells;
+	list* partitions;
 	#ifdef GUI_DEBUGDRAWGUI
 	color* debugcolor;
 	#endif
@@ -27,13 +28,13 @@ _S_gui_cell
 
 gui_cell*
 gui_cell_init
-(
-)
+()
 {
 	gui_cell* gc = malloc(sizeof(gui_cell));
 	gc->pos = vec2_new(0.0, 0.0);
 	gc->dim = _gui_dimension_init(1.0, 1.0);
 	gc->content = GUI_CELL_EMPTY;
+	gc->partitions = NULL;
 	gc->cells = NULL;
 	#ifdef GUI_DEBUGCOLORS
 	gc->debugcolor = color_new4(0.0, 1.0, 0.0, 1.0);
@@ -107,14 +108,26 @@ gui_cell_addcell
 (
 	gui_cell* cell,
 	gui_cell* toadd,
-	gui_cell_content orientation
+	gui_cell_content orientation,
+	double* partition
 )
 {
 	if (cell->content == GUI_CELL_EMPTY) {
 		cell->content = orientation;
 		cell->cells = list_new();
+		cell->partitions = list_new();
+	}
+	if (orientation == GUI_CELL_HORIZONTALCELLS) {
+		toadd->dim->w = cell->dim->w * *partition;
+		toadd->dim->h = cell->dim->h;
+	} else 
+	if (orientation == GUI_CELL_VERTICALCELLS) {
+		toadd->dim->w = cell->dim->w;
+		toadd->dim->h = cell->dim->h * *partition;
 	}
 	list_add(cell->cells, toadd);
+	list_add(cell->partitions, partition);
+	printf("$$%f\n", *partition);
 }
 
 void
@@ -128,6 +141,28 @@ gui_cell_move
 }
 
 void
+gui_cell_adjustpartitions
+(
+	gui_cell* gc
+)
+{
+	// if(gc->content) return;
+	
+	// double total = 0.0;
+	// for (list* l = gc->cells; l->data != NULL; l = l->next) {
+		// gui_cell* cell = (gui_cell*)(l->data);
+		// total += cell->partition;
+	// }
+	
+	// if (total < 1.0) return;
+	
+	// for (list* l = gc->cells; l->data != NULL; l = l->next) {
+		// gui_cell* cell = (gui_cell*)(l->data);
+		// cell->partition /= total;
+	// }
+}
+
+void
 gui_cell_resize
 (
 	gui_cell* gc,
@@ -135,15 +170,30 @@ gui_cell_resize
 	double h
 )
 {
-	double sw = w/gc->dim->w;
-	double sh = h/gc->dim->h;
 	switch(gc->content) {
 		case GUI_CELL_EMPTY: break;
-		case GUI_CELL_VERTICALCELLS:
-		case GUI_CELL_HORIZONTALCELLS:{
+		case GUI_CELL_VERTICALCELLS:{
+			list *p = gc->partitions;
+			double pos = 0.0;
 			for (list* l = gc->cells; l->data != NULL; l = l->next) {
 				gui_cell* cell = (gui_cell*)(l->data);
-				gui_cell_resize(cell, cell->dim->w*sw, cell->dim->h*sh);
+				double* len = (double*)(p->data);
+				gui_cell_resize(cell, w, h*(*len));
+				cell->pos->y = pos * h;
+				p = p->next;
+				pos = *len;
+			}
+		} break;
+		case GUI_CELL_HORIZONTALCELLS:{
+			list *p = gc->partitions;
+			double pos = 0.0;
+			for (list* l = gc->cells; l->data != NULL; l = l->next) {
+				gui_cell* cell = (gui_cell*)(l->data);
+				double* len = (double*)(p->data);
+				gui_cell_resize(cell, w*(*len), h);
+				cell->pos->x = pos * w;
+				p = p->next;
+				pos = *len;
 			}
 		} break;
 	}
@@ -157,7 +207,7 @@ gui_cell_print
 	gui_cell* gc
 )
 {
-	printf("CELL:\n");
+	printf("CELL:\n============================\n");
 	printf("\tPOS:\t");
 	vec2_print(gc->pos);
 	printf("\tDIM:\t");
@@ -165,8 +215,12 @@ gui_cell_print
 	printf("\tCONTENT:\t%s\n", gui_cell_contentstrs[gc->content]);
 	if(gc->content != GUI_CELL_EMPTY) {
 		printf("\tCELLS:\n");
+		list* p = gc->partitions;
 		for(list* l = gc->cells; l->data != NULL; l = l->next) {
+			printf("[%f] ", p->data);
 			gui_cell_print(l->data);
+			p = p->next;
 		}
 	}
+	printf("============================\n");
 }
