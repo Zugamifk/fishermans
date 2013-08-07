@@ -54,21 +54,48 @@ guilang_readheader
 // BUTTON
 // ========================================================================= //
 // BUTTON ( [ [ [x, y, w, h]:#, [text, name]:@ ] ]* )
-void
+gui_button*
 guilang_buildbutton
 (
 	guilang_processor* processor,
 	gui_cell* gc
 )
 {
+	double x = 0.0;
+	double y = 0.0;
+	double w = 1.0;
+	double h = 1.0;
+	char* name = "BUTTON";
+	
 	guilang_processor_match(processor, "BUTTON");
 	guilang_processor_match(processor, "(");
 	char* curr;
 	do {
 		curr = guilang_processor_consume(processor);
-		guilang_processor_match(processor, ":");
-		curr = guilang_processor_consume(processor);
+		if (strcmp(curr, "name") == 0) {
+			guilang_processor_match(processor, ":");
+			name = guilang_processor_consume(processor);
+		} else {
+			double* param;
+			switch(curr[0]) {
+				case 'x': param = &x; break;
+				case 'y': param = &y; break;
+				case 'w': param = &w; break;
+				case 'h': param = &h; break;
+				default: guilang_error(processor, "Bad parameter! BUTTON object does not accept \'%s\'!", curr);
+			}
+			guilang_processor_match(processor, ":");
+			curr = guilang_processor_consume(processor);
+			*param = strtod(curr, NULL);
+		}
 	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
+	
+	x *= gc->dim->w;
+	y *= gc->dim->h;
+	w *= gc->dim->w;
+	h *= gc->dim->h;
+	gui_button* gb = gui_button_init(name, x, y, w, h);
+	return gb;
 }
 	
 // CELL
@@ -134,7 +161,8 @@ guilang_buildcell
 		
 	} else
 	if(strcmp(processor->current, "BUTTON") == 0) {
-		guilang_buildbutton(processor, gc);
+		gui_button* gb = guilang_buildbutton(processor, gc);
+		gui_cell_addobject(gc, gb, GUI_CELL_BUTTON);
 	} else
 	if(strcmp(processor->current, "}") == 0) {
 	}

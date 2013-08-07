@@ -5,6 +5,8 @@
 
 #include "_gui_dimension.c"
 
+#include "gui_button.c"
+
 #include "gui_cell.c"
 #include "gui_window.c"
 #include "gui.c"

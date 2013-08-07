@@ -3,15 +3,23 @@ _E_gui_cell_content
 {
 	GUI_CELL_EMPTY,
 	GUI_CELL_HORIZONTALCELLS,
-	GUI_CELL_VERTICALCELLS
+	GUI_CELL_VERTICALCELLS,
+	GUI_CELL_BUTTON
 } gui_cell_content;
 
 const char* gui_cell_contentstrs[] =
 {
 	"EMPTY",
 	"HORIZONTAL CELLS",
-	"VERTICAL CELLS"
+	"VERTICAL CELLS",
+	"BUTTON"
 };
+
+typedef union
+_U_gui_cell_object
+{
+	gui_button* button;
+} _gui_cell_object;
 
 typedef struct
 _S_gui_cell
@@ -21,6 +29,7 @@ _S_gui_cell
 	gui_cell_content content;
 	list* cells;
 	list* partitions;
+	_gui_cell_object object;
 	#ifdef GUI_DEBUGDRAWGUI
 	color* debugcolor;
 	#endif
@@ -99,6 +108,9 @@ gui_cell_draw
 				#endif
 			}
 		} break;
+		case GUI_CELL_BUTTON: {
+			gui_button_draw(gc->object.button, t, dt);
+		} break;
 	}
 	glPopMatrix();
 }
@@ -127,6 +139,26 @@ gui_cell_addcell
 	}
 	list_add(cell->cells, toadd);
 	list_add(cell->partitions, partition);
+}
+
+void
+gui_cell_addobject
+(
+	gui_cell* gc,
+	void* o,
+	gui_cell_content type
+)
+{
+	switch(type) {
+		case GUI_CELL_EMPTY:
+		case GUI_CELL_HORIZONTALCELLS:
+		case GUI_CELL_VERTICALCELLS:
+		break;
+		case GUI_CELL_BUTTON: {
+			gc->content = type;
+			gc->object.button = o;
+		} break;
+	}
 }
 
 void
@@ -195,6 +227,9 @@ gui_cell_resize
 				pos = *len;
 			}
 		} break;
+		case GUI_CELL_BUTTON: {
+			gui_button_resize(gc->object.button, w, h);
+		} break;
 	}
 	gc->dim->w = w;
 	gc->dim->h = h;
@@ -212,14 +247,22 @@ gui_cell_print
 	printf("\tDIM:\t");
 	_gui_dimension_print(gc->dim);
 	printf("\tCONTENT:\t%s\n", gui_cell_contentstrs[gc->content]);
-	if(gc->content != GUI_CELL_EMPTY) {
-		printf("\tCELLS:\n");
-		list* p = gc->partitions;
-		for(list* l = gc->cells; l->data != NULL; l = l->next) {
-			printf("[%f] ", p->data);
-			gui_cell_print(l->data);
-			p = p->next;
+	switch(gc->content) {
+		case GUI_CELL_EMPTY: break;
+		case GUI_CELL_HORIZONTALCELLS:
+		case GUI_CELL_VERTICALCELLS:{
+			printf("\tCELLS:\n");
+			list* p = gc->partitions;
+			for(list* l = gc->cells; l->data != NULL; l = l->next) {
+				printf("[%f] ", p->data);
+				gui_cell_print(l->data);
+				p = p->next;
+			}
 		}
+		break;
+		case GUI_CELL_BUTTON: {
+			gui_button_print(gc->object.button);
+		} break;
 	}
 	printf("============================\n");
 }
