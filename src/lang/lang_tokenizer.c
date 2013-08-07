@@ -33,17 +33,18 @@ lang_tokenize
 		if (_lang_tokenizer_isnum(*word)) {
 			*curr = _lang_inittoken(LANG_NUMBER, *word);
 		} else 
+		if((*word)[0] == '\"') {
+			*curr = _lang_inittoken(LANG_USERSTRING, *word);
+		} else
 		if (strcmp(*word, "$$") == 0) {
 			*curr = _lang_inittoken(LANG_ENDOFINPUT, "EOI");
 			endtoken = true;
 		} else {
 			*curr = _lang_inittoken(LANG_STRING, *word);
 		}
-		
  		curr++;
 		word++;
 		
 	}
-	
 	return tokens;
 }

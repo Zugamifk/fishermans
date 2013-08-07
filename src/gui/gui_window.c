@@ -13,6 +13,7 @@ _S_gui_window
 gui_window*
 gui_window_init
 (
+	const char* name,
 	double x,
 	double y,
 	double w,
@@ -20,7 +21,8 @@ gui_window_init
 )
 {
 	gui_window* gw = malloc(sizeof(gui_window));
-	gw->name = "FIX THIS SHIT";
+	gw->name = malloc(strlen(name));
+	strcpy(gw->name, name);
 	gw->dim = _gui_dimension_init(w, h);
 	gw->pos = vec2_new(x, y);
 	gw->cell = NULL;

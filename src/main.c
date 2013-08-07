@@ -44,6 +44,7 @@ int main(int argc, char** argv) {
 	
 	screeninfo si = {SCREENW, SCREENH, aspectratio};
 	Mgui = guilang_compile(Mlog, Meb, &si);
+	gui_print(Mgui);
 	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 

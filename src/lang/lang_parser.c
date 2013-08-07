@@ -202,6 +202,7 @@ _lang_parser_freeparsingtable
 					// Act based on token type
 					switch (term->type) {
 						// Add terminals to the first set
+						case LANG_USERSTRING:
 						case LANG_STRING:
 						case LANG_NUMBER:
 						case LANG_EPSILON:
@@ -266,24 +267,42 @@ _lang_parser_freeparsingtable
 			
 			// Get the first term of the production
 			_lang_rule_production* p = (_lang_rule_production*)l->data;
-			_lang_token* first = p->production[0];
+			_lang_token* first;
 			
-			// Add to First(B) based on type
-			switch (first->type) {
-				// Add terminal as items
-				case LANG_STRING:
-				case LANG_NUMBER:
-				case LANG_EPSILON:
-				case LANG_ENDOFINPUT:
-					set_add(pfs, first->value);
-					break;
-				// First(B) = First(B) U First(p)
-				case LANG_NONTERMINAL: {
-					set* fA = hashtable_get(ntfirst, first->value);
-					set_union(pfs, pfs, fA);
+			int i = 0;
+			bool inseq = true;
+			while(inseq) {
+				inseq = false;
+				first = p->production[i];
+				// Add to First(B) based on type
+				switch (first->type) {
+					// Add terminal as items
+					case LANG_USERSTRING:
+					case LANG_STRING:
+					case LANG_NUMBER:
+					case LANG_EPSILON:
+					case LANG_ENDOFINPUT:
+						set_add(pfs, first->value);
+						break;
+					// First(B) = First(B) U First(p)
+					case LANG_NONTERMINAL: {
+						set* fA = hashtable_get(ntfirst, first->value);
+						if (set_has(fA, "EPSILON")) {
+							set_copy(temp, fA);
+							set_remove(temp, "EPSILON");
+							set_union(pfs, pfs, temp);
+							set_clear(temp);
+							inseq = true;
+						} else {
+						// Otherwise add all terms to the first set
+							set_union(pfs, pfs, fA);
+						}
 					} break;
-				case LANG_ENDOFSTRING:
-				break;
+					case LANG_ENDOFSTRING:
+						set_add(pfs, "EPSILON");
+					break;
+				}
+				i++;
 			}
 			fl = fl->next;
 			l = l->next;
@@ -342,6 +361,7 @@ _lang_parser_freeparsingtable
 							// act based on next term type
 							switch (follow->type) {
 								// Add terminals to current's follow set
+								case LANG_USERSTRING:
 								case LANG_STRING:
 								case LANG_NUMBER:
 								case LANG_ENDOFINPUT:
@@ -523,6 +543,9 @@ _lang_parser_getproduction
 	// Get the nonterminal entry
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
 	// Get numbers by a generic value, otherwise use the given terminal's value
+	if (t->type == LANG_USERSTRING) {
+		return hashtable_get(ti, LANG_GENERICWORD);
+	} else
 	if (t->type == LANG_NUMBER) {
 		return hashtable_get(ti, LANG_GENERICNUM);
 	} else return hashtable_get(ti, t->value);
@@ -607,6 +630,7 @@ _lang_parser_getproduction
 				}
 			} break;
 			// Other terminals: match ttype, otehrwise syntax error
+			case LANG_USERSTRING:
 			case LANG_NUMBER: 
 			case LANG_ENDOFINPUT: {
 				if (in->type == top->type) {

@@ -11,8 +11,8 @@ _langspec_scan
 	int i = 0;
 	while (*in != '\0') {
 		lexemes[i] = malloc(LANGSPEC_WORDLENMAX);
-		sscanf(in, " %s ", lexemes[i]); //bein lazy here
-		int wordlen = strlen(lexemes[i]);
+		sscanf(in, " %s", lexemes[i]); //bein lazy here
+ 		int wordlen = strlen(lexemes[i]);
 		in += wordlen==strlen(in)?wordlen:wordlen+1;
 		i++;
 	}
@@ -214,6 +214,9 @@ _langspec_translatetoken
 			if (strcmp(str, "#") == 0) {
 				return _lang_inittoken(LANG_NUMBER, str);
 			} else
+			if (strcmp(str, "@") == 0) {
+				return _lang_inittoken(LANG_USERSTRING, str);
+			} else
 			{
 				//sscanf(str, "\'%[^\']\'", str);
 				return _lang_inittoken(LANG_STRING, str);
@@ -261,7 +264,7 @@ _langspec_readline
 	int childct = 0;
 
 	bool addedepsilon = false;
-	
+
 	do {
 		if (inparens > 0) {
 			if (	curr->type == LANGSPEC_OPTPARENOPEN ||
@@ -321,7 +324,7 @@ _langspec_readline
 	prod[prodpos] = _lang_inittoken(LANG_ENDOFSTRING, "$$");
 	int prodlen = prodpos + 1;
 	_lang_rule_addproduction(rule, prod, prodlen);
-		
+
 	hashtable_insert(grammar, rule->nonterminal, rule);
 	
 	return _lang_inittoken(LANG_NONTERMINAL, name);
@@ -338,11 +341,10 @@ _langspec_generaterules
 	_lang_rule* firstrule = _lang_rule_init(tokens[0]->value);
 	_lang_token* firstprod[LANG_LINELEN];
 	int prodpos = 0;
-	
 	int inparens = 0;
 	int i = 2;
 	_langspec_token* curr = tokens[i];
-	
+
 	int childct = 0;
 	while(curr->type != LANGSPEC_ENDOFSTRING) {
 		if (inparens > 0) {
@@ -373,20 +375,20 @@ _langspec_generaterules
 				char childname[LANG_WORDLEN];
 				sprintf(childname, "%s-%d", firstrule->nonterminal, childct);
 				childct++;
+
 				firstprod[prodpos] = _langspec_readline(grammar, childname, tokens+i, log);
 				prodpos++;
 				inparens++;
 			}
 		}
+
 		i++;
 		curr = tokens[i];
 	}
-	
 	//firstprod[prodpos] = _lang_inittoken(LANG_ENDOFINPUT, curr->value);
 	firstprod[prodpos] = _lang_inittoken(LANG_ENDOFSTRING, curr->value);
 	int prodlen = prodpos + 1;
 	_lang_rule_addproduction(firstrule, firstprod, prodlen);
 	
 	hashtable_insert(grammar, firstrule->nonterminal, firstrule);
-
 }

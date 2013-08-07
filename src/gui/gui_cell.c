@@ -127,7 +127,6 @@ gui_cell_addcell
 	}
 	list_add(cell->cells, toadd);
 	list_add(cell->partitions, partition);
-	printf("$$%f\n", *partition);
 }
 
 void

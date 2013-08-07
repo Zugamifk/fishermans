@@ -1,11 +1,6 @@
 // ==========================================================
 // LANG GRAMMAR DEFINITIONS
 // // ==========================================================
-#define LANG_LINELEN 512
-#define LANG_WORDLEN 128
-#define LANG_SMALLCAP (1<<4)
-#define LANG_MEDCAP (1<<8)
-#define LANG_BIGCAP (1<<16)
 #define LANG_DEBUG 1
 #define LANG_PRINTTOKENSTRINGS 0
 
@@ -18,15 +13,15 @@
 #endif //LANG_DEBUG
 #define LANG_PARSER_MAXNESTINGDEPTH 256
 
-#define LANG_STARTSYMBOL ("GUI")
 #define LANG_ENDOFINPUTSTRING ("EOI")
 #define LANG_GENERICWORD ("@")
 #define LANG_GENERICNUM ("#")
 
-const int _lang_tokencount = 6;
+const int _lang_tokencount = 7;
 typedef enum
 _E_lang_tokentype
 {
+	LANG_USERSTRING,
 	LANG_STRING,
 	LANG_NUMBER,
 	LANG_NONTERMINAL,
@@ -36,6 +31,7 @@ _E_lang_tokentype
 } _lang_tokentype;
 
 const char* _lang_tokentypestrings[] ={
+	"USERSTRING",
 	"STRING",
 	"NUMBER",
 	"NONTERMINAL",

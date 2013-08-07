@@ -16,7 +16,7 @@ _lang_scanner_getstate
 	char c
 )
 {
-	if (isalpha(c)) {
+	if (isalpha(c) || c == '\"') {
 		return _LANG_SCANNER_STATE_ALPHA;
 	} else 
 	if (isdigit(c)) {
@@ -48,7 +48,7 @@ lang_scan
 	char** currword = lexemes;
 	
 	bool decimal = false;
-	
+
 	do {
 		curr++;
 		oldstate = currstate;

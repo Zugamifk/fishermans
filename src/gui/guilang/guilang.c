@@ -85,7 +85,6 @@ guilang_buildcell
 		*end = 1.0 - *step;
 		gui_cell_addcell(gc, cell, orientation, end);
 		guilang_processor_match(processor, "}");
-		printf("--%f\n", gc->partitions->data);
 		list_delete(positions);
 		
 	} else
@@ -105,29 +104,39 @@ guilang_buildwindow
 	gui* g
 )
 {
-	if (strcmp(processor->current, "WINDOW") != 0) return NULL;
+	if (strcmp(processor->current, "WINDOW") != 0) {
+		return NULL;
+	}
+		
 	float x = 0.0;
 	float y = 0.0;
 	float w = 1.0;
 	float h = 1.0;
+	char* name = "WINDOW";
 	
 	guilang_processor_match(processor, "WINDOW");
 	char* curr = guilang_processor_consume(processor);
 	
 	if (curr[0] == '(') {
-		float* param;
+		
 		do {
 			curr = guilang_processor_consume(processor);
-			switch(curr[0]) {
-				case 'x': param = &x; break;
-				case 'y': param = &y; break;
-				case 'w': param = &w; break;
-				case 'h': param = &h; break;
-				default: guilang_error(processor, "Bad parameter! WINDOW object does not accept \'%s\'!", curr);
+			if (strcmp(curr, "name") == 0) {
+				guilang_processor_match(processor, ":");
+				name = guilang_processor_consume(processor);
+			} else {
+				float* param;
+				switch(curr[0]) {
+					case 'x': param = &x; break;
+					case 'y': param = &y; break;
+					case 'w': param = &w; break;
+					case 'h': param = &h; break;
+					default: guilang_error(processor, "Bad parameter! WINDOW object does not accept \'%s\'!", curr);
+				}
+				guilang_processor_match(processor, ":");
+				curr = guilang_processor_consume(processor);
+				*param = strtod(curr, NULL);
 			}
-			guilang_processor_match(processor, ":");
-			curr = guilang_processor_consume(processor);
-			*param = strtod(curr, NULL);
 			curr = guilang_processor_consume(processor);
 		} while(curr[0] != ')');
 	}
@@ -136,7 +145,7 @@ guilang_buildwindow
 	y *= g->dim->h;
 	w *= g->dim->w;
 	h *= g->dim->h;
-	gui_window* gw = gui_window_init(x, y, w, h);
+	gui_window* gw = gui_window_init(name, x, y, w, h);
 	
 	guilang_processor_match(processor, "{");
 	if (strcmp(processor->current, "CELL") == 0) {
@@ -148,8 +157,8 @@ guilang_buildwindow
 	} else {
 		guilang_error(processor, "Window syntax error! Badly formed window sOemHOW!! the bird is \'%s\'", curr);
 	}
-	
-	
+	guilang_processor_match(processor, "}");
+
 	return gw;
 }
 
@@ -205,6 +214,5 @@ guilang_buildgui
 		gw = guilang_buildwindow(processor, g);
 	}
 		
-	gui_print(g);
 	return g;
 }

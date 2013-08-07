@@ -2,6 +2,7 @@
 // LANG RULE : 
 // Contains a lefthand side and a list of productions
 // ==================================================
+
 typedef struct
 _S_lang_rule
 {
@@ -16,6 +17,35 @@ _S_lang_rule_production
 	_lang_token** production;
 	unsigned int len;
 } _lang_rule_production;
+
+// ==================================================
+// TOSTRINGS
+// ==================================================
+
+void
+_lang_rule_printproduction
+(
+	_lang_rule_production* production
+)
+{
+	for (int i = 0; i < production->len; i++) {
+		_lang_printtoken(production->production[i]);
+	}
+}
+
+void 
+_lang_rule_print
+(
+	_lang_rule* rule
+)
+{
+	printf("RULE \"%s\":\n", rule->nonterminal);
+	for (int i = 0; i < rule->transitionct; i++) {
+		printf("-->\t");
+		_lang_rule_printproduction(list_get(rule->transitions, i)->data);
+		printf("\n");
+	}
+}
 
 // ==================================================
 // CONSTRUCTORS/DESTRUCTORS
@@ -73,34 +103,4 @@ _lang_rule_addproduction
 	production->len = len;
 	list_add(rule->transitions, production);
 	rule->transitionct = rule->transitionct +1;
-
-}
-
-// ==================================================
-// TOSTRINGS
-// ==================================================
-
-void
-_lang_rule_printproduction
-(
-	_lang_rule_production* production
-)
-{
-	for (int i = 0; i < production->len; i++) {
-		_lang_printtoken(production->production[i]);
-	}
-}
-
-void 
-_lang_rule_print
-(
-	_lang_rule* rule
-)
-{
-	printf("RULE \"%s\":\n", rule->nonterminal);
-	for (int i = 0; i < rule->transitionct; i++) {
-		printf("-->\t");
-		_lang_rule_printproduction(list_get(rule->transitions, i)->data);
-		printf("\n");
-	}
 }
