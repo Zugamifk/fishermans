@@ -25,6 +25,31 @@ guilang_error
 	sprintf(errorstring, message, word);
 	errorlog_logdef(processor->log, "GUILANG TRANSLATOR", errorstring);
 }
+// ========================================================================= //
+// GUI HEADER INFO
+// ========================================================================= //
+void
+guilang_readheader
+(
+	guilang_processor* processor
+)
+{
+	char* curr = guilang_processor_consume(processor);
+	
+	if (strcmp(curr, "import") == 0) {
+		guilang_processor_match(processor, ":");
+		
+		curr = guilang_processor_consume(processor);
+		while (strcmp(processor->current, ",") == 0) {
+			guilang_processor_match(processor, ",");
+			curr = guilang_processor_consume(processor);
+		}
+	}
+}
+	
+// ========================================================================= //
+// CORE GUI OBJECTS
+// ========================================================================= //
 
 // CELL
 // ========================================================================= //
@@ -180,6 +205,8 @@ guilang_buildgui
 	float h = 1.0;
 
 	guilang_processor* processor = guilang_processor_init(stream, log, bus);
+	
+	guilang_readheader(processor);
 	
 	guilang_processor_match(processor, "GUI");
 	

@@ -158,7 +158,7 @@ _lang_parser_freeparsingtable
 	for (	hashtable_begin(grammar->rules, &k, &r);
 			hashtable_end(grammar->rules);
 			hashtable_next(grammar->rules, &k, &r))
-	{
+	{	
 		hashtable_insert(ntfirst, k, set_initcb((set_cmpcb)strcmp));
 	}
 
@@ -233,7 +233,6 @@ _lang_parser_freeparsingtable
 				}
 				l = l->next;
 			}
-
 			// Continue if changed
 			if (oldsize != firstset->size) changed = true;
 		}

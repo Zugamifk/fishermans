@@ -220,7 +220,7 @@ set_print
 	set_printcb cb
 )
 {
-	printf("( ");
+	printf("[%d]( ", s->size);
 	for(int i = 0; i < s->size; i++) {
 		cb(s->items[i]);
 		printf(", ");

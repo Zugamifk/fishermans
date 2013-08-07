@@ -130,7 +130,7 @@ hashtable_insert
 			table->load = table->load + 1;
 			return;
 		} else {
-			place = (place+table->probecb(i))%table->size;
+			place = (place+(table->probecb(i)))%table->size;
 		}
 	}
 }
@@ -148,12 +148,13 @@ _hashtable_getbucket
 	_hashtable_bucket* bucket = NULL;
 	for (int i = 0; i < table->size; i++) {
 		bucket = data[place];
-		if (bucket == NULL || (_hashtable_hash(bucket->key) ^ hash)) {
+		if (bucket == NULL) {
 			return NULL;
-		} else if (strcmp(bucket->key, key) == 0) {
+		} else
+		if (strcmp(bucket->key, key) == 0) {
 			return bucket;
 		} else {
-			place = (place+table->probecb(i))%table->size;
+			place = (place+(table->probecb(i)))%table->size;
 		}
 	}
 	return NULL;
@@ -168,7 +169,6 @@ hashtable_get
 {
 
 	_hashtable_bucket* bucket = _hashtable_getbucket(table, key);
-	
 	if (bucket == NULL) {
 		return NULL;
 	} else
