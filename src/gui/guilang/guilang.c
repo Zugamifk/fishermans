@@ -51,6 +51,26 @@ guilang_readheader
 // CORE GUI OBJECTS
 // ========================================================================= //
 
+// BUTTON
+// ========================================================================= //
+// BUTTON ( [ [ [x, y, w, h]:#, [text, name]:@ ] ]* )
+void
+guilang_buildbutton
+(
+	guilang_processor* processor,
+	gui_cell* gc
+)
+{
+	guilang_processor_match(processor, "BUTTON");
+	guilang_processor_match(processor, "(");
+	char* curr;
+	do {
+		curr = guilang_processor_consume(processor);
+		guilang_processor_match(processor, ":");
+		curr = guilang_processor_consume(processor);
+	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
+}
+	
 // CELL
 // ========================================================================= //
 // CELL{ [ ( [horizontal, vertical] [,#]* ) ] $CELL* }
@@ -68,9 +88,10 @@ guilang_buildcell
 	guilang_processor_match(processor, "CELL");
 	guilang_processor_match(processor, "{");
 	
-	char* curr = guilang_processor_consume(processor);
+	char* curr;
 	gui_cell* gc = gui_cell_init();
-	if(curr[0] == '(') {
+	if(strcmp(processor->current, "(") == 0) {
+		guilang_processor_match(processor, "(");
 		curr = guilang_processor_consume(processor);
 		gui_cell_content orientation;
 		if (strcmp(curr, "horizontal") == 0) {
@@ -109,12 +130,16 @@ guilang_buildcell
 		double* end = malloc(sizeof(double));
 		*end = 1.0 - *step;
 		gui_cell_addcell(gc, cell, orientation, end);
-		guilang_processor_match(processor, "}");
 		list_delete(positions);
 		
 	} else
-	if(curr[0] == '}') {
+	if(strcmp(processor->current, "BUTTON") == 0) {
+		guilang_buildbutton(processor, gc);
+	} else
+	if(strcmp(processor->current, "}") == 0) {
 	}
+
+	guilang_processor_match(processor, "}");
 	
 	return gc;
 }

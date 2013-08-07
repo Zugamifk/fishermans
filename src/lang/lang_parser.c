@@ -121,6 +121,18 @@ _lang_parser_freeparsingtable
 	hashtable_deepfree(p->nti, (hashtable_freecb)_lang_parser_freeparsingtableentry);
 }
 
+void
+_parsingtable_error
+(
+	errorlog* log,
+	const char* message,
+	const char* str
+)
+{
+	char errorstring[LANG_LINELEN]; 
+	sprintf(errorstring, message, str);
+	errorlog_logdef(log, "LANG PARSINGTABLE GENERATOR", errorstring);
+}
 // PARSING TABLE
 /*
 	Builds 4 hashtables:
@@ -136,7 +148,8 @@ _lang_parser_freeparsingtable
 /**/	_lang_parser_initparsingtable	//
 /*============================================================================*/
 (
-	lang_grammar* grammar	// The grammar to build the parsing table from
+	lang_grammar* grammar,	// The grammar to build the parsing table from
+	errorlog* log
 )
 /*============================================================================*/
 {	
@@ -212,6 +225,12 @@ _lang_parser_freeparsingtable
 						// Merge first sets of nonterminals
 						case LANG_NONTERMINAL: {
 							set* fA = hashtable_get(ntfirst, term->value);
+							
+							// if fA is NULL, it isnt valid
+							if (fA == NULL) {
+								_parsingtable_error(log, "Invalid nonterminal! [ %s ] does not appear in the parsing table!", term->value);
+								return NULL;
+							} else
 							// If it has an epsilon, skip the epsilon and add the first set of the next term as well
 							if (set_has(fA, "EPSILON")) {
 								set_copy(temp, fA);
@@ -238,7 +257,13 @@ _lang_parser_freeparsingtable
 		}
 		
 	}
+	
+	#ifdef LANG_PRINTNTFIRST
+	printf("NTFIRST:\n");
+	hashtable_print(ntfirst, (hashtable_printcb)_lang_parser_printset);
+	#endif
 
+	
 	/* -----------------------------------------------------------------------*/
 	// generate production first sets
 	
@@ -307,7 +332,12 @@ _lang_parser_freeparsingtable
 			l = l->next;
 		}
 	}
-
+	
+	#ifdef LANG_PRINTFIRST
+	printf("FIRST:\n");
+	hashtable_print(firstsets, (hashtable_printcb)_lang_parser_printsetlist);
+	#endif
+	
 	/* -----------------------------------------------------------------------*/
 	// generate follow sets
 
@@ -404,6 +434,11 @@ _lang_parser_freeparsingtable
 		}
 	}
 
+	#ifdef LANG_PRINTFOLLOW
+	printf("FOLLOW:\n");
+	hashtable_print(followsets, (hashtable_printcb)_lang_parser_printset);
+	#endif
+	
 	/* -----------------------------------------------------------------------*/
 	// Build a new parsing table
 
@@ -472,20 +507,6 @@ _lang_parser_freeparsingtable
 
 	// Print test stuff
 	set_free(temp);
-	#ifdef LANG_PRINTNTFIRST
-	printf("NTFIRST:\n");
-	hashtable_print(ntfirst, (hashtable_printcb)_lang_parser_printset);
-	#endif
-	
-	#ifdef LANG_PRINTFIRST
-	printf("FIRST:\n");
-	hashtable_print(firstsets, (hashtable_printcb)_lang_parser_printsetlist);
-	#endif
-	
-	#ifdef LANG_PRINTFOLLOW
-	printf("FOLLOW:\n");
-	hashtable_print(followsets, (hashtable_printcb)_lang_parser_printset);
-	#endif
 	
 	#ifdef LANG_PRINTPARSINGTABLE
 	printf("TABLE:\n");
@@ -575,7 +596,11 @@ _lang_parser_getproduction
 /*============================================================================*/
 {
 	// Build a parsing taken for the given grammar
-	_lang_parsingtable* pt = _lang_parser_initparsingtable(g);
+	_lang_parsingtable* pt = _lang_parser_initparsingtable(g, log);
+	if (pt == NULL) {
+		_lang_parser_error(log, "Parsing table initialization failed!", NULL, NULL);
+		return 1;
+	}
 
 	// Initialize the end of input token for the stack
 	_lang_token* eoi = _lang_inittoken(LANG_ENDOFINPUT, "$$");
