@@ -83,8 +83,7 @@ gui_resize
 	int y
 )
 {
-	g->dim->w = x;
-	g->dim->h = y;
+	_gui_dimension_resize(g->dim, x, y);
 }
 
 void

@@ -90,10 +90,6 @@ guilang_buildbutton
 		}
 	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
 	
-	x *= gc->dim->w;
-	y *= gc->dim->h;
-	w *= gc->dim->w;
-	h *= gc->dim->h;
 	gui_button* gb = gui_button_init(name, x, y, w, h);
 	return gb;
 }
@@ -142,9 +138,10 @@ guilang_buildcell
 		gui_cell* cell = guilang_buildcell(processor, gw);
 		vec2* pos = vec2_new(0.0, 0.0);
 		double* step;
+		double laststep = 0.0;
 		for(list* l = positions; l->data!=NULL; l = l->next) {
 			step = (double*)(l->data);
-			gui_cell_addcell(gc, cell, orientation, step);
+			gui_cell_addcell(gc, cell, orientation, step, *step - laststep);
 			if (orientation == GUI_CELL_HORIZONTALCELLS) { 
 				pos->x = (*step)*gw->dim->w;
 			} else {
@@ -152,11 +149,11 @@ guilang_buildcell
 			}
 			cell = guilang_buildcell(processor, gw);
 			gui_cell_move(cell, pos);
-			
+			laststep = *step;
 		}
 		double* end = malloc(sizeof(double));
-		*end = 1.0 - *step;
-		gui_cell_addcell(gc, cell, orientation, end);
+		*end = 1.0;
+		gui_cell_addcell(gc, cell, orientation, end, 1.0 - laststep);
 		list_delete(positions);
 		
 	} else
@@ -218,12 +215,10 @@ guilang_buildwindow
 			curr = guilang_processor_consume(processor);
 		} while(curr[0] != ')');
 	}
-	
 	x *= g->dim->w;
 	y *= g->dim->h;
-	w *= g->dim->w;
-	h *= g->dim->h;
 	gui_window* gw = gui_window_init(name, x, y, w, h);
+	gui_window_resize(gw, g->dim->w, g->dim->h);
 	
 	guilang_processor_match(processor, "{");
 	if (strcmp(processor->current, "CELL") == 0) {
@@ -282,17 +277,13 @@ guilang_buildgui
 			curr = guilang_processor_consume(processor);
 		} while(curr[0] != ')');
 	}
-	
-	x *= info->w;
-	y *= info->h;
-	w *= info->w;
-	h *= info->h;
+
 	gui* g = gui_init(x, y, w, h);
+	gui_resize(g, info->w, info->h);
 	gui_window* gw = guilang_buildwindow(processor, g);
 	while(gw != NULL) {
 		gui_openwindow(g, gw);
 		gw = guilang_buildwindow(processor, g);
 	}
-		
 	return g;
 }

@@ -121,7 +121,8 @@ gui_cell_addcell
 	gui_cell* cell,
 	gui_cell* toadd,
 	gui_cell_content orientation,
-	double* partition
+	double* partition,
+	double size
 )
 {
 	if (cell->content == GUI_CELL_EMPTY) {
@@ -129,13 +130,16 @@ gui_cell_addcell
 		cell->cells = list_new();
 		cell->partitions = list_new();
 	}
+	
 	if (orientation == GUI_CELL_HORIZONTALCELLS) {
-		toadd->dim->w = cell->dim->w * *partition;
+		toadd->dim->sw = size;
+		toadd->dim->w = cell->dim->w * size;
 		toadd->dim->h = cell->dim->h;
 	} else 
 	if (orientation == GUI_CELL_VERTICALCELLS) {
+		toadd->dim->sh = size;
 		toadd->dim->w = cell->dim->w;
-		toadd->dim->h = cell->dim->h * *partition;
+		toadd->dim->h = cell->dim->h * size;
 	}
 	list_add(cell->cells, toadd);
 	list_add(cell->partitions, partition);
@@ -209,7 +213,7 @@ gui_cell_resize
 			for (list* l = gc->cells; l->data != NULL; l = l->next) {
 				gui_cell* cell = (gui_cell*)(l->data);
 				double* len = (double*)(p->data);
-				gui_cell_resize(cell, w, h*(*len));
+				gui_cell_resize(cell, w, h);
 				cell->pos->y = pos * h;
 				p = p->next;
 				pos = *len;
@@ -221,7 +225,7 @@ gui_cell_resize
 			for (list* l = gc->cells; l->data != NULL; l = l->next) {
 				gui_cell* cell = (gui_cell*)(l->data);
 				double* len = (double*)(p->data);
-				gui_cell_resize(cell, w*(*len), h);
+				gui_cell_resize(cell, w, h);
 				cell->pos->x = pos * w;
 				p = p->next;
 				pos = *len;
@@ -231,8 +235,7 @@ gui_cell_resize
 			gui_button_resize(gc->object.button, w, h);
 		} break;
 	}
-	gc->dim->w = w;
-	gc->dim->h = h;
+	_gui_dimension_resize(gc->dim, w, h);
 }
 
 void

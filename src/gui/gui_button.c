@@ -60,8 +60,7 @@ gui_button_resize
 	double h
 )
 {
-	gb->dim->w = w;
-	gb->dim->h = h;
+	_gui_dimension_resize(gb->dim, w, h);
 }
 
 void

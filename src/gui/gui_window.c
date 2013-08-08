@@ -55,6 +55,20 @@ gui_window_update
 }
 
 void
+gui_window_resize
+(
+	gui_window* gw,
+	int w,
+	int h
+)
+{
+	_gui_dimension_resize(gw->dim, w, h);
+	if (gw->cell != NULL) {
+		gui_cell_resize(gw->cell, w, h);
+	}
+}
+
+void
 gui_window_draw
 (
 	gui_window* gw,
