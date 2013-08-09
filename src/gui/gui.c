@@ -44,6 +44,19 @@ gui_init
 }
 
 void
+gui_reset
+(
+	gui* g
+)
+{
+	g->state = GUI_STATE_ACTIVE;
+	for(int i = 0; i < g->activewindows->size; i++)
+	{
+		gui_window_reset(g->activewindows->items[i]);
+	}
+}
+
+void
 gui_update
 (
 	gui* g,
@@ -51,7 +64,6 @@ gui_update
 	double dt
 )
 {
-
 }
 
 void
@@ -98,6 +110,7 @@ gui_mouseupdate
 	int y
 )
 {
+	gui_reset(g);
 	if (gui_contains(g, x, y)) {
 		for(int i = 0; i < g->activewindows->size; i++)
 		{

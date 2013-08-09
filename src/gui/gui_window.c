@@ -54,6 +54,18 @@ gui_window_setcell
 }
 
 void
+gui_window_reset
+(
+	gui_window* gw
+)
+{
+	gw->state = GUI_WINDOW_ACTIVE;
+	if (gw->cell != NULL) {
+		gui_cell_reset(gw->cell);
+	}
+}
+
+void
 gui_window_update
 (
 	gui_window* w,
@@ -101,6 +113,9 @@ gui_window_mouseupdate
 )
 {
 	if (gui_window_contains(gw, x, y)) {
+		if (gw->cell != NULL) {
+			gui_cell_mouseupdate(gw->cell, x - gw->pos->x, y - gw->pos->y);
+		}
 		gw->state = GUI_WINDOW_CONTAINSMOUSE;
 	} else {
 		gw->state = GUI_WINDOW_ACTIVE;

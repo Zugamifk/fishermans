@@ -1,4 +1,11 @@
 typedef enum
+_E_gui_cell_state
+{
+	GUI_CELL_NONE,
+	GUI_CELL_CONTAINSMOUSE
+} gui_cell_state;
+
+typedef enum
 _E_gui_cell_content
 {
 	GUI_CELL_EMPTY,
@@ -24,6 +31,7 @@ _U_gui_cell_object
 typedef struct
 _S_gui_cell
 {
+	gui_cell_state state;
 	vec2* pos;
 	_gui_dimension* dim;
 	gui_cell_content content;
@@ -40,6 +48,7 @@ gui_cell_init
 ()
 {
 	gui_cell* gc = malloc(sizeof(gui_cell));
+	gc->state = GUI_CELL_NONE;
 	gc->pos = vec2_new(0.0, 0.0);
 	gc->dim = _gui_dimension_init(1.0, 1.0);
 	gc->content = GUI_CELL_EMPTY;
@@ -52,6 +61,27 @@ gui_cell_init
 }
 
 void
+gui_cell_reset
+(
+	gui_cell* gc
+)
+{
+	gc->state = GUI_CELL_NONE;
+	switch(gc->content) {
+		case GUI_CELL_EMPTY: break;
+		case GUI_CELL_HORIZONTALCELLS:
+		case GUI_CELL_VERTICALCELLS: {
+			for (list *l = gc->cells; l->data != NULL; l = l->next) {
+				gui_cell_reset(l->data);
+			}
+		}break;
+		case GUI_CELL_BUTTON: {
+			gui_button_reset(gc->object.button);
+		} break;
+	}
+}
+
+void
 gui_cell_update
 (
 	gui_cell* gc,
@@ -60,6 +90,47 @@ gui_cell_update
 )
 {
 
+}
+
+bool
+gui_cell_contains
+(
+	gui_cell* gc,
+	double x,
+	double y
+)
+{
+	return (gc->pos->x < x &&
+			gc->pos->y < y &&
+			x < gc->pos->x + gc->dim->w &&
+			y < gc->pos->y + gc->dim->h);
+}
+
+void
+gui_cell_mouseupdate
+(
+	gui_cell* gc,
+	int x,
+	int y
+)
+{
+	if (gui_cell_contains(gc, x, y)) {
+		gc->state = GUI_CELL_CONTAINSMOUSE;
+		double rx = x - gc->pos->x;
+		double ry = y - gc->pos->y;
+		switch(gc->content) {
+			case GUI_CELL_EMPTY: break;
+			case GUI_CELL_HORIZONTALCELLS:
+			case GUI_CELL_VERTICALCELLS: {
+				for (list *l = gc->cells; l->data != NULL; l = l->next) {
+					gui_cell_mouseupdate(l->data, rx, ry);
+				}
+			}break;
+			case GUI_CELL_BUTTON: {
+				gui_button_mouseupdate(gc->object.button, rx, ry);
+			} break;
+		}
+	}
 }
 
 void
@@ -112,6 +183,12 @@ gui_cell_draw
 			gui_button_draw(gc->object.button, t, dt);
 		} break;
 	}
+	#ifdef GUI_DEBUGDRAWGUI
+	if (gc->state == GUI_CELL_CONTAINSMOUSE) {
+		color_applyinverse(gc->debugcolor);
+		shapes_box(gc->dim->w, gc->dim->h);
+	}
+	#endif
 	glPopMatrix();
 }
 
