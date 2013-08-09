@@ -104,18 +104,30 @@ guilang_buildcell
 	gui_window* gw
 )
 {
+	// Don't build a cell if there is no cell code to read!
 	if (strcmp(processor->current, "CELL") != 0) {
 		return NULL;
 	}
 	
+	// Match first tokens
 	guilang_processor_match(processor, "CELL");
 	guilang_processor_match(processor, "{");
 	
+	// Current word pointer
 	char* curr;
+	
+	// Initialize cell to return
 	gui_cell* gc = gui_cell_init();
+	
+	// Build internal cells
 	if(strcmp(processor->current, "(") == 0) {
+		// match open paren
 		guilang_processor_match(processor, "(");
+		
+		// Get a parameter name
 		curr = guilang_processor_consume(processor);
+		
+		// The first value should be an orientation
 		gui_cell_content orientation;
 		if (strcmp(curr, "horizontal") == 0) {
 			orientation = GUI_CELL_HORIZONTALCELLS;
@@ -125,35 +137,66 @@ guilang_buildcell
 		} else {
 			guilang_error(processor, "Bad Parameter! CELL expects an orientation! Got \'%s\'", curr);
 		}
+		
+		// Match comma and set up a list of partition values for spacing cells
 		guilang_processor_match(processor, ",");
 		list* positions = list_new();
 		do {
+			// match partition value
 			curr = guilang_processor_consume(processor);
-			double* pos = malloc(sizeof(double));
+			double* pos = malloc(sizeof(double));			
 			*pos = strtod(curr, NULL);
+			
+			// add to partition list
 			list_add(positions, pos);
+			
+			//consume next token and compare for loop
 			curr = guilang_processor_consume(processor);
 		} while (curr[0] != ')');
 		
+		// Initialize cell partition
 		gui_cell* cell = guilang_buildcell(processor, gw);
-		vec2* pos = vec2_new(0.0, 0.0);
+		
+		// initialize cell position
+		double x = 0.0;
+		double y = 0.0;
+		
+		// Step values for partitions
 		double* step;
 		double laststep = 0.0;
+		
+		// Iterate over list of partitions
 		for(list* l = positions; l->data!=NULL; l = l->next) {
+		
+			// Get positions
 			step = (double*)(l->data);
+			
+			// Add the last cell to the current cell
 			gui_cell_addcell(gc, cell, orientation, step, *step - laststep);
+			
+			// Get position for next cell
 			if (orientation == GUI_CELL_HORIZONTALCELLS) { 
-				pos->x = (*step)*gw->dim->w;
+				x = (*step)*gc->dim->w;
 			} else {
-				pos->y = (*step)*gw->dim->h;
+				y = (*step)*gc->dim->h;
 			}
+			
+			// Initialize next cell and move
 			cell = guilang_buildcell(processor, gw);
-			gui_cell_move(cell, pos);
+			gui_cell_move(cell, x, y);
+			
+			// Set last step value
 			laststep = *step;
 		}
+		
+		// Set end partition value
 		double* end = malloc(sizeof(double));
 		*end = 1.0;
+		
+		/// add last cell
 		gui_cell_addcell(gc, cell, orientation, end, 1.0 - laststep);
+		
+		// Clear temp objects
 		list_delete(positions);
 		
 	} else

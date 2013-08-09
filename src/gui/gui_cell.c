@@ -73,7 +73,10 @@ gui_cell_draw
 	if (gc == NULL) return;
 	glPushMatrix();
 	vec2_translate(gc->pos);
-
+	#ifdef GUI_DEBUGDRAWGUI
+	color_apply(gc->debugcolor);
+	shapes_box(gc->dim->w, gc->dim->h);
+	#endif
 	switch (gc->content) {
 		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS: {
@@ -86,8 +89,8 @@ gui_cell_draw
 				#ifdef GUI_DEBUGDRAWGUI
 				glBegin(GL_LINES);
 				color_apply(gc->debugcolor);
-				glVertex2d(cell->pos->x, 0.0);
-				glVertex2d(cell->pos->x, gc->dim->h);
+				// glVertex2d(cell->pos->x, 0.0);
+				// glVertex2d(cell->pos->x, gc->dim->h);
 				glEnd();
 				#endif
 			}
@@ -102,8 +105,8 @@ gui_cell_draw
 				#ifdef GUI_DEBUGDRAWGUI
 				glBegin(GL_LINES);
 				color_apply(gc->debugcolor);
-				glVertex2d(0.0,cell->pos->y);
-				glVertex2d(gc->dim->w, cell->pos->y);
+				// glVertex2d(0.0,cell->pos->y);
+				// glVertex2d(gc->dim->w, cell->pos->y);
 				glEnd();
 				#endif
 			}
@@ -113,6 +116,48 @@ gui_cell_draw
 		} break;
 	}
 	glPopMatrix();
+}
+
+void
+gui_cell_resize
+(
+	gui_cell* gc,
+	double w,
+	double h
+)
+{
+	_gui_dimension_resize(gc->dim, w, h);
+
+	switch(gc->content) {
+		case GUI_CELL_EMPTY: break;
+		case GUI_CELL_VERTICALCELLS:{
+			list *p = gc->partitions;
+			double pos = 0.0;
+			for (list* l = gc->cells; l->data != NULL; l = l->next) {
+				gui_cell* cell = (gui_cell*)(l->data);
+				double* len = (double*)(p->data);
+				gui_cell_resize(cell, gc->dim->w, gc->dim->h);
+				cell->pos->y = pos * h;
+				p = p->next;
+				pos = *len;
+			}
+		} break;
+		case GUI_CELL_HORIZONTALCELLS:{
+			list *p = gc->partitions;
+			double pos = 0.0;
+			for (list* l = gc->cells; l->data != NULL; l = l->next) {
+				gui_cell* cell = (gui_cell*)(l->data);
+				double* len = (double*)(p->data);
+				gui_cell_resize(cell, gc->dim->w, gc->dim->h);
+				cell->pos->x = pos * w;
+				p = p->next;
+				pos = *len;
+			}
+		} break;
+		case GUI_CELL_BUTTON: {
+			gui_button_resize(gc->object.button, gc->dim->w, gc->dim->h);
+		} break;
+	}
 }
 
 void
@@ -169,10 +214,12 @@ void
 gui_cell_move
 (
 	gui_cell* cell,
-	vec2* step
+	double x, 
+	double y
 )
 {	
-	vec4_addto(cell->pos, step);
+	cell->pos->x += x;
+	cell->pos->y += y;
 }
 
 void
@@ -195,47 +242,6 @@ gui_cell_adjustpartitions
 		// gui_cell* cell = (gui_cell*)(l->data);
 		// cell->partition /= total;
 	// }
-}
-
-void
-gui_cell_resize
-(
-	gui_cell* gc,
-	double w,
-	double h
-)
-{
-	switch(gc->content) {
-		case GUI_CELL_EMPTY: break;
-		case GUI_CELL_VERTICALCELLS:{
-			list *p = gc->partitions;
-			double pos = 0.0;
-			for (list* l = gc->cells; l->data != NULL; l = l->next) {
-				gui_cell* cell = (gui_cell*)(l->data);
-				double* len = (double*)(p->data);
-				gui_cell_resize(cell, w, h);
-				cell->pos->y = pos * h;
-				p = p->next;
-				pos = *len;
-			}
-		} break;
-		case GUI_CELL_HORIZONTALCELLS:{
-			list *p = gc->partitions;
-			double pos = 0.0;
-			for (list* l = gc->cells; l->data != NULL; l = l->next) {
-				gui_cell* cell = (gui_cell*)(l->data);
-				double* len = (double*)(p->data);
-				gui_cell_resize(cell, w, h);
-				cell->pos->x = pos * w;
-				p = p->next;
-				pos = *len;
-			}
-		} break;
-		case GUI_CELL_BUTTON: {
-			gui_button_resize(gc->object.button, w, h);
-		} break;
-	}
-	_gui_dimension_resize(gc->dim, w, h);
 }
 
 void
