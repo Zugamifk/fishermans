@@ -34,6 +34,7 @@ lang_tokenize
 			*curr = _lang_inittoken(LANG_NUMBER, *word);
 		} else 
 		if((*word)[0] == '\"') {
+			sscanf(*word, "\"%[^\"]\"", *word);
 			*curr = _lang_inittoken(LANG_USERSTRING, *word);
 		} else
 		if (strcmp(*word, "$$") == 0) {

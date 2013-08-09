@@ -30,13 +30,13 @@ shapes_ring(double r, double t, int segnum)
 }
 
 void
-shapes_cursor(double s)
+shapes_cursor()
 {
-	glScalef(s, s, s);
+	//glScalef(s, s, s);
 	glBegin(GL_POLYGON);
 	glVertex2d(0.0, 0.0);
-	glVertex2d(0.1, -0.1);
-	glVertex2d(0.05, -0.1);
-	glVertex2d(0.0, -0.14);
+	glVertex2d(20, -20);
+	glVertex2d(8, -15);
+	glVertex2d(0.0, -30);
 	glEnd();
 }

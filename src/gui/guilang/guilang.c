@@ -10,8 +10,8 @@
 	#		Any number.
 */
 
-//Error log
-// ========================================================================= //]
+//Error logging
+// ========================================================================= //
 // This should never have to be called! Parser should do work correctly!!!!
 void
 guilang_error
@@ -23,8 +23,25 @@ guilang_error
 {
 	char errorstring[LANG_LINELEN]; 
 	sprintf(errorstring, message, word);
-	errorlog_logdef(processor->log, "GUILANG TRANSLATOR", errorstring);
+	errorlog_logdef(processor->log, "GUILANG TRANSLATOR SYNTAX", errorstring);
 }
+
+// Semantic / Logic errors
+// This is ok to call! It's still bad, but the translator is supposed to pick
+// these up. These errors indicate your guilang code is crap. 
+void
+guilang_logicerror
+(
+	guilang_processor* processor,
+	const char* message,
+	const char* word
+)
+{
+	char errorstring[LANG_LINELEN]; 
+	sprintf(errorstring, message, word);
+	errorlog_logdef(processor->log, "GUILANG TRANSLATOR LOGIC", errorstring);
+}
+
 // ========================================================================= //
 // GUI HEADER INFO
 // ========================================================================= //
@@ -44,7 +61,6 @@ guilang_readheader
 			curr = guilang_processor_consume(processor);
 		}
 	}
-	printf("?");
 }
 	
 // ========================================================================= //

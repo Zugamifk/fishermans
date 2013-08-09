@@ -1,6 +1,15 @@
+typedef enum
+_E_gui_state
+{
+	GUI_STATE_INACTIVE,
+	GUI_STATE_ACTIVE,
+	GUI_STATE_CONTAINSMOUSE
+} gui_state;
+
 typedef struct
 _S_gui
 {
+	gui_state state;
 	_gui_dimension* dim;
 	vec2* pos;
 	double aspectratio;
@@ -22,6 +31,7 @@ gui_init
 )
 {
 	gui* g = malloc(sizeof(gui));
+	g->state = GUI_STATE_ACTIVE;
 	g->dim = _gui_dimension_init(w, h);
 	g->pos = vec2_new(x, y);
 	g->aspectratio = 1.0;
@@ -45,37 +55,6 @@ gui_update
 }
 
 void
-gui_draw
-(
-	gui* g,
-	double t,
-	double dt
-)
-{
-	glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-	gluOrtho2D(0.0, g->dim->w, 0.0, g->dim->h);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	
-	glPushMatrix();
-	vec2_translate(g->pos);
-	#ifdef GUI_DEBUGDRAWGUI
-	color_apply(g->debugcolor);
-	shapes_box(g->dim->w, g->dim->h);
-	#endif
-	
-	void* gw;
-	for(set_begin(g->activewindows, &gw); set_end(g->activewindows); set_next(g->activewindows, &gw)) {
-		gui_window_draw(gw, t, dt);
-	}
-	
-	glPopMatrix();
-}
-
-void
 gui_resize
 (
 	gui* g,
@@ -95,6 +74,69 @@ gui_openwindow
 {
 	hashtable_insert(g->windows, w->name, w);
 	set_add(g->activewindows, w);
+}
+
+bool
+gui_contains
+(
+	gui* g,
+	double x,
+	double y
+)
+{
+	return (g->pos->x < x &&
+			g->pos->y < y &&
+			x < g->pos->x + g->dim->w &&
+			y < g->pos->y + g->dim->h);
+}
+
+void
+gui_mouseupdate
+(
+	gui* g,
+	int x,
+	int y
+)
+{
+	if (gui_contains(g, x, y)) {
+		for(int i = 0; i < g->activewindows->size; i++)
+		{
+			gui_window_mouseupdate(g->activewindows->items[i], x, y);
+		}
+		g->state = GUI_STATE_CONTAINSMOUSE;
+	} else {
+		g->state = GUI_STATE_ACTIVE;
+	}
+}
+
+void
+gui_draw
+(
+	gui* g,
+	double t,
+	double dt
+)
+{	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+	glPushMatrix();
+	vec2_translate(g->pos);
+	#ifdef GUI_DEBUGDRAWGUI
+	if (g->state == GUI_STATE_CONTAINSMOUSE) {
+		color_applyinverse(g->debugcolor);
+	} else {
+		color_apply(g->debugcolor);
+	}
+	shapes_box(g->dim->w, g->dim->h);
+	#endif
+	
+	void* gw;
+	for(set_begin(g->activewindows, &gw); set_end(g->activewindows); set_next(g->activewindows, &gw)) {
+		gui_window_draw(gw, t, dt);
+	}
+	
+	glPopMatrix();
 }
 
 void

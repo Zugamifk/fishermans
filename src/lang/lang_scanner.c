@@ -71,7 +71,7 @@ lang_scan
 				continue;
 			} else
 			// if it's a string, continue
-			if (oldstate == _LANG_SCANNER_STATE_STRING ^ instring) {
+			if ((oldstate == _LANG_SCANNER_STATE_STRING) ^ instring) {
 				instring = true;
 				continue;
 			} else

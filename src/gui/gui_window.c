@@ -1,7 +1,16 @@
+typedef enum
+_E_gui_window_state
+{
+	GUI_WINDOW_INACTIVE,
+	GUI_WINDOW_ACTIVE,
+	GUI_WINDOW_CONTAINSMOUSE
+} gui_window_state;
+
 typedef struct
 _S_gui_window
 {
 	char* name;
+	gui_window_state state;
 	_gui_dimension* dim;
 	vec2* pos;
 	gui_cell* cell;
@@ -23,6 +32,7 @@ gui_window_init
 	gui_window* gw = malloc(sizeof(gui_window));
 	gw->name = malloc(strlen(name));
 	strcpy(gw->name, name);
+	gw->state = GUI_WINDOW_ACTIVE;
 	gw->dim = _gui_dimension_init(w, h);
 	gw->pos = vec2_new(x, y);
 	gw->cell = NULL;
@@ -68,6 +78,35 @@ gui_window_resize
 	}
 }
 
+bool
+gui_window_contains
+(
+	gui_window* gw,
+	double x,
+	double y
+)
+{
+	return (gw->pos->x < x &&
+			gw->pos->y < y &&
+			x < gw->pos->x + gw->dim->w &&
+			y < gw->pos->y + gw->dim->h);
+}
+
+void
+gui_window_mouseupdate
+(
+	gui_window* gw,
+	int x,
+	int y
+)
+{
+	if (gui_window_contains(gw, x, y)) {
+		gw->state = GUI_WINDOW_CONTAINSMOUSE;
+	} else {
+		gw->state = GUI_WINDOW_ACTIVE;
+	}
+}
+
 void
 gui_window_draw
 (
@@ -82,7 +121,11 @@ gui_window_draw
 	gui_cell_draw(gw->cell, t, dt);
 	
 	#ifdef GUI_DEBUGDRAWGUI
-	color_apply(gw->debugcolor);
+	if (gw->state == GUI_WINDOW_CONTAINSMOUSE) {
+		color_applyinverse(gw->debugcolor);
+	} else {
+		color_apply(gw->debugcolor);
+	}
 	shapes_box(gw->dim->w, gw->dim->h);
 	#endif
 	

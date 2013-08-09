@@ -12,11 +12,12 @@ void draw();
 void resize(int, int);
 void upkeys(unsigned char, int, int);
 void skeys(int, int, int);
-
+void mousemove(mouse_state *);
+void mouseup(mouse_state *);
 void quit();
 
-#define SCREENW 800
-#define SCREENH 600
+int screenwidth;
+int screenheight;
 event_bus *Meb;
 errorlog *Mlog;
 mouse_state *Mms;
@@ -33,16 +34,21 @@ int main(int argc, char** argv) {
 	
 	vec4_initglobals();
 	
+	screenwidth = 800;
+	screenheight = 600;
+	
 	Meb 	= bus_init();	
 	
 	Mlog = errorlog_init("Main", "errorlog.txt", 0);
 	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
 		
 	Mms = mouse_init(Meb);
+	bus_subscribe(Meb, mouse_event_up, (void *)mouseup);
+	bus_subscribe(Meb, mouse_event_move, (void *)mousemove);
 	
 	Mfms = audio_system_init();
 	
-	screeninfo si = {SCREENW, SCREENH, aspectratio};
+	screeninfo si = {screenwidth, screenheight, aspectratio};
 	Mgui = guilang_compile(Mlog, Meb, &si);
 	gui_print(Mgui);
 	
@@ -64,7 +70,7 @@ initglut()
 {
 
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(800, 600);
+	glutInitWindowSize(screenwidth, screenheight);
 	glutInitWindowPosition(0,0);
 	glutCreateWindow("ULTRA SHADER EXTREME");
 	
@@ -128,7 +134,16 @@ draw()
 	//glActiveTexture(GL_TEXTURE0);
 //	shader_update1i(Msp, "tex", 0);
 //	glBindTexture(GL_TEXTURE_2D, Msp->texture);
+		glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+	gluOrtho2D(0.0, (double)screenwidth, 0.0, (double)screenheight);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	glPushMatrix();
+	glTranslated(Mms->x, screenheight - Mms->y, 0.0);
+	glColor3f(0.4, 0.1, 0.4);
+	shapes_cursor();
+	glPopMatrix();
 	gui_draw(Mgui, TIME, DTIME);
  //     gluPerspective( 60.0, aspectratio, 1.0, 30.0 );
 
@@ -145,6 +160,9 @@ resize(int w, int h)
 	h = (h == 0) ? 1 : h;
 	w = (w == 0) ? 1 : w;
 	glViewport( 0, 0, w, h );	// View port uses whole window
+	
+	screenwidth = w;
+	screenheight = h;
 	aspectratio = (float)w/(float)h;
 	
 	gui_resize(Mgui, w, h);
@@ -156,6 +174,18 @@ resize(int w, int h)
 
 	// Select the Modelview matrix
     glMatrixMode( GL_MODELVIEW );
+}
+
+void
+mousemove(mouse_state *ms)
+{
+	gui_mouseupdate(Mgui, ms->x, screenheight - ms->y);
+}
+
+void
+mouseup(mouse_state *ms)
+{
+	
 }
 
 void

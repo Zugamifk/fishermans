@@ -1,6 +1,16 @@
+typedef enum
+_E_guilang_processor_state
+{
+	GUILANG_PROCESSOR_IDLE,
+	GUILANG_PROCESSOR_READING,
+	GUILANG_PROCESSOR_ERROR,
+	GUILANG_PROCESSOR_END
+} guilang_processor_state;
+
 typedef struct
 _S_guilang_processor
 {
+	guilang_processor_state state;
 	char** stream;
 	char** cursor;
 	char* current;
@@ -17,6 +27,7 @@ guilang_processor_init
 )
 {
 	guilang_processor* processor = malloc(sizeof(guilang_processor));
+	processor->state = GUILANG_PROCESSOR_READING;
 	processor->stream = stream;
 	processor->cursor = stream;
 	processor->current = *stream;
