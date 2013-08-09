@@ -73,10 +73,7 @@ gui_cell_draw
 	if (gc == NULL) return;
 	glPushMatrix();
 	vec2_translate(gc->pos);
-	#ifdef GUI_DEBUGDRAWGUI
-	color_apply(gc->debugcolor);
-	shapes_box(gc->dim->w, gc->dim->h);
-	#endif
+
 	switch (gc->content) {
 		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS: {
@@ -89,8 +86,8 @@ gui_cell_draw
 				#ifdef GUI_DEBUGDRAWGUI
 				glBegin(GL_LINES);
 				color_apply(gc->debugcolor);
-				// glVertex2d(cell->pos->x, 0.0);
-				// glVertex2d(cell->pos->x, gc->dim->h);
+				glVertex2d(cell->pos->x, 0.0);
+				glVertex2d(cell->pos->x, gc->dim->h);
 				glEnd();
 				#endif
 			}
@@ -105,8 +102,8 @@ gui_cell_draw
 				#ifdef GUI_DEBUGDRAWGUI
 				glBegin(GL_LINES);
 				color_apply(gc->debugcolor);
-				// glVertex2d(0.0,cell->pos->y);
-				// glVertex2d(gc->dim->w, cell->pos->y);
+				glVertex2d(0.0,cell->pos->y);
+				glVertex2d(gc->dim->w, cell->pos->y);
 				glEnd();
 				#endif
 			}

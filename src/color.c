@@ -41,3 +41,9 @@ color_apply(color *c)
 {
 	glColor4d(c->r, c->g, c->b, c->a);
 }
+
+void
+color_applyinverse(color *c)
+{
+	glColor4d(1.0-c->r, 1.0-c->g, 1.0-c->b, c->a);
+}

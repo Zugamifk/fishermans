@@ -35,7 +35,6 @@ guilang_readheader
 )
 {
 	char* curr = guilang_processor_consume(processor);
-	
 	if (strcmp(curr, "import") == 0) {
 		guilang_processor_match(processor, ":");
 		
@@ -45,6 +44,7 @@ guilang_readheader
 			curr = guilang_processor_consume(processor);
 		}
 	}
+	printf("?");
 }
 	
 // ========================================================================= //

@@ -5,6 +5,7 @@ typedef enum
 _E_lang_scanner_state {
 	_LANG_SCANNER_STATE_ALPHA
 ,	_LANG_SCANNER_STATE_NUM
+,	_LANG_SCANNER_STATE_STRING
 ,	_LANG_SCANNER_STATE_OTHER
 ,	_LANG_SCANNER_STATE_SPACE
 ,	_LANG_SCANNER_STATE_NULL
@@ -16,7 +17,10 @@ _lang_scanner_getstate
 	char c
 )
 {
-	if (isalpha(c) || c == '\"') {
+	if (c == '\"') {
+		return _LANG_SCANNER_STATE_STRING;
+	} else
+	if (isalpha(c)) {
 		return _LANG_SCANNER_STATE_ALPHA;
 	} else 
 	if (isdigit(c)) {
@@ -48,7 +52,8 @@ lang_scan
 	char** currword = lexemes;
 	
 	bool decimal = false;
-
+	bool instring = false;
+	
 	do {
 		curr++;
 		oldstate = currstate;
@@ -57,13 +62,17 @@ lang_scan
 		if (currstate == oldstate) {
 		
 		} else
-		if (oldstate == _LANG_SCANNER_STATE_SPACE)  {
+		if (oldstate == _LANG_SCANNER_STATE_SPACE && !instring)  {
 			wordptr = curr;
 		}else {
-			
 			// if it's a decimal point, continue
 			if (*curr == '.' && !decimal) {
 				decimal = true;
+				continue;
+			} else
+			// if it's a string, continue
+			if (oldstate == _LANG_SCANNER_STATE_STRING ^ instring) {
+				instring = true;
 				continue;
 			} else
 			if (currstate == _LANG_SCANNER_STATE_NUM && decimal) {
@@ -77,6 +86,7 @@ lang_scan
 			*((*currword)+len) = '\0';
 
 			// advance pointers
+			instring = false;
 			decimal = false;
 			currword++;
 			wordptr = curr;
