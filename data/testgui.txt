@@ -1,5 +1,5 @@
 import: "MOUSE MOVE"
-GUI(x:0.0, y:0.0, w:0.5, h:1.0)
+GUI(x:0.0, y:0.0, w:1, h:1.0)
 WINDOW(x:0.7, y:0.2, w:0.28, h:0.78, name:"poop")
 {
 	CELL {

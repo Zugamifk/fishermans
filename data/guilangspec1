@@ -22,10 +22,12 @@ CELLOBJECT -> ( BUTTON )
 
 BUTTON -> 'BUTTON' '(' [ BUTTONPARAMLIST ] ')'
 BUTTONPARAMLIST -> BUTTONPARAM [ ',' BUTTONPARAMLIST ]
-BUTTONPARAM -> ( DIMENSION | POSITION | NAME | TEXT )
+BUTTONPARAM -> ( DIMENSION | POSITION | NAME | TEXT | MOUSEEVENT )
 
 DIMENSION -> ( 'w' | 'h' ) ':' #
 POSITION -> ( 'x' | 'y' ) ':' #
 NAME -> 'name' ':' @
 TEXT -> 'text' ':' @
-ORIENTATION -> ( 'vertical' | 'horizontal' ) 
+ORIENTATION -> ( 'vertical' | 'horizontal' )
+
+MOUSEEVENT -> ( 'hover' | 'click' ) ':' @

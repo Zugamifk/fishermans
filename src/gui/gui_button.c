@@ -15,10 +15,15 @@ _S_gui_button
 	char* text;
 	_gui_dimension* dim;
 	vec2* pos;
+	void (*clickcb)(struct _S_gui_button*);
 	#ifdef GUI_DEBUGCOLORS
 	color* debugcolor;
 	#endif
 } gui_button;
+
+void guitestclick(gui_button* g) {
+	_gui_dimension_print(g->dim);
+}
 
 gui_button*
 gui_button_init
@@ -37,6 +42,7 @@ gui_button_init
 	gb->dim = _gui_dimension_init(w, h);
 	gb->pos = vec2_new(x, y);
 	gb->text = "TEST";
+	gb->clickcb = guitestclick;
 	#ifdef GUI_DEBUGCOLORS
 	gb->debugcolor = color_new4(0.0, 6.0, 3.0, 1.0);
 	#endif
@@ -64,6 +70,18 @@ gui_button_contains
 			gb->pos->y < y &&
 			x < gb->pos->x + gb->dim->w &&
 			y < gb->pos->y + gb->dim->h);
+}
+
+void
+gui_button_click
+(
+	gui_button* gb,
+	event_bus* bus
+)
+{
+	if (gb->state == GUI_BUTTON_HOVER && gb->clickcb != NULL) {
+		gb->clickcb(gb);
+	}
 }
 
 void

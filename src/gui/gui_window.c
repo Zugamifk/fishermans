@@ -14,6 +14,7 @@ _S_gui_window
 	_gui_dimension* dim;
 	vec2* pos;
 	gui_cell* cell;
+	void (*clickcb)(struct _S_gui_window*);
 	#ifdef GUI_DEBUGCOLORS
 	color* debugcolor;
 	#endif
@@ -36,6 +37,7 @@ gui_window_init
 	gw->dim = _gui_dimension_init(w, h);
 	gw->pos = vec2_new(x, y);
 	gw->cell = NULL;
+	gw->clickcb = NULL;
 	#ifdef GUI_DEBUGCOLORS
 	gw->debugcolor = color_new4(0.0, 0.0, 1.0, 1.0);
 	#endif
@@ -119,6 +121,22 @@ gui_window_mouseupdate
 		gw->state = GUI_WINDOW_CONTAINSMOUSE;
 	} else {
 		gw->state = GUI_WINDOW_ACTIVE;
+	}
+}
+
+void
+gui_window_click
+(
+	gui_window* gw,
+	event_bus* bus
+)
+{
+	if (gw->state == GUI_WINDOW_CONTAINSMOUSE) {
+		if (gw->clickcb != NULL) gw->clickcb(gw);
+		
+		if (gw->cell != NULL) {
+			gui_cell_click(gw->cell, bus);
+		}
 	}
 }
 

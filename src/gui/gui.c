@@ -16,6 +16,7 @@ _S_gui
 	hashtable* windows;
 	set* activewindows;
 	errorlog* log;
+	void (*clickcb)(struct _S_gui*);
 	#ifdef GUI_DEBUGCOLORS
 	color* debugcolor;
 	#endif
@@ -37,6 +38,7 @@ gui_init
 	g->aspectratio = 1.0;
 	g->windows = hashtable_init(0);
 	g->activewindows = set_init();
+	g->clickcb = NULL;
 	#ifdef GUI_DEBUGCOLORS
 	g->debugcolor = color_new4(1.0, 0.0, 0.0, 1.0);
 	#endif
@@ -119,6 +121,26 @@ gui_mouseupdate
 		g->state = GUI_STATE_CONTAINSMOUSE;
 	} else {
 		g->state = GUI_STATE_ACTIVE;
+	}
+}
+
+void
+gui_click
+(
+	gui* g,
+	event_bus* bus
+)
+{
+	if (g->state == GUI_STATE_CONTAINSMOUSE) {
+		if (g->clickcb != NULL) g->clickcb(g);
+		
+		void* gw;
+		for(set_begin(g->activewindows, &gw); 
+			set_end(g->activewindows); 
+			set_next(g->activewindows, &gw))
+		{
+			gui_window_click(gw, bus);
+		}
 	}
 }
 

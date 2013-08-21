@@ -38,6 +38,7 @@ _S_gui_cell
 	list* cells;
 	list* partitions;
 	_gui_cell_object object;
+	void (*clickcb)(struct _S_gui_cell*);
 	#ifdef GUI_DEBUGDRAWGUI
 	color* debugcolor;
 	#endif
@@ -54,6 +55,7 @@ gui_cell_init
 	gc->content = GUI_CELL_EMPTY;
 	gc->partitions = NULL;
 	gc->cells = NULL;
+	gc->clickcb = NULL;
 	#ifdef GUI_DEBUGCOLORS
 	gc->debugcolor = color_new4(0.0, 1.0, 0.0, 1.0);
 	#endif
@@ -128,6 +130,31 @@ gui_cell_mouseupdate
 			}break;
 			case GUI_CELL_BUTTON: {
 				gui_button_mouseupdate(gc->object.button, rx, ry);
+			} break;
+		}
+	}
+}
+
+void
+gui_cell_click
+(
+	gui_cell* gc,
+	event_bus* bus
+)
+{
+	if (gc->state == GUI_CELL_CONTAINSMOUSE) {
+		if (gc->clickcb != NULL) gc->clickcb(gc);
+		
+		switch(gc->content) {
+			case GUI_CELL_EMPTY: break;
+			case GUI_CELL_HORIZONTALCELLS:
+			case GUI_CELL_VERTICALCELLS: {
+				for (list *l = gc->cells; l->data != NULL; l = l->next) {
+					gui_cell_click(l->data, bus);
+				}
+			}break;
+			case GUI_CELL_BUTTON: {
+				gui_button_click(gc->object.button, bus);
 			} break;
 		}
 	}

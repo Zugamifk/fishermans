@@ -31,6 +31,8 @@ _S_screeninfo
 
 #define DATAPATH data/
 
+#include "hax/bittwiddle.h"
+
 #include "lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"

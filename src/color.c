@@ -47,3 +47,9 @@ color_applyinverse(color *c)
 {
 	glColor4d(1.0-c->r, 1.0-c->g, 1.0-c->b, c->a);
 }
+
+void
+color_applyhalftone(color* c) 
+{
+	glColor4d(0.5*c->r, 0.5*c->g, 0.5*c->b, c->a);
+}

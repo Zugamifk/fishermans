@@ -27,6 +27,8 @@ gui* Mgui;
 
 int main(int argc, char** argv) {
 	
+	//bittwiddle_test();
+	
 	srand(time(NULL));
 	glutInit(&argc, argv);
 	
@@ -185,7 +187,7 @@ mousemove(mouse_state *ms)
 void
 mouseup(mouse_state *ms)
 {
-	
+	gui_click(Mgui, Meb);
 }
 
 void
