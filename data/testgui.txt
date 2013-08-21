@@ -5,7 +5,7 @@ WINDOW(x:0.7, y:0.2, w:0.28, h:0.78, name:"poop")
 	CELL {
 		(vertical,0.1, 0.6 )
 		CELL {
-			BUTTON(x:10, y:10, w: 0.6, h:0.6, name:"FARTS")
+			BUTTON(x:10, y:10, w: 0.6, h:0.6, name:"FARTS", click:"QUIT")
 		}
 		CELL {
 		

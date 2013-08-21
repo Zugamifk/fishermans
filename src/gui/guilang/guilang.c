@@ -87,6 +87,7 @@ guilang_buildbutton
 	double y = 0.0;
 	double w = 1.0;
 	double h = 1.0;
+	char* click = NULL;
 	char* name = "BUTTON";
 	
 	guilang_processor_match(processor, "BUTTON");
@@ -97,6 +98,11 @@ guilang_buildbutton
 		if (strcmp(curr, "name") == 0) {
 			guilang_processor_match(processor, ":");
 			name = guilang_processor_consume(processor);
+		} else 
+		if (strcmp(curr, "click") == 0) {
+			guilang_processor_match(processor, ":");
+			click = guilang_processor_consume(processor);
+			printf("%s\n", click);
 		} else {
 			double* param;
 			switch(curr[0]) {
@@ -113,6 +119,7 @@ guilang_buildbutton
 	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
 	
 	gui_button* gb = gui_button_init(name, x, y, w, h);
+	gui_button_setclickcb(gb, processor->bus, click);
 	return gb;
 }
 	

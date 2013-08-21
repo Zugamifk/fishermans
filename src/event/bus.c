@@ -36,6 +36,7 @@ bus_triggerevent(event_bus *eb, event_id id, event_descriptor des)
 {
 	event *e = eb->subscriptions[id];
 	if (e == NULL) return EVENT_ID_INVALID;
+
 	for (	event_subscription sub = 0;
 			sub < EVENT_SUBSCRIPTION_MAX;
 			sub++
@@ -79,7 +80,9 @@ bus_neweventwithname(event_bus *eb, char* name)
 	if (id == EVENT_LIST_MAX) return EVENT_BUS_FULL;
 	eb->subscriptions[id] = calloc(EVENT_SUBSCRIPTION_MAX, sizeof(event));
 	
-	hashtable_insert(eb->eventdictionary, name, &id);
+	event_id* idlookup = malloc(sizeof(event_id));
+	*idlookup = id;
+	hashtable_insert(eb->eventdictionary, name, idlookup);
 	return id;
 }
 
@@ -98,6 +101,14 @@ bus_eventnameexists(event_bus* eb, char* name)
 {
 	int *id = hashtable_get(eb->eventdictionary, name);
 	return id != NULL;
+}
+
+event_id
+bus_getidbyname(event_bus* eb, char* name)
+{
+	event_id *id = hashtable_get(eb->eventdictionary, name);
+
+	return *id;
 }
 
 event_subscription

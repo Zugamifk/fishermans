@@ -39,7 +39,9 @@ int main(int argc, char** argv) {
 	screenwidth = 800;
 	screenheight = 600;
 	
-	Meb 	= bus_init();	
+	Meb 	= bus_init();
+	event_id quitid = bus_neweventwithname(Meb, "QUIT");
+	bus_subscribe(Meb, quitid, quit);
 	
 	Mlog = errorlog_init("Main", "errorlog.txt", 0);
 	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
@@ -216,7 +218,7 @@ skeys(int key, int x, int y)
 void
 quit
 (
-	void
+	void* anything
 )
 {
 	errorlog_free(Mlog);
