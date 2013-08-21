@@ -93,6 +93,13 @@ bus_removeeventwithname(event_bus *eb, char* name)
 	hashtable_remove(eb->eventdictionary, name);
 }
 
+bool
+bus_eventnameexists(event_bus* eb, char* name)
+{
+	int *id = hashtable_get(eb->eventdictionary, name);
+	return id != NULL;
+}
+
 event_subscription
 bus_subscribebyname(event_bus *eb, char* name, event e)
 {

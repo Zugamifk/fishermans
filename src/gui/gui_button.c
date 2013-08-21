@@ -80,6 +80,7 @@ gui_button_click
 )
 {
 	if (gb->state == GUI_BUTTON_HOVER && gb->clickcb != NULL) {
+		gb->state = GUI_BUTTON_CLICKED;
 		gb->clickcb(gb);
 	}
 }
@@ -92,7 +93,7 @@ gui_button_mouseupdate
 	int y
 )
 {
-	if (gui_button_contains(gb, x, y)) {
+	if (gui_button_contains(gb, x, y) && gb->state == GUI_BUTTON_ACTIVE) {
 		gb->state = GUI_BUTTON_HOVER;
 	}
 }

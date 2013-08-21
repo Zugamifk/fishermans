@@ -1,2 +1,11 @@
 ERROR: ARE YOU READY TO GET DOWN
 	DOWN
+ERROR: GUILANG TRANSLATOR LOGIC
+	Import: Event "MOUSE MOVE" does not exist!
+
+ERROR: GUILANG TRANSLATOR LOGIC
+	Import: Event "POOP" does not exist!
+
+ERROR: GUILANG TRANSLATOR LOGIC
+	Import: Event "BUTT" does not exist!
+

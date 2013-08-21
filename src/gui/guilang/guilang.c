@@ -57,8 +57,14 @@ guilang_readheader
 		
 		curr = guilang_processor_consume(processor);
 		while (strcmp(processor->current, ",") == 0) {
+			if (!bus_eventnameexists(processor->bus, curr)) {
+				guilang_logicerror(processor, "Import: Event \"%s\" does not exist!\n", curr);
+			}
 			guilang_processor_match(processor, ",");
 			curr = guilang_processor_consume(processor);
+		}
+		if (!bus_eventnameexists(processor->bus, curr)) {
+			guilang_logicerror(processor, "Import: Event \"%s\" does not exist!\n", curr);
 		}
 	}
 }
