@@ -12,6 +12,7 @@ _S_gui
 	gui_state state;
 	_gui_dimension* dim;
 	vec2* pos;
+	char* name;
 	double aspectratio;
 	hashtable* windows;
 	set* activewindows;
@@ -32,6 +33,7 @@ gui_init
 	g->state = GUI_STATE_ACTIVE;
 	g->dim = _gui_dimension_init(w, h);
 	g->pos = vec2_new(x, y);
+	g->name = "GUI";
 	g->aspectratio = 1.0;
 	g->windows = hashtable_init(0);
 	g->activewindows = set_init();

@@ -3,7 +3,7 @@ typedef struct
 _S_gui_style
 {
 	colorpack* palette;
-	fontinfo* f;
+	fontinfo* font;
 	void (*gui)(struct _S_gui_style*, gui*, double, double);
 	void (*window)(struct _S_gui_style*, gui_window*, double, double);
 	void (*cell)(struct _S_gui_style*, gui_cell*, double, double);
@@ -39,7 +39,7 @@ gui_style_setfont
 	fontinfo* f
 )
 {
-	gs->f = f;
+	gs->font = f;
 }
 
 color*

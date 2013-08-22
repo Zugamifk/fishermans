@@ -1,4 +1,4 @@
-#define color_new3(r, g, b) color_new4(r, g, b, 1.0);
+#define color_new3(r, g, b) color_new4(r, g, b, 1.0)
 
 typedef struct
 t_color

@@ -1,3 +1,5 @@
+#define GUI_DEBUGSTYLE_FONTSIZE 12
+
 void
 gui_debugstyle_guicb(gui_style* style, gui* g, double t, double dt) {
 	color* c = gui_style_getcolor(style, 0);
@@ -6,7 +8,9 @@ gui_debugstyle_guicb(gui_style* style, gui* g, double t, double dt) {
 	} else {
 		color_apply(c);
 	}
+	
 	shapes_box(g->dim->w, g->dim->h);
+	font_draw(g->name, style->font, 10.0, 10.0, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
 }
 
 void
@@ -18,6 +22,7 @@ gui_debugstyle_windowcb(gui_style* style, gui_window* gw, double t, double dt) {
 		color_apply(c);
 	}
 	shapes_box(gw->dim->w, gw->dim->h);
+	font_draw(gw->name, style->font, 10.0, 10.0, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
 }
 
 void
@@ -40,6 +45,7 @@ gui_debugstyle_buttoncb(gui_style* style, gui_button* gb, double t, double dt) {
 		color_apply(c);
 	}
 	shapes_box(gb->dim->w, gb->dim->h);
+	font_draw(gb->name, style->font, 10.0, 10.0, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
 }
 
 gui_style*
@@ -58,7 +64,7 @@ gui_debugstyle_init
 	carr[3] = color_new4(0.0, 0.6, 0.3, 1.0); //button
 	gui_style_setpalette(gs, carr, len);
 	
-	fontinfo* guifont = font_initdef();
+	fontinfo* guifont = font_init("data/extremeradcool", color_new3(0.0, 0.0, 0.0));
 	gui_style_setfont(gs, guifont);
 	
 	gs->gui = gui_debugstyle_guicb;
