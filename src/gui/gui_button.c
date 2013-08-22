@@ -16,9 +16,6 @@ _S_gui_button
 	_gui_dimension* dim;
 	vec2* pos;
 	event_id clickeventid;
-	#ifdef GUI_DEBUGCOLORS
-	color* debugcolor;
-	#endif
 } gui_button;
 
 gui_button*
@@ -39,9 +36,6 @@ gui_button_init
 	gb->pos = vec2_new(x, y);
 	gb->text = "TEST";
 	gb->clickeventid = EVENT_ID_NULL;
-	#ifdef GUI_DEBUGCOLORS
-	gb->debugcolor = color_new4(0.0, 6.0, 3.0, 1.0);
-	#endif
 	return gb;
 }
 
@@ -105,29 +99,6 @@ gui_button_mouseupdate
 	}
 }
 
-void
-gui_button_draw
-(
-	gui_button* gb,
-	double t,
-	double dt
-)
-{
-	
-	glPushMatrix();
-	vec2_translate(gb->pos);
-	
-	#ifdef GUI_DEBUGDRAWGUI
-	if (gb->state == GUI_BUTTON_HOVER) {
-		color_applyinverse(gb->debugcolor);
-	} else {
-		color_apply(gb->debugcolor);
-	}
-	shapes_box(gb->dim->w, gb->dim->h);
-	#endif
-	
-	glPopMatrix();
-}
 void
 gui_button_resize
 (

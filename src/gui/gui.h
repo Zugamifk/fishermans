@@ -9,6 +9,10 @@
 
 #include "gui_cell.c"
 #include "gui_window.c"
+
 #include "gui.c"
 
 #include "guilang/guilang.h"
+
+#include "gui_style.c"
+#include "gui_debugstyle.c"

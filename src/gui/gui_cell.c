@@ -39,9 +39,6 @@ _S_gui_cell
 	list* partitions;
 	_gui_cell_object object;
 	void (*clickcb)(struct _S_gui_cell*);
-	#ifdef GUI_DEBUGDRAWGUI
-	color* debugcolor;
-	#endif
 } gui_cell;
 
 gui_cell*
@@ -56,9 +53,6 @@ gui_cell_init
 	gc->partitions = NULL;
 	gc->cells = NULL;
 	gc->clickcb = NULL;
-	#ifdef GUI_DEBUGCOLORS
-	gc->debugcolor = color_new4(0.0, 1.0, 0.0, 1.0);
-	#endif
 	return gc;
 }
 
@@ -158,65 +152,6 @@ gui_cell_click
 			} break;
 		}
 	}
-}
-
-void
-gui_cell_draw
-(
-	gui_cell* gc,
-	double t,
-	double dt
-)
-{
-	if (gc == NULL) return;
-	glPushMatrix();
-	vec2_translate(gc->pos);
-
-	switch (gc->content) {
-		case GUI_CELL_EMPTY: break;
-		case GUI_CELL_HORIZONTALCELLS: {
-			list* l = gc->cells;
-			gui_cell_draw(l->data, t, dt);
-			for(l = l->next; l->data!= NULL; l = l->next) {
-				gui_cell* cell = l->data;	
-				gui_cell_draw(cell, t, dt);
-				
-				#ifdef GUI_DEBUGDRAWGUI
-				glBegin(GL_LINES);
-				color_apply(gc->debugcolor);
-				glVertex2d(cell->pos->x, 0.0);
-				glVertex2d(cell->pos->x, gc->dim->h);
-				glEnd();
-				#endif
-			}
-		} break;
-		case GUI_CELL_VERTICALCELLS: {
-			list* l = gc->cells;
-			gui_cell_draw(l->data, t, dt);
-			for(l = l->next; l->data!= NULL; l = l->next) {
-				gui_cell* cell = l->data;	
-				gui_cell_draw(cell, t, dt);
-				
-				#ifdef GUI_DEBUGDRAWGUI
-				glBegin(GL_LINES);
-				color_apply(gc->debugcolor);
-				glVertex2d(0.0,cell->pos->y);
-				glVertex2d(gc->dim->w, cell->pos->y);
-				glEnd();
-				#endif
-			}
-		} break;
-		case GUI_CELL_BUTTON: {
-			gui_button_draw(gc->object.button, t, dt);
-		} break;
-	}
-	#ifdef GUI_DEBUGDRAWGUI
-	if (gc->state == GUI_CELL_CONTAINSMOUSE) {
-		color_applyinverse(gc->debugcolor);
-		shapes_box(gc->dim->w, gc->dim->h);
-	}
-	#endif
-	glPopMatrix();
 }
 
 void

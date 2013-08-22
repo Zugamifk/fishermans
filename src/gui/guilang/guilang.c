@@ -102,7 +102,6 @@ guilang_buildbutton
 		if (strcmp(curr, "click") == 0) {
 			guilang_processor_match(processor, ":");
 			click = guilang_processor_consume(processor);
-			printf("%s\n", click);
 		} else {
 			double* param;
 			switch(curr[0]) {

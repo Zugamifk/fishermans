@@ -24,6 +24,7 @@ mouse_state *Mms;
 audio_system *Mfms;
 shaderprogram *Msp;
 gui* Mgui;
+gui_style* Mgs;
 
 int main(int argc, char** argv) {
 	
@@ -54,7 +55,8 @@ int main(int argc, char** argv) {
 	
 	screeninfo si = {screenwidth, screenheight, aspectratio};
 	Mgui = guilang_compile(Mlog, Meb, &si);
-	gui_print(Mgui);
+	//gui_print(Mgui);
+	Mgs = gui_debugstyle_init();
 	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
@@ -148,7 +150,8 @@ draw()
 	glColor3f(0.4, 0.1, 0.4);
 	shapes_cursor();
 	glPopMatrix();
-	gui_draw(Mgui, TIME, DTIME);
+	
+	gui_style_draw(Mgs, Mgui, TIME, DTIME);
  //     gluPerspective( 60.0, aspectratio, 1.0, 30.0 );
 
   //  gluLookAt(0.0, 5.0, -7.0,

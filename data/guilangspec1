@@ -30,4 +30,6 @@ NAME -> 'name' ':' @
 TEXT -> 'text' ':' @
 ORIENTATION -> ( 'vertical' | 'horizontal' )
 
-MOUSEEVENT -> ( 'hover' | 'click' ) ':' @
+MOUSEEVENT -> ( 'hover' | 'click' ) ':' EVENT
+
+EVENT -> ( 'QUIT' )

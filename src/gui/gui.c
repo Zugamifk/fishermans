@@ -17,9 +17,6 @@ _S_gui
 	set* activewindows;
 	errorlog* log;
 	void (*clickcb)(struct _S_gui*);
-	#ifdef GUI_DEBUGCOLORS
-	color* debugcolor;
-	#endif
 } gui;
 
 gui*
@@ -39,9 +36,6 @@ gui_init
 	g->windows = hashtable_init(0);
 	g->activewindows = set_init();
 	g->clickcb = NULL;
-	#ifdef GUI_DEBUGCOLORS
-	g->debugcolor = color_new4(1.0, 0.0, 0.0, 1.0);
-	#endif
 	return g;
 }
 
@@ -141,37 +135,8 @@ gui_click
 		{
 			gui_window_click(gw, bus);
 		}
-	}
-}
-
-void
-gui_draw
-(
-	gui* g,
-	double t,
-	double dt
-)
-{	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
 	
-	glPushMatrix();
-	vec2_translate(g->pos);
-	#ifdef GUI_DEBUGDRAWGUI
-	if (g->state == GUI_STATE_CONTAINSMOUSE) {
-		color_applyinverse(g->debugcolor);
-	} else {
-		color_apply(g->debugcolor);
 	}
-	shapes_box(g->dim->w, g->dim->h);
-	#endif
-	
-	void* gw;
-	for(set_begin(g->activewindows, &gw); set_end(g->activewindows); set_next(g->activewindows, &gw)) {
-		gui_window_draw(gw, t, dt);
-	}
-	
-	glPopMatrix();
 }
 
 void
