@@ -45,7 +45,7 @@ gui_debugstyle_buttoncb(gui_style* style, gui_button* gb, double t, double dt) {
 		color_apply(c);
 	}
 	shapes_box(gb->dim->w, gb->dim->h);
-	font_draw(gb->name, style->font, 10.0, 10.0, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
+	font_draw(gb->text, style->font, 10.0, 10.0, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
 }
 
 gui_style*

@@ -38,6 +38,10 @@ gui_init
 	g->windows = hashtable_init(0);
 	g->activewindows = set_init();
 	g->clickcb = NULL;
+	
+	gui_text* tt = gui_text_init(4, 5, 1);
+	gui_text_settext(tt, "TEST%d%f%dpoo", 2, g->pos, g->pos);
+	gui_text_print(tt);
 	return g;
 }
 

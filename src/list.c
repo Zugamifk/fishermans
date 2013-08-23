@@ -44,7 +44,7 @@ int
 list_add(list *l, void *d) 
 {
 	int ind = 0;
-	while(l->next) {
+	while(l->next != NULL) {
 		l = l->next;
 		ind++;
 	}
