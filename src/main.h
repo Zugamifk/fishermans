@@ -60,3 +60,5 @@ _S_screeninfo
 
 #include "lang/lang_tools.h"
 #include "gui/gui.h"
+
+#include "app/Sprite/src/sprite.h"

@@ -7,15 +7,17 @@ const char* guilang_requiredvars[] = {
 gui*
 guilang_compile
 (
+	const char* grammarfile,
+	const char* guifile,
 	errorlog*	log,
 	event_bus* bus,
 	hashtable* vars
 )
 {
-	lang_grammar *spec = lang_initgrammar("data/guilangspec1", log);
+	lang_grammar *spec = lang_initgrammar(grammarfile, log);
 	char *guidata;
 	int len;
-	load("data/testgui.txt", &guidata, &len);
+	load(guifile, &guidata, &len);
 	
 	char** lex = lang_scan(guidata);
 	
