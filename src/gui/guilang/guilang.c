@@ -123,7 +123,7 @@ guilang_buildbutton
 	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
 	
 	gui_button* gb = gui_button_init(name, x, y, w, h);
-	gb->text = text;
+	gui_text_settext(gb->text, text, 0);
 	gui_button_setclickcb(gb, processor->bus, click);
 	return gb;
 }

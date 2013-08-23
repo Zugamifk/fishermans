@@ -8,6 +8,7 @@ _S_gui_style
 	void (*window)(struct _S_gui_style*, gui_window*, double, double);
 	void (*cell)(struct _S_gui_style*, gui_cell*, double, double);
 	void (*button)(struct _S_gui_style*, gui_button*, double, double);
+	void (*text)(struct _S_gui_style*, gui_text*, double, double);
 } gui_style;
 
 gui_style*

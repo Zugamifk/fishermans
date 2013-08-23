@@ -1,6 +1,13 @@
 #define GUI_DEBUGSTYLE_FONTSIZE 12
 
 void
+gui_debugstyle_textcb(gui_style* style, gui_text* gt, double t, double dt) {
+	double x = gt->pos->x;
+	double y = gt->pos->y;
+	font_draw(gt->text, style->font, x, y, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
+}
+
+void
 gui_debugstyle_guicb(gui_style* style, gui* g, double t, double dt) {
 	color* c = gui_style_getcolor(style, 0);
 	if (g->state == GUI_STATE_CONTAINSMOUSE) {
@@ -45,7 +52,7 @@ gui_debugstyle_buttoncb(gui_style* style, gui_button* gb, double t, double dt) {
 		color_apply(c);
 	}
 	shapes_box(gb->dim->w, gb->dim->h);
-	font_draw(gb->text, style->font, 10.0, 10.0, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
+	style->text(style, gb->text, t, dt); 
 }
 
 gui_style*
@@ -71,6 +78,7 @@ gui_debugstyle_init
 	gs->window = gui_debugstyle_windowcb;
 	gs->cell = gui_debugstyle_cellcb;
 	gs->button = gui_debugstyle_buttoncb;
+	gs->text = gui_debugstyle_textcb;
 	
 	return gs;
 }

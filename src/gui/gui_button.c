@@ -12,7 +12,7 @@ _S_gui_button
 {
 	char* name;
 	gui_button_state state;
-	char* text;
+	gui_text* text;
 	_gui_dimension* dim;
 	vec2* pos;
 	event_id clickeventid;
@@ -34,7 +34,12 @@ gui_button_init
 	gb->state = GUI_BUTTON_ACTIVE;
 	gb->dim = _gui_dimension_init(w, h);
 	gb->pos = vec2_new(x, y);
-	gb->text = "TEST";
+	
+	double ts = h/2.0 > 10.0?10.0:h/2.0;
+	double tx = x + 10.0;
+	double ty = y + h/2.0 - ts/2.0;
+	gb->text = gui_text_init(tx, ty, ts);
+	gui_text_settext(gb->text, "TEST", 0);
 	gb->clickeventid = EVENT_ID_NULL;
 	return gb;
 }
