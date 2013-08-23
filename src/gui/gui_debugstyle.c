@@ -4,7 +4,7 @@ void
 gui_debugstyle_textcb(gui_style* style, gui_text* gt, double t, double dt) {
 	double x = gt->pos->x;
 	double y = gt->pos->y;
-	font_draw(gt->text, style->font, x, y, GUI_DEBUGSTYLE_FONTSIZE, FONT_LEN_INF);
+	font_draw(gt->text, style->font, x, y, GUI_DEBUGSTYLE_FONTSIZE, gt->width);
 }
 
 void
@@ -39,6 +39,9 @@ gui_debugstyle_cellcb(gui_style* style, gui_cell* gc, double t, double dt) {
 		color_applyinverse(c);
 	} else {
 		color_apply(c);
+	}
+	if (gc->content == GUI_CELL_TEXT) {
+		style->text(style, gc->object.text, t, dt);
 	}
 	shapes_box(gc->dim->w, gc->dim->h);
 }

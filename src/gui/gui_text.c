@@ -4,6 +4,7 @@ _S_gui_text
 {
 	char* text;
 	double size;
+	double width;
 	vec2* pos;
 	char* fmtstring;
 	list* fmtargs;
@@ -23,6 +24,7 @@ gui_text_init
 	gt->text = malloc(GUI_TEXT_LEN);
 	gt->pos = vec2_new(x, y);
 	gt->size = s;
+	gt->width = FONT_LEN_INF;
 	gt->fmtstring = malloc(GUI_TEXT_LEN);
 	gt->fmtargs = list_new();
 	gt->frozen = false;
@@ -94,6 +96,17 @@ gui_text_settext
 }
 
 void
+gui_text_resize
+(
+	gui_text* gt,
+	double w,
+	double h
+)
+{
+	gt->width = w;
+}
+
+void
 gui_text_print
 (
 	gui_text* gt
@@ -101,6 +114,7 @@ gui_text_print
 {
 	printf("TEXT:\"%s\"\n", gt->text);
 	printf("\tSIZE:\t%f\n", gt->size);
+	printf("\tWIDTH:\t%f\n", gt->width);
 	printf("\tPOS:\t");
 	vec2_print(gt->pos);
 	printf("FORMAT STRING:\"%s\"\n", gt->fmtstring);

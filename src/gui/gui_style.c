@@ -86,6 +86,7 @@ _gui_style_drawcell
 				glPopMatrix();
 			}
 		} break;
+		case GUI_CELL_TEXT: break;
 	}
 	glPopMatrix();
 }

@@ -11,7 +11,8 @@ _E_gui_cell_content
 	GUI_CELL_EMPTY,
 	GUI_CELL_HORIZONTALCELLS,
 	GUI_CELL_VERTICALCELLS,
-	GUI_CELL_BUTTON
+	GUI_CELL_BUTTON,
+	GUI_CELL_TEXT
 } gui_cell_content;
 
 const char* gui_cell_contentstrs[] =
@@ -19,13 +20,15 @@ const char* gui_cell_contentstrs[] =
 	"EMPTY",
 	"HORIZONTAL CELLS",
 	"VERTICAL CELLS",
-	"BUTTON"
+	"BUTTON",
+	"TEXT"
 };
 
 typedef union
 _U_gui_cell_object
 {
 	gui_button* button;
+	gui_text* text;
 } _gui_cell_object;
 
 typedef struct
@@ -74,6 +77,7 @@ gui_cell_reset
 		case GUI_CELL_BUTTON: {
 			gui_button_reset(gc->object.button);
 		} break;
+		case GUI_CELL_TEXT: break;
 	}
 }
 
@@ -125,6 +129,7 @@ gui_cell_mouseupdate
 			case GUI_CELL_BUTTON: {
 				gui_button_mouseupdate(gc->object.button, rx, ry);
 			} break;
+			case GUI_CELL_TEXT: break;
 		}
 	}
 }
@@ -150,6 +155,7 @@ gui_cell_click
 			case GUI_CELL_BUTTON: {
 				gui_button_click(gc->object.button, bus);
 			} break;
+			case GUI_CELL_TEXT: break;
 		}
 	}
 }
@@ -192,6 +198,9 @@ gui_cell_resize
 		} break;
 		case GUI_CELL_BUTTON: {
 			gui_button_resize(gc->object.button, gc->dim->w, gc->dim->h);
+		} break;
+		case GUI_CELL_TEXT: {
+			gui_text_resize(gc->object.text, gc->dim->w, gc->dim->h);
 		} break;
 	}
 }
@@ -242,6 +251,10 @@ gui_cell_addobject
 		case GUI_CELL_BUTTON: {
 			gc->content = type;
 			gc->object.button = o;
+		} break;
+		case GUI_CELL_TEXT: {
+			gc->content = type;
+			gc->object.text = o;
 		} break;
 	}
 }
@@ -308,6 +321,9 @@ gui_cell_print
 		case GUI_CELL_BUTTON: {
 			gui_button_print(gc->object.button);
 		} break;
+		case GUI_CELL_TEXT: {
+			gui_text_print(gc->object.text);
+		}break;
 	}
 	printf("============================\n");
 }

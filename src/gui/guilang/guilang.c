@@ -238,6 +238,15 @@ guilang_buildcell
 		gui_button* gb = guilang_buildbutton(processor, gc);
 		gui_cell_addobject(gc, gb, GUI_CELL_BUTTON);
 	} else
+	if(strcmp(processor->current, "text") == 0) {
+		guilang_processor_match(processor, "text");
+		guilang_processor_match(processor, ":");
+		curr = guilang_processor_consume(processor);
+		
+		gui_text* gt = gui_text_init(0, 0, 10.0);
+		gui_text_settext(gt, curr, 0);
+		gui_cell_addobject(gc, gt, GUI_CELL_TEXT);
+	} else
 	if(strcmp(processor->current, "}") == 0) {
 	}
 

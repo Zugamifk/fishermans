@@ -27,6 +27,7 @@ font_draw(char *str, fontinfo *fi, double x, double y, double s, double w)
 		fi->font = GlobalFontInfo.font;
 	}
 	
+	w = w/s;
 	glPushMatrix();
 	color_apply(fi->col);
 	glTranslated(x, y, 0.0);
@@ -39,8 +40,7 @@ font_draw(char *str, fontinfo *fi, double x, double y, double s, double w)
 			glTranslated(0.6+fi->font->spacing, 0.0,0.0);
 			
 			char next[256];
-			sscanf(str, "%s", next);
-			if (sscanf > 0 && x + font_getstrwidth(next, fi) > w) {
+			if (sscanf(str, "%s", next) > 0 && x + font_getstrwidth(next, fi) > w) {
 				glTranslated(-x, -1.4, 0.0);
 				x = 0.0;
 			}
@@ -67,6 +67,7 @@ font_draw(char *str, fontinfo *fi, double x, double y, double s, double w)
 		}
 		str++;
 	}
+	printf("%f\n", x);
 	glPopMatrix();
 }
 
