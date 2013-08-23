@@ -18,7 +18,9 @@ WINDOW(x:0.7, y:0.2, w:0.28, h:0.78, name:"poop")
 				(vertical, 0.5)
 				CELL {
 					text:"Some text in a small box up here?"
-				} CELL { }
+				} CELL {
+					text:"WIDTH IS: %d"+"WIDTH"
+				}
 			} 
 			CELL { 
 				(vertical, 0.2)

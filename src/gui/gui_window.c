@@ -69,7 +69,9 @@ gui_window_update
 	double dt
 )
 {
-
+	if (w->cell != NULL) {
+		gui_cell_update(w->cell, t, dt);
+	}
 }
 
 void

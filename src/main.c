@@ -53,13 +53,10 @@ int main(int argc, char** argv) {
 	
 	Mfms = audio_system_init();
 	
-	screeninfo si = {screenwidth, screenheight, aspectratio};
 	hashtable* guivars = hashtable_init(0);
 	hashtable_insert(guivars, GUIVAR_GUIWIDTH, &screenwidth);
 	hashtable_insert(guivars, GUIVAR_GUIHEIGHT, &screenheight);
-	int* w = hashtable_get(guivars, GUIVAR_GUIWIDTH);
-	int* h = hashtable_get(guivars, GUIVAR_GUIHEIGHT);
-	printf("%d %d\n",*w ,*h);
+
 	Mgui = guilang_compile(Mlog, Meb, guivars);
 	gui_print(Mgui);
 	Mgs = gui_debugstyle_init();

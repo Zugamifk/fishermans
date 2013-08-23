@@ -89,7 +89,21 @@ gui_cell_update
 	double dt
 )
 {
-
+	switch(gc->content) {
+		case GUI_CELL_EMPTY: break;
+		case GUI_CELL_HORIZONTALCELLS:
+		case GUI_CELL_VERTICALCELLS: {
+			for (list *l = gc->cells; l->data != NULL; l = l->next) {
+				gui_cell_update(l->data, t, dt);
+			}
+		}break;
+		case GUI_CELL_BUTTON: {
+		//	gui_button_reset(gc->object.button);
+		} break;
+		case GUI_CELL_TEXT: {
+			gui_text_update(gc->object.text);
+		} break;
+	}
 }
 
 bool

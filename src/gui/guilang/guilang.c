@@ -48,8 +48,7 @@ guilang_logicerror
 void
 guilang_readheader
 (
-	guilang_processor* processor,
-	hashtable* vars
+	guilang_processor* processor
 )
 {
 	char* curr;
@@ -76,19 +75,19 @@ guilang_readheader
 		
 		curr = guilang_processor_consume(processor);
 		while (strcmp(processor->current, ",") == 0) {
-			if (hashtable_get(vars, curr) == NULL) {
+			if (hashtable_get(processor->vars, curr) == NULL) {
 				guilang_logicerror(processor, "Externally defined variable \"%s\" does not exist!\n", curr);
 			}
 			guilang_processor_match(processor, ",");
 			curr = guilang_processor_consume(processor);
 		}
-		if (hashtable_get(vars, curr) == NULL) {
+		if (hashtable_get(processor->vars, curr) == NULL) {
 			guilang_logicerror(processor, "Externally defined variable \"%s\" does not exist!\n", curr);
 		}
 	} else return;
-	guilang_readheader(processor, vars);
+	guilang_readheader(processor);
 }
-	
+
 // ========================================================================= //
 // CORE GUI OBJECTS
 // ========================================================================= //
@@ -259,12 +258,19 @@ guilang_buildcell
 		gui_cell_addobject(gc, gb, GUI_CELL_BUTTON);
 	} else
 	if(strcmp(processor->current, "text") == 0) {
+		gui_text* gt = gui_text_init(0, 0, 10.0);
+
 		guilang_processor_match(processor, "text");
 		guilang_processor_match(processor, ":");
-		curr = guilang_processor_consume(processor);
+		char* fmtstr = guilang_processor_consume(processor);
+		if (processor->current[0] == '+') {
+			guilang_processor_match(processor, "+");
+			curr = guilang_processor_consume(processor);
+			gui_text_settext(gt, fmtstr, 1, hashtable_get(processor->vars, curr));
+		} else {
+			gui_text_settext(gt, fmtstr, 0);
+		}
 		
-		gui_text* gt = gui_text_init(0, 0, 10.0);
-		gui_text_settext(gt, curr, 0);
 		gui_cell_addobject(gc, gt, GUI_CELL_TEXT);
 	} else
 	if(strcmp(processor->current, "}") == 0) {
@@ -359,8 +365,9 @@ guilang_buildgui
 	float h = 1.0;
 
 	guilang_processor* processor = guilang_processor_init(stream, log, bus);
+	processor->vars = vars;
 	
-	guilang_readheader(processor, vars);
+	guilang_readheader(processor);
 	
 	guilang_processor_match(processor, "GUI");
 	

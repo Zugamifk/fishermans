@@ -29,7 +29,8 @@ BUTTONPARAM -> ( DIMENSION | POSITION | NAME | TEXT | MOUSEEVENT )
 DIMENSION -> ( 'w' | 'h' ) ':' #
 POSITION -> ( 'x' | 'y' ) ':' #
 NAME -> 'name' ':' @
-TEXT -> 'text' ':' @
+TEXT -> 'text' ':' @ [ TEXTFMTARGLIST ]
+TEXTFMTARGLIST -> '+' ( # | @ ) [ TEXTFMTARGLIST ]
 ORIENTATION -> ( 'vertical' | 'horizontal' )
 
 MOUSEEVENT -> ( 'hover' | 'click' ) ':' EVENT

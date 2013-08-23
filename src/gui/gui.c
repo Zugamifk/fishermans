@@ -64,6 +64,10 @@ gui_update
 	double dt
 )
 {
+	for(int i = 0; i < g->activewindows->size; i++)
+	{
+		gui_window_update(g->activewindows->items[i], t, dt);
+	}
 }
 
 void

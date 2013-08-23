@@ -16,6 +16,7 @@ _S_guilang_processor
 	char* current;
 	errorlog* log;
 	event_bus* bus;
+	hashtable* vars;
 } guilang_processor;
 
 guilang_processor*
