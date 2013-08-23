@@ -200,7 +200,10 @@ gui_cell_resize
 			gui_button_resize(gc->object.button, gc->dim->w, gc->dim->h);
 		} break;
 		case GUI_CELL_TEXT: {
-			gui_text_resize(gc->object.text, gc->dim->w, gc->dim->h);
+			gui_text* gt = gc->object.text;
+			gui_text_resize(gt, gc->dim->w, gc->dim->h);
+			gt->pos->y = gc->dim->h - gt->size - 10.0;
+			gt->pos->x = 10.0;
 		} break;
 	}
 }

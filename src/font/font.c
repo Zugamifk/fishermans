@@ -67,7 +67,6 @@ font_draw(char *str, fontinfo *fi, double x, double y, double s, double w)
 		}
 		str++;
 	}
-	printf("%f\n", x);
 	glPopMatrix();
 }
 
