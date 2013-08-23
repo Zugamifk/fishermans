@@ -1,5 +1,7 @@
-import: "MOUSE MOVE", "POOP", "BUTT"
-GUI(x:0.0, y:0.0, w:1, h:1.0)
+event: "MOUSE MOVE", "POOP", "BUTT"
+var: "WIDTH", "PEEE"
+
+GUI(x:0.0, y:0.0, w:1.0, h:1.0)
 WINDOW(x:0.7, y:0.2, w:0.28, h:0.78, name:"poop")
 {
 	CELL {
@@ -14,7 +16,9 @@ WINDOW(x:0.7, y:0.2, w:0.28, h:0.78, name:"poop")
 			(horizontal, 0.5)
 			CELL { 
 				(vertical, 0.5)
-				CELL { } CELL { }
+				CELL {
+					text:"Some text in a small box up here?"
+				} CELL { }
 			} 
 			CELL { 
 				(vertical, 0.2)

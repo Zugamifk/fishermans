@@ -140,6 +140,7 @@ gui_window_print
 	gui_window* gw
 )
 {
+	if (gw == NULL) return;
 	printf("WINDOW \'%s\':\n", gw->name);
 	printf("\tPOS:\t");
 	vec2_print(gw->pos);

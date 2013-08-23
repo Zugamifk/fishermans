@@ -1,11 +1,14 @@
 ERROR: ARE YOU READY TO GET DOWN
 	DOWN
 ERROR: GUILANG TRANSLATOR LOGIC
-	Import: Event "MOUSE MOVE" does not exist!
+	Externally defined event "MOUSE MOVE" does not exist!
 
 ERROR: GUILANG TRANSLATOR LOGIC
-	Import: Event "POOP" does not exist!
+	Externally defined event "POOP" does not exist!
 
 ERROR: GUILANG TRANSLATOR LOGIC
-	Import: Event "BUTT" does not exist!
+	Externally defined event "BUTT" does not exist!
+
+ERROR: GUILANG TRANSLATOR LOGIC
+	Externally defined variable "PEEE" does not exist!
 

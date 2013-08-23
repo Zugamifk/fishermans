@@ -14,6 +14,7 @@ _S_gui
 	vec2* pos;
 	char* name;
 	double aspectratio;
+	hashtable* vars;
 	hashtable* windows;
 	set* activewindows;
 	errorlog* log;
@@ -153,12 +154,14 @@ gui_print
 	vec2_print(g->pos);
 	printf("\tDIM:\t");
 	_gui_dimension_print(g->dim);
+	
 	char* k;
 	void* v;
 	for(	hashtable_begin(g->windows, &k, &v);
 			hashtable_end(g->windows); 
 			hashtable_next(g->windows, &k, &v)) 
 	{
+		printf("?\n");
 		gui_window_print(v);
 	}
 }

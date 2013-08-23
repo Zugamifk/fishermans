@@ -48,25 +48,45 @@ guilang_logicerror
 void
 guilang_readheader
 (
-	guilang_processor* processor
+	guilang_processor* processor,
+	hashtable* vars
 )
 {
-	char* curr = guilang_processor_consume(processor);
-	if (strcmp(curr, "import") == 0) {
+	char* curr;
+	
+	if (strcmp(processor->current, "event") == 0) {
+		guilang_processor_match(processor, "event");
 		guilang_processor_match(processor, ":");
 		
 		curr = guilang_processor_consume(processor);
 		while (strcmp(processor->current, ",") == 0) {
 			if (!bus_eventnameexists(processor->bus, curr)) {
-				guilang_logicerror(processor, "Import: Event \"%s\" does not exist!\n", curr);
+				guilang_logicerror(processor, "Externally defined event \"%s\" does not exist!\n", curr);
 			}
 			guilang_processor_match(processor, ",");
 			curr = guilang_processor_consume(processor);
 		}
 		if (!bus_eventnameexists(processor->bus, curr)) {
-			guilang_logicerror(processor, "Import: Event \"%s\" does not exist!\n", curr);
+			guilang_logicerror(processor, "Externally defined event \"%s\" does not exist!\n", curr);
 		}
-	}
+	} else
+	if (strcmp(processor->current, "var") == 0) {
+		guilang_processor_match(processor, "var");
+		guilang_processor_match(processor, ":");
+		
+		curr = guilang_processor_consume(processor);
+		while (strcmp(processor->current, ",") == 0) {
+			if (hashtable_get(vars, curr) == NULL) {
+				guilang_logicerror(processor, "Externally defined variable \"%s\" does not exist!\n", curr);
+			}
+			guilang_processor_match(processor, ",");
+			curr = guilang_processor_consume(processor);
+		}
+		if (hashtable_get(vars, curr) == NULL) {
+			guilang_logicerror(processor, "Externally defined variable \"%s\" does not exist!\n", curr);
+		}
+	} else return;
+	guilang_readheader(processor, vars);
 }
 	
 // ========================================================================= //
@@ -330,7 +350,7 @@ guilang_buildgui
 	char** stream,
 	errorlog* log,
 	event_bus* bus,
-	screeninfo* info
+	hashtable* vars
 )
 {
 	float x = 0.0;
@@ -340,7 +360,7 @@ guilang_buildgui
 
 	guilang_processor* processor = guilang_processor_init(stream, log, bus);
 	
-	guilang_readheader(processor);
+	guilang_readheader(processor, vars);
 	
 	guilang_processor_match(processor, "GUI");
 	
@@ -365,7 +385,11 @@ guilang_buildgui
 	}
 
 	gui* g = gui_init(x, y, w, h);
-	gui_resize(g, info->w, info->h);
+	g->vars = vars;
+	int* screenw = hashtable_get(vars, GUIVAR_GUIWIDTH);
+	int* screenh = hashtable_get(vars, GUIVAR_GUIHEIGHT);
+	printf("%d %d\n", *screenw, *screenh);
+	gui_resize(g, *screenw, *screenh);
 	gui_window* gw = guilang_buildwindow(processor, g);
 	while(gw != NULL) {
 		gui_openwindow(g, gw);

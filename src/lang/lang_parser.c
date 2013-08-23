@@ -491,7 +491,7 @@ _parsingtable_error
 					// Or if this first set contains epsilon, check the follow set
 					(set_has(f, "EPSILON") && set_has(follow, v))
 					) {
-					if (rule != NULL) printf("!!!!!!!!!!!ERRORR!!!!!!!\n"); //error here, means ambiguous grammar
+					if (rule != NULL) printf("!!!!!!!!!!!AMBIGUOUS GRAMMAR!!!!!!!!!!\n"); //error here, means ambiguous grammar
 					rule = prods->data;
 				}
 			

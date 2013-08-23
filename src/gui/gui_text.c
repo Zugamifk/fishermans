@@ -63,6 +63,11 @@ gui_text_update
 				fmtstr = "%f";
 				textptr += sprintf(textptr, fmtstr, *((double*)(args->data)));
 				args = args->next;
+			} else
+			if (*curr == 's') {
+				fmtstr = "%s";
+				textptr += sprintf(textptr, fmtstr, *((char**)(args->data)));
+				args = args->next;
 			}
 			curr++;
 			word = curr;

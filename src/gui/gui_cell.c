@@ -202,8 +202,9 @@ gui_cell_resize
 		case GUI_CELL_TEXT: {
 			gui_text* gt = gc->object.text;
 			gui_text_resize(gt, gc->dim->w, gc->dim->h);
-			gt->pos->y = gc->dim->h - gt->size - 10.0;
-			gt->pos->x = 10.0;
+			// This is bad
+			gt->pos->y = gc->dim->h - (gt->size * 1.8);
+			gt->pos->x = gt->size * 0.8;
 		} break;
 	}
 }
