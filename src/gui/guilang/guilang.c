@@ -371,9 +371,10 @@ guilang_buildgui
 	
 	guilang_processor_match(processor, "GUI");
 	
-	char* curr = guilang_processor_consume(processor);
+	char* curr;
 	
-	if (curr[0] == '(') {
+	if (processor->current[0]== '(') {
+		guilang_processor_match(processor, "(");
 		float* param;
 		do {
 			curr = guilang_processor_consume(processor);

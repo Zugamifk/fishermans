@@ -133,7 +133,8 @@ update(int v)
 	//shader_update1f(Msp, "time", TIME);
 	//shader_update1fv(Msp, "dials", SDR_NUMDIALS, gui_dials);
 	
-	gui_update(Mgui, TIME, DTIME);
+	Sprite_update(TIME, DTIME);
+	//gui_update(Mgui, TIME, DTIME);
 	
 	glutTimerFunc(16, update, v);
 }
@@ -156,7 +157,8 @@ draw()
 	shapes_cursor();
 	glPopMatrix();
 	
-	gui_style_draw(Mgs, Mgui, TIME, DTIME);
+	Sprite_draw(TIME, DTIME);
+	//gui_style_draw(Mgs, Mgui, TIME, DTIME);
  //     gluPerspective( 60.0, aspectratio, 1.0, 30.0 );
 
   //  gluLookAt(0.0, 5.0, -7.0,
@@ -177,8 +179,9 @@ resize(int w, int h)
 	screenheight = h;
 	aspectratio = (float)w/(float)h;
 	
-	gui_resize(Mgui, w, h);
-
+	//gui_resize(Mgui, w, h);
+	Sprite_resize(w, h);
+	
 	// Set up the projection view matrix (not very well!)
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
@@ -191,13 +194,15 @@ resize(int w, int h)
 void
 mousemove(mouse_state *ms)
 {
-	gui_mouseupdate(Mgui, ms->x, screenheight - ms->y);
+	Sprite_mousemove(ms);
+	//gui_mouseupdate(Mgui, ms->x, screenheight - ms->y);
 }
 
 void
 mouseup(mouse_state *ms)
 {
-	gui_click(Mgui, Meb);
+	Sprite_mouseup(ms);
+	//gui_click(Mgui, Meb);
 }
 
 void

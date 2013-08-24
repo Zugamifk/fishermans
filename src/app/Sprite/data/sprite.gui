@@ -2,4 +2,14 @@ event:"QUIT"
 var:"WIDTH"
 var:"HEIGHT"
 
-GUI 
+GUI
+WINDOW ( name:"Sprite" ) {
+	CELL {
+		(horizontal, 0.7)
+		CELL {
+		
+		} CELL {
+		
+		}
+	}
+}
