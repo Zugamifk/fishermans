@@ -229,9 +229,15 @@ hashtable_begin
 	HASHTABLEDATA** d
 )
 {
-	int i = 0;
-	while (i < t->size && t->data[i] == NULL) {
-		i++;
+	int i;
+	for (i = 0; ; i++) {
+		if (i >= t->size) {
+			*key = NULL;
+			*d = NULL;
+			t->i = i;
+			return;
+		}
+		if (t->data[i] != NULL) break;
 	}
 	t->i = i;
 	_hashtable_bucket* b = t->data[i];

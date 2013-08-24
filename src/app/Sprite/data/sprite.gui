@@ -1,0 +1,5 @@
+event:"QUIT"
+var:"WIDTH"
+var:"HEIGHT"
+
+GUI 

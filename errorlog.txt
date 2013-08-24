@@ -1,5 +1,3 @@
-ERROR: ARE YOU READY TO GET DOWN
-	DOWN
 ERROR: GUILANG TRANSLATOR LOGIC
 	Externally defined event "MOUSE MOVE" does not exist!
 

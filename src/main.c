@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 	bus_subscribe(Meb, quitid, quit);
 	
 	Mlog = errorlog_init("Main", "errorlog.txt", 0);
-	errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
+	//errorlog_logdef(Mlog, "ARE YOU READY TO GET DOWN", "DOWN");
 		
 	Mms = mouse_init(Meb);
 	bus_subscribe(Meb, mouse_event_up, (void *)mouseup);
@@ -58,8 +58,10 @@ int main(int argc, char** argv) {
 	hashtable_insert(guivars, GUIVAR_GUIHEIGHT, &screenheight);
 
 	Mgui = guilang_compile("data/guilangspec1", "data/testgui.txt", Mlog, Meb, guivars);
-	gui_print(Mgui);
+	//gui_print(Mgui);
 	Mgs = gui_debugstyle_init();
+	
+	Sprite_init(Mlog, Meb, guivars);
 	
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 

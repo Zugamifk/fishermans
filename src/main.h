@@ -61,4 +61,5 @@ _S_screeninfo
 #include "lang/lang_tools.h"
 #include "gui/gui.h"
 
+#define SPRITE_PATH app/Sprite
 #include "app/Sprite/src/sprite.h"

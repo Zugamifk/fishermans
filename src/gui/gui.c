@@ -165,7 +165,6 @@ gui_print
 			hashtable_end(g->windows); 
 			hashtable_next(g->windows, &k, &v)) 
 	{
-		printf("?\n");
 		gui_window_print(v);
 	}
 }

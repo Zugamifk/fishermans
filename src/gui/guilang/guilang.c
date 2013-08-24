@@ -291,7 +291,7 @@ guilang_buildwindow
 	gui* g
 )
 {
-	if (strcmp(processor->current, "WINDOW") != 0) {
+	if (processor->current == NULL || strcmp(processor->current, "WINDOW") != 0) {
 		return NULL;
 	}
 		
@@ -395,7 +395,7 @@ guilang_buildgui
 	g->vars = vars;
 	int* screenw = hashtable_get(vars, GUIVAR_GUIWIDTH);
 	int* screenh = hashtable_get(vars, GUIVAR_GUIHEIGHT);
-	printf("%d %d\n", *screenw, *screenh);
+
 	gui_resize(g, *screenw, *screenh);
 	gui_window* gw = guilang_buildwindow(processor, g);
 	while(gw != NULL) {
