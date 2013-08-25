@@ -65,7 +65,7 @@ _gui_style_drawcell
 	if (gc == NULL) return;
 	glPushMatrix();
 	vec2_translate(gc->pos);
-	if (style->cell != NULL) style->cell(style, gc, t, dt);
+	
 
 	switch (gc->content) {
 		case GUI_CELL_EMPTY: break;
@@ -88,6 +88,9 @@ _gui_style_drawcell
 		} break;
 		case GUI_CELL_TEXT: break;
 	}
+	
+	if (style->cell != NULL) style->cell(style, gc, t, dt);
+	
 	glPopMatrix();
 }
 
@@ -105,19 +108,19 @@ gui_style_draw
 	glPushMatrix();
 	vec2_translate(g->pos);
 	
-	if (style->gui != NULL) style->gui(style, g, t, dt);
-	
 	gui_window* gw;
 	for(set_begin(g->activewindows, (SETDATA**)(&gw)); set_end(g->activewindows); set_next(g->activewindows, (SETDATA**)(&gw))) {
 		glPushMatrix();
 		vec2_translate(gw->pos);
 		
-		if (style->window != NULL) style->window(style, gw, t, dt);
-		
 		_gui_style_drawcell(gw->cell, style, t, dt);
+		
+		if (style->window != NULL) style->window(style, gw, t, dt);
 		
 		glPopMatrix();
 	}
+	
+	if (style->gui != NULL) style->gui(style, g, t, dt);
 	
 	glPopMatrix();
 }

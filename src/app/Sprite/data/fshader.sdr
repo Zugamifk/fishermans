@@ -4,10 +4,11 @@ const float pi = 3.14159;
 
 const int WIDTH = 8;
 
+float wave() {
+	return 0.5+0.5*sin(time);
+}
+
 void main (void)  
 {   
-		unsigned int RMASK = (unsigned int)(gl_Color.r*WIDTH);
-		unsigned int GMASK = (unsigned int)(gl_Color.g*WIDTH);
-		unsigned int BMASK = (unsigned int)(gl_Color.b*WIDTH);
-		gl_FragColor = (0.5f+0.5f*sin(time))-gl_Color;
+		gl_FragColor = vec4(gl_Color.r,wave(), wave(), 1.0);
 } 

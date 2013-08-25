@@ -74,5 +74,16 @@ shaderprogram_update
 	float dt
 )
 {
-	
+	char* k;
+	HASHTABLEDATA* v;
+	for (hashtable_begin(sp->vars, &k, &v); hashtable_end(sp->vars); hashtable_next(sp->vars, &k, &v)) {
+		GLuint id = glGetUniformLocation(sp->program, k);
+		if (id < 0) {
+			// Ignore
+		} else {
+			double* f = (double*)v;
+			printf("%s -- %f %f\n", k, *f, f);
+			glUniform1f(id, *f);
+		}
+	}
 }

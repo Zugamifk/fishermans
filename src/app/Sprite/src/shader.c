@@ -8,6 +8,10 @@ const char* SpriteFshaders[] = {
 };
 const int SpriteFshaderct = 1;
 
+#define SPRITESHADER_GUICOLOR 1.0, 0.0, 0.0, 1.0
+#define SPRITESHADER_WINDOWCOLOR 0.8, 0.0, 0.0, 1.0
+#define SPRITESHADER_CELLCOLOR 0.6, 0.0, 0.0, 1.0
+
 shaderprogram*
 Spriteshader_init
 (

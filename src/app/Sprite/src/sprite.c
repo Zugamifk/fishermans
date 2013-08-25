@@ -23,7 +23,7 @@ Sprite_init
 
 	SpriteGUI = guilang_compile(SPRITE_GUISPECPATH, SPRITE_GUIPATH, log, bus, vars);
 	gui_print(SpriteGUI);
-	SpriteGUIstyle = gui_debugstyle_init();
+	SpriteGUIstyle = Sprite_guistyle_init();
 	Spriteevents = bus;
 	Spritelog = log;
 }
@@ -35,6 +35,7 @@ Sprite_initshaders
 )
 {
 	Spriteshaders = Spriteshader_init(Spritelog);
+	hashtable_insert(Spriteshaders->vars, "time", &TIME);
 	shaderprogram_activate(Spriteshaders, Spritelog);
 }
 
