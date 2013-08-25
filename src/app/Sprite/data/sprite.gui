@@ -1,13 +1,19 @@
 event:"QUIT"
 var:"WIDTH"
 var:"HEIGHT"
+var:"GRAPHICS"
 
 GUI
 WINDOW ( name:"Sprite" ) {
 	CELL {
 		(horizontal, 0.7)
 		CELL {
-		
+			(vertical, 0.3)
+			CELL {
+				text:"CURRENT GRAPHICS: %f"+"GRAPHICS"
+			} CELL {
+			
+			}
 		} CELL {
 		
 		}

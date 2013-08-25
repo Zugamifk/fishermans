@@ -1,12 +1,3 @@
-typedef struct
-t_shaderprogram
-{
-	GLuint program;
-	GLuint *shaders;
-	int shaderct;
-	GLuint texture;
-} shaderprogram;
-
-#define SDR_NUMDIALS 7
-
+#define SHADER_STRLEN 128
 #include "shader.c"
+#include "shaderprogram.c"

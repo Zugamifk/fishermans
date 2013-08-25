@@ -57,9 +57,9 @@ int main(int argc, char** argv) {
 	hashtable_insert(guivars, GUIVAR_GUIWIDTH, &screenwidth);
 	hashtable_insert(guivars, GUIVAR_GUIHEIGHT, &screenheight);
 
-	Mgui = guilang_compile("data/guilangspec1", "data/testgui.txt", Mlog, Meb, guivars);
+	//Mgui = guilang_compile("data/guilangspec1", "data/testgui.txt", Mlog, Meb, guivars);
 	//gui_print(Mgui);
-	Mgs = gui_debugstyle_init();
+	//Mgs = gui_debugstyle_init();
 	
 	Sprite_init(Mlog, Meb, guivars);
 	
@@ -118,6 +118,7 @@ initglut()
 		// "shaders/fshader.sdr"
 	// };
 //	Msp = shader_init(shaders);
+	Sprite_initshaders();
 	
 	printf("init done!\n");
 	glutMainLoop();

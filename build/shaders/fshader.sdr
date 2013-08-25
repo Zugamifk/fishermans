@@ -8,6 +8,7 @@ const float samplestr = 2.2;
 const float sampledist = 2.0;
 
 const float pi = 3.14159;
+const float cycle = 2.0*3.14159;
 
 void main (void)  
 {   
@@ -35,4 +36,4 @@ void main (void)
 	} else {
 		gl_FragColor = gl_Color;
 	}
-} 
+}
