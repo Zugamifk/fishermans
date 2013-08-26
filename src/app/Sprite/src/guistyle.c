@@ -65,14 +65,27 @@ Sprite_guistyle_buttoncb(gui_style* style, gui_button* gb, double t, double dt) 
 }
 
 void
-Sprite_guistyle_viewportcb(gui_style* style, gui_viewport* gb, double t, double dt) {
+Sprite_guistyle_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	color* c = gui_style_getcolor(style, SPRITESHADER_PARTICLEID);
-	if (gb->state == GUI_VIEWPORT_HOVER) {
-		color_applyinverse(c);
-	} else {
-		color_apply(c);
-	}
-	shapes_boxfilled(gb->dim->w, gb->dim->h);
+	color_apply(c);
+
+	glEnable(GL_TEXTURE_2D); 
+		
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0);
+	glVertex2d(0.0, 0.0);
+	
+	glTexCoord2f(SPRITETEX_WIDTH, 0.0);
+	glVertex2d(gv->dim->w, 0.0);
+	
+	glTexCoord2f(SPRITETEX_WIDTH, SPRITETEX_HEIGHT);
+	glVertex2d(gv->dim->w, gv->dim->h);
+	
+	glTexCoord2f(0.0, SPRITETEX_HEIGHT);
+	glVertex2d(0.0, gv->dim->h);
+	
+	glEnd();
+	glDisable(GL_TEXTURE_2D); 
 }
 
 gui_style*

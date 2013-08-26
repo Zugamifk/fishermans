@@ -1,4 +1,6 @@
 uniform float time;
+uniform sampler2D tex;
+varying vec2 texc;
 
 const float pi = 3.14159;
 
@@ -25,9 +27,9 @@ decodeid
 
 vec4
 drawparticle() {
-	return vec4(wave(), wave(), wave(), 1.0);
+	return texture2D(tex, texc/512.0);
 }
-
+ 
 void main (void)  
 {   
 		int id = decodeid(gl_Color);

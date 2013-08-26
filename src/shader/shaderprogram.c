@@ -67,6 +67,19 @@ shaderprogram_activate
 }
 
 void
+shaderprogram_addtexture
+(
+	shaderprogram* sp,
+	char* name,
+	void (*gencb)(GLuint*)
+)
+{
+	GLuint* id = malloc(sizeof(GLuint));
+	gencb(id);
+	hashtable_insert(sp->textures, name, id);
+}
+
+void
 shaderprogram_update
 (
 	shaderprogram* sp,

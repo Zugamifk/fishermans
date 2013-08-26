@@ -37,6 +37,17 @@ Sprite_initshaders
 	Spriteshaders = Spriteshader_init(Spritelog);
 	hashtable_insert(Spriteshaders->vars, "time", &TIME);
 	shaderprogram_activate(Spriteshaders, Spritelog);
+	shaderprogram_addtexture(Spriteshaders, "PERLIN", Spritetex_perlin);
+	shaderprogram_addtexture(Spriteshaders, "GRADIENT", Spritetex_2dgradient);
+	GLuint* gradient = hashtable_get(Spriteshaders->textures, "PERLIN");
+	glActiveTexture(GL_TEXTURE0);
+	GLuint id = glGetUniformLocation(Spriteshaders->program, "tex");
+	if (id < 0) {
+		//errorlog_logdef(Spritelog, "\'%s\' does not exist!\n", var);
+	} else {
+		glUniform1i(id, 0);
+	}
+	glBindTexture(GL_TEXTURE_2D, *gradient);
 }
 
 void
