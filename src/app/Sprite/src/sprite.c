@@ -39,7 +39,7 @@ Sprite_initshaders
 	shaderprogram_activate(Spriteshaders, Spritelog);
 	shaderprogram_addtexture(Spriteshaders, "PERLIN", Spritetex_perlin);
 	shaderprogram_addtexture(Spriteshaders, "GRADIENT", Spritetex_2dgradient);
-	GLuint* gradient = hashtable_get(Spriteshaders->textures, "PERLIN");
+	GLuint* gradient = hashtable_get(Spriteshaders->textures, "GRADIENT");
 	glActiveTexture(GL_TEXTURE0);
 	GLuint id = glGetUniformLocation(Spriteshaders->program, "tex");
 	if (id < 0) {
