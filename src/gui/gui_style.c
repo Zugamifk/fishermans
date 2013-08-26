@@ -9,6 +9,7 @@ _S_gui_style
 	void (*cell)(struct _S_gui_style*, gui_cell*, double, double);
 	void (*button)(struct _S_gui_style*, gui_button*, double, double);
 	void (*text)(struct _S_gui_style*, gui_text*, double, double);
+	void (*viewport)(struct _S_gui_style*, gui_viewport*, double, double);
 } gui_style;
 
 gui_style*
@@ -65,10 +66,8 @@ _gui_style_drawcell
 	if (gc == NULL) return;
 	glPushMatrix();
 	vec2_translate(gc->pos);
-	
 
 	switch (gc->content) {
-		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS:
 		case GUI_CELL_VERTICALCELLS: {
 			list* l = gc->cells;
@@ -86,7 +85,15 @@ _gui_style_drawcell
 				glPopMatrix();
 			}
 		} break;
-		case GUI_CELL_TEXT: break;
+		case GUI_CELL_VIEWPORT: {
+			if (style->viewport != NULL) {
+				glPushMatrix();
+				vec2_translate(gc->object.viewport->pos);
+				style->viewport(style, gc->object.viewport, t, dt);
+				glPopMatrix();
+			}
+		} break;
+		default: break;
 	}
 	
 	if (style->cell != NULL) style->cell(style, gc, t, dt);

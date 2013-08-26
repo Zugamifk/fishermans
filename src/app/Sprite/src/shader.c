@@ -34,8 +34,8 @@ Spriteshader_encodecolor
 {
 	double fac = (double)id;
 	double den = (double)SPRITESHADER_NUMIDS;
-	printf("%f %f", fac, den);
-	return color_new4(fac/den, 0.0, 0.0, 1.0);
+	color* c = color_new4(fac/den, 0.0, 0.0, 1.0);
+	return c;
 }
 
 color**

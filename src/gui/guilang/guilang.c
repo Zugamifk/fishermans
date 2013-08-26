@@ -92,6 +92,37 @@ guilang_readheader
 // CORE GUI OBJECTS
 // ========================================================================= //
 
+// VIEWPORT
+// ========================================================================= //
+// VIEWPORT ( [ name ]:@)
+gui_viewport*
+guilang_buildviewport
+(
+	guilang_processor* processor,
+	gui_cell* gc
+)
+{
+	double x = 0.0;
+	double y = 0.0;
+	double w = 1.0;
+	double h = 1.0;
+	char* name = "VIEWPORT";
+	
+	guilang_processor_match(processor, "VIEWPORT");
+	guilang_processor_match(processor, "(");
+	char* curr;
+	do {
+		curr = guilang_processor_consume(processor);
+		if (strcmp(curr, "name") == 0) {
+			guilang_processor_match(processor, ":");
+			name = guilang_processor_consume(processor);
+		}
+	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
+	
+	gui_viewport* gv = gui_viewport_init(name, x, y, w, h);
+	return gv;
+}
+
 // BUTTON
 // ========================================================================= //
 // BUTTON ( [ [ [x, y, w, h]:#, [text, name]:@ ] ]* )
@@ -256,6 +287,10 @@ guilang_buildcell
 	if(strcmp(processor->current, "BUTTON") == 0) {
 		gui_button* gb = guilang_buildbutton(processor, gc);
 		gui_cell_addobject(gc, gb, GUI_CELL_BUTTON);
+	} else
+	if(strcmp(processor->current, "VIEWPORT") == 0) {
+		gui_viewport* gv = guilang_buildviewport(processor, gc);
+		gui_cell_addobject(gc, gv, GUI_CELL_VIEWPORT);
 	} else
 	if(strcmp(processor->current, "text") == 0) {
 		gui_text* gt = gui_text_init(0, 0, 10.0);

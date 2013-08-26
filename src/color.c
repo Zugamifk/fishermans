@@ -53,3 +53,8 @@ color_applyhalftone(color* c)
 {
 	glColor4d(0.5*c->r, 0.5*c->g, 0.5*c->b, c->a);
 }
+
+void
+color_print(color* c) {
+	printf("COLOR: [%f, %f, %f, %f]\n", c->r, c->g, c->b, c->a);
+}

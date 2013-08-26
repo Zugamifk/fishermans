@@ -59,6 +59,7 @@ Sprite_draw
 	float dt
 )
 {
+
 	gui_style_draw(SpriteGUIstyle, SpriteGUI, t, dt);
 }
 

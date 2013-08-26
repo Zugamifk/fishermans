@@ -12,7 +12,8 @@ _E_gui_cell_content
 	GUI_CELL_HORIZONTALCELLS,
 	GUI_CELL_VERTICALCELLS,
 	GUI_CELL_BUTTON,
-	GUI_CELL_TEXT
+	GUI_CELL_TEXT,
+	GUI_CELL_VIEWPORT
 } gui_cell_content;
 
 const char* gui_cell_contentstrs[] =
@@ -29,6 +30,7 @@ _U_gui_cell_object
 {
 	gui_button* button;
 	gui_text* text;
+	gui_viewport* viewport;
 } _gui_cell_object;
 
 typedef struct
@@ -67,7 +69,6 @@ gui_cell_reset
 {
 	gc->state = GUI_CELL_NONE;
 	switch(gc->content) {
-		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS:
 		case GUI_CELL_VERTICALCELLS: {
 			for (list *l = gc->cells; l->data != NULL; l = l->next) {
@@ -77,7 +78,7 @@ gui_cell_reset
 		case GUI_CELL_BUTTON: {
 			gui_button_reset(gc->object.button);
 		} break;
-		case GUI_CELL_TEXT: break;
+		default: break;
 	}
 }
 
@@ -90,19 +91,16 @@ gui_cell_update
 )
 {
 	switch(gc->content) {
-		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS:
 		case GUI_CELL_VERTICALCELLS: {
 			for (list *l = gc->cells; l->data != NULL; l = l->next) {
 				gui_cell_update(l->data, t, dt);
 			}
 		}break;
-		case GUI_CELL_BUTTON: {
-		//	gui_button_reset(gc->object.button);
-		} break;
 		case GUI_CELL_TEXT: {
 			gui_text_update(gc->object.text);
 		} break;
+		default: break;
 	}
 }
 
@@ -133,7 +131,6 @@ gui_cell_mouseupdate
 		double rx = x - gc->pos->x;
 		double ry = y - gc->pos->y;
 		switch(gc->content) {
-			case GUI_CELL_EMPTY: break;
 			case GUI_CELL_HORIZONTALCELLS:
 			case GUI_CELL_VERTICALCELLS: {
 				for (list *l = gc->cells; l->data != NULL; l = l->next) {
@@ -143,7 +140,7 @@ gui_cell_mouseupdate
 			case GUI_CELL_BUTTON: {
 				gui_button_mouseupdate(gc->object.button, rx, ry);
 			} break;
-			case GUI_CELL_TEXT: break;
+			default: break;
 		}
 	}
 }
@@ -159,7 +156,6 @@ gui_cell_click
 		if (gc->clickcb != NULL) gc->clickcb(gc);
 		
 		switch(gc->content) {
-			case GUI_CELL_EMPTY: break;
 			case GUI_CELL_HORIZONTALCELLS:
 			case GUI_CELL_VERTICALCELLS: {
 				for (list *l = gc->cells; l->data != NULL; l = l->next) {
@@ -169,7 +165,7 @@ gui_cell_click
 			case GUI_CELL_BUTTON: {
 				gui_button_click(gc->object.button, bus);
 			} break;
-			case GUI_CELL_TEXT: break;
+			default: break;
 		}
 	}
 }
@@ -185,7 +181,6 @@ gui_cell_resize
 	_gui_dimension_resize(gc->dim, w, h);
 
 	switch(gc->content) {
-		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_VERTICALCELLS:{
 			list *p = gc->partitions;
 			double pos = 0.0;
@@ -213,13 +208,17 @@ gui_cell_resize
 		case GUI_CELL_BUTTON: {
 			gui_button_resize(gc->object.button, gc->dim->w, gc->dim->h);
 		} break;
+		case GUI_CELL_VIEWPORT: {
+			gui_viewport_resize(gc->object.viewport, gc->dim->w, gc->dim->h);
+		} break;
 		case GUI_CELL_TEXT: {
 			gui_text* gt = gc->object.text;
 			gui_text_resize(gt, gc->dim->w, gc->dim->h);
-			// This is bad
+			// This is bad -- hardcoded numbers
 			gt->pos->y = gc->dim->h - (gt->size * 1.8);
 			gt->pos->x = gt->size * 0.8;
 		} break;
+		default: break;
 	}
 }
 
@@ -262,10 +261,6 @@ gui_cell_addobject
 )
 {
 	switch(type) {
-		case GUI_CELL_EMPTY:
-		case GUI_CELL_HORIZONTALCELLS:
-		case GUI_CELL_VERTICALCELLS:
-		break;
 		case GUI_CELL_BUTTON: {
 			gc->content = type;
 			gc->object.button = o;
@@ -274,6 +269,11 @@ gui_cell_addobject
 			gc->content = type;
 			gc->object.text = o;
 		} break;
+		case GUI_CELL_VIEWPORT: {
+			gc->content = type;
+			gc->object.viewport = o;
+		} break;
+		default: break;
 	}
 }
 
@@ -324,7 +324,6 @@ gui_cell_print
 	_gui_dimension_print(gc->dim);
 	printf("\tCONTENT:\t%s\n", gui_cell_contentstrs[gc->content]);
 	switch(gc->content) {
-		case GUI_CELL_EMPTY: break;
 		case GUI_CELL_HORIZONTALCELLS:
 		case GUI_CELL_VERTICALCELLS:{
 			printf("\tCELLS:\n");
@@ -342,6 +341,10 @@ gui_cell_print
 		case GUI_CELL_TEXT: {
 			gui_text_print(gc->object.text);
 		}break;
+		case GUI_CELL_VIEWPORT: {
+			gui_viewport_print(gc->object.viewport);
+		}break;
+		default: break;
 	}
 	printf("============================\n");
 }

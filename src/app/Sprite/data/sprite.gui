@@ -12,10 +12,10 @@ WINDOW ( name:"Sprite" ) {
 			CELL {
 				text:"CURRENT GRAPHICS: %f"+"GRAPHICS"
 			} CELL {
-			
+				VIEWPORT(name:"SPRITE")
 			}
 		} CELL {
-		
+			BUTTON(x:10, y:10, w: 0.6, h:0.1, name:"FARTS", text:"Quit", click:QUIT)
 		}
 	}
 }
