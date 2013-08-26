@@ -82,7 +82,6 @@ shaderprogram_update
 			// Ignore
 		} else {
 			double* f = (double*)v;
-			printf("%s -- %f %f\n", k, *f, f);
 			glUniform1f(id, *f);
 		}
 	}

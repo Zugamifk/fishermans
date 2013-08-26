@@ -72,12 +72,8 @@ Sprite_guistyle_init
 {
 	gui_style* gs = gui_style_init();
 	
-	int len = 4;
-	color** carr = malloc(sizeof(color*)*len);
-	carr[0] = color_new4(SPRITESHADER_GUICOLOR); //gui
-	carr[1] = color_new4(SPRITESHADER_WINDOWCOLOR); //window
-	carr[2] = color_new4(SPRITESHADER_CELLCOLOR); //cell
-	carr[3] = color_new4(0.0, 0.6, 0.3, 1.0); //button
+	int len;
+	color** carr = Spriteshader_gencolors(&len);
 	gui_style_setpalette(gs, carr, len);
 	
 	fontinfo* guifont = font_init("data/extremeradcool", color_new3(0.0, 0.0, 0.0));

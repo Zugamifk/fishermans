@@ -2,13 +2,41 @@ uniform float time;
 
 const float pi = 3.14159;
 
-const int WIDTH = 8;
+const int FWIDTH = 256;
+const int SPRITESHADER_GUIID = 0;
+const int SPRITESHADER_WINDOWID = 1;
+const int SPRITESHADER_CELLID = 2;
+const int SPRITESHADER_BUTTONID = 3;
+const int SPRITESHADER_PARTICLEID = 4;
 
 float wave() {
-	return 0.5+0.5*sin(time);
+	return 0.5+0.5*(0.5*sin(time*15.0+gl_FragCoord.x/25.0) + 0.5*sin(time*10.0+gl_FragCoord.y/25.0));
 }
+
+int
+decodeid
+(
+	vec4 color
+)
+{
+	double val = 1.0/color.r;
+	return (int)(val);
+}
+
 
 void main (void)  
 {   
-		gl_FragColor = vec4(gl_Color.r,wave(), wave(), 1.0);
+		int id = decodeid(gl_Color);
+		
+		switch(id) {
+			case SPRITESHADER_CELLID:
+					gl_FragColor = vec4(gl_Color.b,gl_Color.r,gl_Color.g, 1.0);
+			break;
+			default:
+					gl_FragColor = vec4(gl_Color.g,gl_Color.b,gl_Color.r, 1.0);
+			break;
+		}
+		
+	//	int GMASK = (int)(gl_Color.g*255.0d);
+	//	//int BMASK = (int)(gl_Color.b*255.0d);
 } 
