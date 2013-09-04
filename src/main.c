@@ -21,7 +21,7 @@ int screenheight;
 event_bus *Meb;
 errorlog *Mlog;
 mouse_state *Mms;
-audio_system *Mfms;
+// audio_system *Mfms;
 shaderprogram *Msp;
 gui* Mgui;
 gui_style* Mgs;
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 	bus_subscribe(Meb, mouse_event_up, (void *)mouseup);
 	bus_subscribe(Meb, mouse_event_move, (void *)mousemove);
 	
-	Mfms = audio_system_init();
+	//Mfms = audio_system_init();
 	
 	hashtable* guivars = hashtable_init(0);
 	hashtable_insert(guivars, GUIVAR_GUIWIDTH, &screenwidth);
@@ -66,6 +66,7 @@ int main(int argc, char** argv) {
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
 	//audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);
+	//funtable_test();
 	
 	#ifndef DEBUG_DONTOPENWINDOW
 	initglut();

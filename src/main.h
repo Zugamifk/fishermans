@@ -33,6 +33,7 @@ _S_screeninfo
 
 #include "hax/bittwiddle.h"
 
+#include "math/funtable.c"
 #include "lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"
