@@ -36,6 +36,7 @@ Sprite_initshaders
 {
 	Spriteshaders = Spriteshader_init(Spritelog);
 	hashtable_insert(Spriteshaders->vars, "time", &TIME);
+	hashtable_insert(Spriteshaders->vars, "graphics", &SPRITE_GRAPHICS);
 	shaderprogram_activate(Spriteshaders, Spritelog);
 	shaderprogram_addtexture(Spriteshaders, "PERLIN", Spritetex_perlin);
 	shaderprogram_addtexture(Spriteshaders, "GRADIENT", Spritetex_2dgradient);

@@ -1,4 +1,5 @@
 uniform float time;
+uniform float graphics;
 uniform sampler2D tex;
 varying vec2 texc;
 
@@ -39,8 +40,8 @@ grid(vec2 pos) {
 }
 
 float
-midgradient(float x) {
-	float mid = width/2.0;
+midgradient(float x, float w) {
+	float mid = w/2.0;
 	return abs(x-mid)/mid;
 }
 
@@ -54,7 +55,7 @@ vec4 waves(float x, float fx) {
 }
 
 float impulse() {
-	float interval = fmod(time*2.0, 2.0);
+	float interval = fmod(time+graphics, 2.0);
 	if (interval < 0.5) {
 		float x = 0.5-0.5*cos(interval*4.0*pi);
 		return x;
@@ -64,14 +65,26 @@ float impulse() {
 }
 
 vec4 midpeak(vec2 pos) {
-	float x = midgradient(pos.x);
-	float y = midgradient(pos.y);
+	float x = midgradient(pos.x, width);
+	float y = midgradient(pos.y, width);
+	float size = 0.1;
 	float peak = 0.5+0.5*cos(x*pi);
-	if (y < peak*impulse()) {
-		return vec4(1.0, 1.0, 1.0, 1.0);
-	} else {
-		return vec4(0.0, 0.0, 0.0, 1.0);
+	
+	float val = peak*impulse();
+	
+	vec4 edge = vec4(0.0, 0.0, 0.0, 1.0);
+	if (y < val+size) {
+		float col;
+		if (y < val+size/2.0) {
+			col = sin(pos.x+time*5.0);
+		}
+		if ( y > val ) {
+			col += 1.0-midgradient(y - (size-val), size);
+			edge += vec4(col, col, col, 1.0);
+		}
+		edge += col;
 	}
+	return edge;
 }
 
 vec4
@@ -81,7 +94,7 @@ drawparticle() {
  
 void main (void)  
 {   
-		int id = decodeid(gl_Color);
+		int id = decodeid(gl_Color); 
 		
 		switch(id) {
 			case SPRITESHADER_CELLID:
