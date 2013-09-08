@@ -1,7 +1,9 @@
-#include "portaudio.h"
+#include "fmod.h"
 
-typedef struct
-_S_audiostream
-{
-	PaStream* _pa_stream;
-} audiostream;
+#define AUDIO_ERROR FMOD_RESULT
+
+#define AUDIO_BUFFERSIZE 1024
+#define AUDIO_NUMBUFFERS 10
+
+#include "audiosystem.c"
+#include "audio.c"

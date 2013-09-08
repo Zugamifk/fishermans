@@ -7,6 +7,8 @@ gui_style* SpriteGUIstyle;
 event_bus* Spriteevents;
 errorlog* Spritelog;
 
+audiosystem* Spriteaudio;
+
 shaderprogram* Spriteshaders;
 
 void
@@ -26,6 +28,11 @@ Sprite_init
 	SpriteGUIstyle = Sprite_guistyle_init();
 	Spriteevents = bus;
 	Spritelog = log;
+	
+	Spriteaudio = audiosystem_init("Sprite Audio", log);
+	FMOD_SOUND* dong;
+	FMOD_System_CreateStream(Spriteaudio->sys, "data/song.mp3", FMOD_DEFAULT, 0, &dong);
+	FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, dong, false, 0);
 }
 
 void
@@ -62,6 +69,7 @@ Sprite_update
 	gui_update(SpriteGUI, t, dt);
 	
 	shaderprogram_update(Spriteshaders, t, dt);
+	audiosystem_update(Spriteaudio, t, dt);
 }
 
 void
