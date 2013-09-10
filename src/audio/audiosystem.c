@@ -1,12 +1,3 @@
-typedef struct
-_S_audiosystem
-{
-	char* name;
-	FMOD_SYSTEM* sys;
-	hashtable* sounds;
-	audiostream* playing;
-} audiosystem;
-
 void
 audiosystem_error
 (
@@ -98,6 +89,8 @@ audiosystem_init
 	}
 	if (!audiosystem_resultok(as, log, err)) goto abort;
 	
+	as->sounds = hashtable_init(0);
+	
 	return as;
 	
 abort:
@@ -105,6 +98,30 @@ abort:
 	free(as->sys);
 	free(as);
 	return NULL;
+}
+
+void
+audiosystem_addsound
+(
+	audiosystem* as,
+	char* name,
+	audiostream* sound
+)
+{
+	hashtable_insert(as->sounds, name, sound);
+}
+
+void
+audiosystem_playsound
+(
+	audiosystem* as,
+	char* name
+)
+{
+	audiostream* str = hashtable_get(as->sounds, name);
+	if (as == NULL) return;
+	
+	FMOD_System_PlaySound(as->sys, FMOD_CHANNEL_FREE, str->sound, false, NULL);
 }
 
 void

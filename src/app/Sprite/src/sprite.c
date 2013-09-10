@@ -30,15 +30,17 @@ Sprite_init
 	Spritelog = log;
 	
 	Spriteaudio = audiosystem_init("Sprite Audio", log);
-	FMOD_SOUND* dong;
-	FMOD_System_CreateStream(Spriteaudio->sys, "data/song.mp3", FMOD_DEFAULT, 0, &dong);
-	FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, dong, false, 0);
+	audiostream* poo = audiostream_init(Spriteaudio, audio_testcb);
+	FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, poo->sound, false, NULL);
+	// FMOD_SOUND* dong;
+	// FMOD_System_CreateStream(Spriteaudio->sys, "data/song.mp3", FMOD_DEFAULT, 0, &dong);
+	// FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, dong, false, 0);
 }
 
 void
 Sprite_initshaders
 (
-	void
+ 	void
 )
 {
 	Spriteshaders = Spriteshader_init(Spritelog);
