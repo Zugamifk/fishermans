@@ -40,6 +40,7 @@ audiosystem_init
 	errorlog* log
 )
 {
+	audio_data_init();
 	audiosystem* as = malloc(sizeof(audiosystem));
 	AUDIO_ERROR err;
 	

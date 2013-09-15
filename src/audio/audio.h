@@ -16,6 +16,9 @@ _S_audiosystem
 	set* playing;
 } audiosystem;
 
+#include "audio_vals.c"
+#include "audio_data.c"
+#include "audiobank.c"
 #include "audiostream.c"
 #include "audiosystem.c"
 #include "audio.c"

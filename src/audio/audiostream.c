@@ -12,10 +12,11 @@ typedef struct
 _S_audiostream
 {
 	FMOD_SOUND* sound;
-	int len;
+	signed short* sample;
+	int samplelen;
+	int samplepos;
 	float* spectrum;
 	int spectrumlen;
-	int samplepos;
 	audio_streamtype type;
 } audiostream;
 
@@ -26,21 +27,25 @@ audio_testcb
 	signed short *cdata = (signed short *)d;
 	unsigned int numsamples = l/2;
 	
-	audiostream* stream;
-	FMOD_Sound_GetUserData(s, (void*)&stream);
-	float prevpos = 261.6*(float)(stream->samplepos)/44100.0;
+	audiostream* as;
+	FMOD_Sound_GetUserData(s, (void*)&as);
+
+	const float freq = audio_data_info->frequencies->range[AUDIO_PITCH_MIDDLEC];
+	float volume = 0.3;
 	
 	for (	int i = 0;
 			i < numsamples;
 			i+=2	) 
 	{
-		float pos = prevpos + 261.6*(float)(i)/44100.0;
-		signed short val = 0.3* sin(pos*2.0*pi) * 32767.0;
-		cdata[i] = 	val;
-		cdata[i+1] = val;
-	//	printf("%f\n", audio_time);
+		 int pos = as->samplepos + i/2;
+		float t = (float)pos/44100.0 * freq;
+		float ft = audio_data_range_get(audio_data_info->square, t);
+		cdata[i] = 	 ft * 32767.0 * volume;
+		cdata[i+1] = ft * 32767.0 * volume;
 	}
-	stream->samplepos = stream->samplepos + numsamples;
+	
+	as->samplepos = as->samplepos + numsamples/2;
+	
 	return FMOD_OK;
 }
 
@@ -51,18 +56,19 @@ audiostream_init
 	audio_readcb readcb
 )
 {
+	int samplerate = 44100;
+	int channels = 2;
+	int length = 1; // in seconds
+	
 	audiostream* as = malloc(sizeof(audiostream));
 
 	as->sound = NULL;
-	as->len = 0;
+	as->sample = malloc(sizeof(float)*samplerate);
+	as->samplelen = samplerate;
 	as->samplepos = 0;
 	as->spectrum = NULL;
 	as->spectrumlen = 0;
 	as->type = AUDIO_TYPE_NONE;
-	
-	int samplerate = 44100;
-	int channels = 2;
-	int length = 1; // in seconds
 	
 	FMOD_CREATESOUNDEXINFO fsinfo;
 	memset(&fsinfo, 0, sizeof(FMOD_CREATESOUNDEXINFO));
