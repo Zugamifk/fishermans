@@ -15,7 +15,12 @@ WINDOW ( name:"Sprite" ) {
 				VIEWPORT(name:"SPRITE")
 			}
 		} CELL {
-			BUTTON(x:10, y:10, w: 0.6, h:0.1, name:"FARTS", text:"Quit", click:QUIT)
+			(vertical, 0.1, 0.2)
+			CELL {
+			BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Quit", click:QUIT)
+			} CELL {
+			BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Play", click:QUIT)
+			} CELL {}
 		}
 	}
 }
