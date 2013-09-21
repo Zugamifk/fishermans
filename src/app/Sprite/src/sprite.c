@@ -8,6 +8,7 @@ event_bus* Spriteevents;
 errorlog* Spritelog;
 
 audiosystem* Spriteaudio;
+lang_grammar* Spritenoiselanggrammar;
 
 shaderprogram* Spriteshaders;
 
@@ -24,17 +25,19 @@ Sprite_init
 	SPRITE_SCREENH = hashtable_get(vars, GUIVAR_GUIHEIGHT);
 
 	SpriteGUI = guilang_compile(SPRITE_GUISPECPATH, SPRITE_GUIPATH, log, bus, vars);
-	gui_print(SpriteGUI);
+	//gui_print(SpriteGUI);
 	SpriteGUIstyle = Sprite_guistyle_init();
 	Spriteevents = bus;
 	Spritelog = log;
 	
+	Spritenoiselanggrammar = noiselang_init(SPRITE_AUDIOSPECPATH, log);
+	audio_sound* Spritetestsound = noiselang_loadsound(SPRITE_SOUNDPATH, Spritenoiselanggrammar, Spritelog);
+	audio_sound_bank(Spritetestsound, 5.0, 44100.0);
+	
 	Spriteaudio = audiosystem_init("Sprite Audio", log);
-	audiostream* poo = audiostream_init(Spriteaudio, audio_testcb);
-	FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, poo->sound, false, NULL);
-	// FMOD_SOUND* dong;
-	// FMOD_System_CreateStream(Spriteaudio->sys, "data/song.mp3", FMOD_DEFAULT, 0, &dong);
-	// FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, dong, false, 0);
+	audiostream* poo = audiostream_init(Spriteaudio, Spritetestsound);
+	FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, poo->fmodsound, false, NULL);
+
 }
 
 void

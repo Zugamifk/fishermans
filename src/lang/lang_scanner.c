@@ -59,7 +59,7 @@ lang_scan
 		oldstate = currstate;
 		currstate = _lang_scanner_getstate(*curr);
 		
-		if (currstate == oldstate) {
+		if (currstate == oldstate && currstate != _LANG_SCANNER_STATE_OTHER) {
 		
 		} else
 		if (oldstate == _LANG_SCANNER_STATE_SPACE && !instring)  {

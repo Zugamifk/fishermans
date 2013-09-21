@@ -51,7 +51,6 @@ _S_screeninfo
 
 #include "mouse.c"
 
-#include "audio/audio.h"
 
 #include "color.c"
 #include "font/font.h"
@@ -60,6 +59,7 @@ _S_screeninfo
 #include "shader/shader.h"
 
 #include "lang/lang_tools.h"
+#include "audio/audio.h"
 #include "gui/gui.h"
 
 #define SPRITE_PATH app/Sprite

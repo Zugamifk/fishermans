@@ -19,6 +19,9 @@ _S_audiosystem
 #include "audio_vals.c"
 #include "audio_data.c"
 #include "audiobank.c"
+#include "audio_sound.c"
 #include "audiostream.c"
 #include "audiosystem.c"
 #include "audio.c"
+
+#include "noiselang/noiselang.h"

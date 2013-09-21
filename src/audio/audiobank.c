@@ -1,36 +1,51 @@
 typedef struct
 _S_audiobank
 {
-	char* name;
-	float* data;
-	float (*gencb)(int);
+	float min;
+	float max;
+	float interval;
 	unsigned int len;
+	float* data;
 } audiobank;
 
 audiobank*
 audiobank_init
 (
-	char* name,
-	float (*fun)(int),
+	float* data,
+	float min,
+	float max,
 	unsigned int len
 )
 {
 	audiobank* ab = malloc(sizeof(audiobank));
-	
-	ab->name = malloc(strlen(name));
-	strcpy(ab->name, name);
-	
-	ab->data = malloc(sizeof(float)*len);
-	memset(ab->data, 0, sizeof(float)*len);
-	ab->gencb = fun;
+
+	ab->min = min;
+	ab->max = max;
+	ab->interval = max - min;
 	ab->len = len;
-	
-	if (fun == NULL) return ab;
-	
-	for(int i = 0; i < len; i++) {
-		ab->data[i] = fun(i);
-	}
+	ab->data = data;
 	
 	return ab;
 }
 
+float
+audiobank_get
+(
+	audiobank* bank,
+	float x
+)
+{
+	x = fmod(x-bank->min, bank->interval);
+	int i = x/bank->interval * bank->len;
+	return bank->data[i];
+}
+
+void
+audiobank_free
+(
+	audiobank* bank
+)
+{
+	free(bank->data);
+	free(bank);
+}

@@ -1,0 +1,12 @@
+SOUND -> @ '<' SEQUENCE '>'
+SEQUENCE -> SIGNAL
+SIGNAL -> VALUE
+VALUE -> '(' ( ATOM | # | VARIABLE ) ')'
+ATOM -> ( SIN | PRODUCT )
+VARIABLE -> ( 'time' | FREQUENCY )
+
+FREQUENCY -> 'freq' #
+
+PRODUCT -> '*' VALUE VALUE
+
+SIN -> 'sin' VALUE

@@ -11,9 +11,8 @@ _E_audio_streamtype
 typedef struct
 _S_audiostream
 {
-	FMOD_SOUND* sound;
-	signed short* sample;
-	int samplelen;
+	FMOD_SOUND* fmodsound;
+	audio_sound* sound;
 	int samplepos;
 	float* spectrum;
 	int spectrumlen;
@@ -30,16 +29,16 @@ audio_testcb
 	audiostream* as;
 	FMOD_Sound_GetUserData(s, (void*)&as);
 
-	const float freq = audio_data_info->frequencies->range[AUDIO_PITCH_MIDDLEC];
 	float volume = 0.3;
 	
 	for (	int i = 0;
 			i < numsamples;
 			i+=2	) 
 	{
-		 int pos = as->samplepos + i/2;
-		float t = (float)pos/44100.0 * freq;
-		float ft = audio_data_range_get(audio_data_info->square, t);
+		int pos = as->samplepos + i/2;
+		float t = (float)pos/44100.0;
+		float ft = audio_sound_get(as->sound, t);
+		//printf("%f ", ft);
 		cdata[i] = 	 ft * 32767.0 * volume;
 		cdata[i+1] = ft * 32767.0 * volume;
 	}
@@ -53,7 +52,7 @@ audiostream*
 audiostream_init
 (
 	audiosystem* sys,
-	audio_readcb readcb
+	audio_sound* sound
 )
 {
 	int samplerate = 44100;
@@ -62,9 +61,8 @@ audiostream_init
 	
 	audiostream* as = malloc(sizeof(audiostream));
 
-	as->sound = NULL;
-	as->sample = malloc(sizeof(float)*samplerate);
-	as->samplelen = samplerate;
+	as->fmodsound = NULL;
+	as->sound = sound;
 	as->samplepos = 0;
 	as->spectrum = NULL;
 	as->spectrumlen = 0;
@@ -83,11 +81,11 @@ audiostream_init
 	fsinfo.defaultfrequency = samplerate;
 	
 	fsinfo.format = FMOD_SOUND_FORMAT_PCM16;
-	fsinfo.pcmreadcallback = readcb;
+	fsinfo.pcmreadcallback = audio_testcb;
 	
 	fsinfo.userdata = as;
 	
-	FMOD_System_CreateStream(sys->sys, NULL, FMOD_2D | FMOD_LOOP_NORMAL | FMOD_OPENUSER, &fsinfo, &(as->sound));
+	FMOD_System_CreateStream(sys->sys, NULL, FMOD_2D | FMOD_LOOP_NORMAL | FMOD_OPENUSER, &fsinfo, &(as->fmodsound));
 	
 	return as;
 }

@@ -8,3 +8,4 @@
 #include "lang_grammar.h"
 #include "lang_tokenizer.c"
 #include "lang_parser.c"
+#include "lang_processor.c"

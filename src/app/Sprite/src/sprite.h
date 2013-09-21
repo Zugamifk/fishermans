@@ -1,5 +1,7 @@
 #define SPRITE_GUISPECPATH "data/guilangspec1"
 #define SPRITE_GUIPATH "src/app/Sprite/data/sprite.gui"
+#define SPRITE_AUDIOSPECPATH "data/noiselangspec.txt"
+#define SPRITE_SOUNDPATH "src/app/Sprite/data/sound.anf"
 #define SPRITE_VERTSHADERPATH "src/app/Sprite/data/vshader.sdr"
 #define SPRITE_FRAGSHADERPATH "src/app/Sprite/data/fshader.sdr"
 

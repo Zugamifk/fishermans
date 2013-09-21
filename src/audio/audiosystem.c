@@ -122,7 +122,7 @@ audiosystem_playsound
 	audiostream* str = hashtable_get(as->sounds, name);
 	if (as == NULL) return;
 	
-	FMOD_System_PlaySound(as->sys, FMOD_CHANNEL_FREE, str->sound, false, NULL);
+	FMOD_System_PlaySound(as->sys, FMOD_CHANNEL_FREE, str->fmodsound, false, NULL);
 }
 
 void
