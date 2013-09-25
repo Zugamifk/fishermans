@@ -1,1 +1,1 @@
-"Thump"<(sin(*(time)(freq 41)))>
+"Thump"<(lfo(*(time)(10))(sin(*(time)(freq 25))))>

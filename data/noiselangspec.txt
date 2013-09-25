@@ -1,12 +1,17 @@
 SOUND -> @ '<' SEQUENCE '>'
 SEQUENCE -> SIGNAL
-SIGNAL -> VALUE
+SIGNAL -> ( VALUE | ENVELOPE )
+ENVELOPE -> '(' ( LFO | ASDR ) ')'
 VALUE -> '(' ( ATOM | # | VARIABLE ) ')'
-ATOM -> ( SIN | PRODUCT )
+ATOM -> ( SIN | PRODUCT | SUM )
 VARIABLE -> ( 'time' | FREQUENCY )
 
 FREQUENCY -> 'freq' #
 
-PRODUCT -> '*' VALUE VALUE
+PRODUCT -> '*' VALUE SIGNAL
+SUM -> '+' VALUE SIGNAL
 
 SIN -> 'sin' VALUE
+
+LFO -> 'lfo' VALUE SIGNAL
+ASDR -> 'asdr' # # # # SIGNAL

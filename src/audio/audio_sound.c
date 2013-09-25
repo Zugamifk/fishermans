@@ -30,6 +30,7 @@ float audio_sound_sin(float x) {return sin(x*2.0*pi);}
 float audio_sound_cos(float x) {return cos(x);}
 float audio_sound_square(float x) {return x<0.5?-1.0:1.0;}
 float audio_sound_saw(float x) {return 2.0*x-1.0;}
+float audio_sound_lfo(float x, float y) {return (0.25+0.5*math_usin(x))*y;}
 float audio_sound_product(float x, float y) {return x*y;}
 
 audio_sound*

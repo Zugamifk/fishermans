@@ -1,6 +1,7 @@
 double SPRITE_GRAPHICS = 0;
 int* SPRITE_SCREENW;
 int* SPRITE_SCREENH;
+float SPRITE_SPECTRUM[512];
 
 gui* SpriteGUI;
 gui_style* SpriteGUIstyle;
@@ -36,7 +37,7 @@ Sprite_init
 	
 	Spriteaudio = audiosystem_init("Sprite Audio", log);
 	audiostream* poo = audiostream_init(Spriteaudio, Spritetestsound);
-	FMOD_System_PlaySound(Spriteaudio->sys, FMOD_CHANNEL_FREE, poo->fmodsound, false, NULL);
+	FMOD_System_PlaySound(Spriteaudio->sys, 0, poo->fmodsound, false, NULL);
 
 }
 
@@ -47,8 +48,9 @@ Sprite_initshaders
 )
 {
 	Spriteshaders = Spriteshader_init(Spritelog);
-	hashtable_insert(Spriteshaders->vars, "time", &TIME);
-	hashtable_insert(Spriteshaders->vars, "graphics", &SPRITE_GRAPHICS);
+	shaderprogram_addvar(Spriteshaders, "time", &TIME, SHADER_FLOAT1, 1);
+	shaderprogram_addvar(Spriteshaders, "graphics", &SPRITE_GRAPHICS, SHADER_FLOAT1, 1);
+	shaderprogram_addvar(Spriteshaders, "spectrum", &SPRITE_SPECTRUM, SHADER_FLOAT1V, 128);
 	shaderprogram_activate(Spriteshaders, Spritelog);
 	shaderprogram_addtexture(Spriteshaders, "PERLIN", Spritetex_perlin);
 	shaderprogram_addtexture(Spriteshaders, "GRADIENT", Spritetex_2dgradient);
@@ -75,6 +77,7 @@ Sprite_update
 	
 	shaderprogram_update(Spriteshaders, t, dt);
 	audiosystem_update(Spriteaudio, t, dt);
+	FMOD_Channel_GetSpectrum(0, SPRITE_SPECTRUM, 512, 0, FMOD_DSP_FFT_WINDOW_RECT);
 }
 
 void
