@@ -1,0 +1,11 @@
+"Thump"<(lfo
+	(*
+		(time)
+		(11))
+	(sin
+		(*
+			(time)
+			(freq 75)
+		)
+	)
+)>

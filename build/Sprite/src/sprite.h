@@ -1,0 +1,11 @@
+#define SPRITE_GUISPECPATH "data/guilangspec1"
+#define SPRITE_GUIPATH "Sprite/data/sprite.gui"
+#define SPRITE_AUDIOSPECPATH "data/noiselangspec.txt"
+#define SPRITE_SOUNDPATH "Sprite/data/sound.anf"
+#define SPRITE_VERTSHADERPATH "Sprite/data/vshader.sdr"
+#define SPRITE_FRAGSHADERPATH "Sprite/data/fshader.sdr"
+
+#include "texture.c"
+#include "shader.c"
+#include "guistyle.c"
+#include "sprite.c"

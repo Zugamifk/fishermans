@@ -2,7 +2,7 @@
 
 #define DEBUGMAIN
 #ifdef DEBUGMAIN
-//	#define DEBUG_DONTOPENWINDOW
+	#define DEBUG_DONTOPENWINDOW
 	#define DEBUG_KEEPLOG
 #endif
 
@@ -29,6 +29,8 @@ gui_style* Mgs;
 int main(int argc, char** argv) {
 	
 	//bittwiddle_test();
+	//bintree_test();
+	xfasttrie_test();
 	
 	srand(time(NULL));
 	glutInit(&argc, argv);

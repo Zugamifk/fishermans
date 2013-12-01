@@ -1,0 +1,146 @@
+uniform float time;
+uniform float graphics;
+uniform sampler2D tex;
+varying vec2 texc;
+
+const float width = 512.0;
+uniform float spectrum[128];
+
+const float pi = 3.14159;
+
+const int SPRITESHADER_GUIID = 0;
+const int SPRITESHADER_WINDOWID = 1;
+const int SPRITESHADER_CELLID = 2;
+const int SPRITESHADER_BUTTONID = 3;
+const int SPRITESHADER_PARTICLEID = 4;
+const int SPRITESHADER_NUMIDS = 5;
+
+float wave() {
+	vec2 os = vec2(sin(time*20.0)*2.5, 5.0*cos(time*10.0));
+	return 0.5+0.5*(0.5*sin(os.x+gl_FragCoord.x/25.0) + 0.5*sin(os.y+gl_FragCoord.y/25.0));
+}
+
+int
+decodeid
+(
+	vec4 color
+)
+{
+	float val = SPRITESHADER_NUMIDS*color.r;
+	return val;
+}
+
+vec4
+grid(vec2 pos) {
+	float x = fmod(pos.x+0.1, 16.0);
+	float y = fmod(pos.y-0.1, 16.0);
+	if (x<=1.0 || y<= 1.0) {
+		return vec4(0.0, 0.0, 0.0, 1.0);
+	} else {
+		return vec4(1.0, 1.0, 1.0, 1.0);
+	}
+}
+
+float
+midgradient(float x, float w) {
+	float mid = w/2.0;
+	return abs(x-mid)/mid;
+}
+
+vec4 waves(float x, float fx) {
+	float wave = 0.5 + 0.2*sin(x/10.0+time*10.0);
+	if (fx < wave) {
+		return vec4(1.0, 1.0, 1.0, 1.0);
+	} else {
+		return vec4(0.0, 0.0, 0.0, 1.0);
+	}
+}
+
+float impulse() {
+	float interval = fmod(time+graphics, 2.0);
+	if (interval < 0.5) {
+		float x = 0.5-0.5*cos(interval*4.0*pi);
+		return x;
+	} else {
+		return 0.0;
+	}
+}
+
+vec4 midpeak(vec2 pos) {
+	float x = midgradient(pos.x, width);
+	float y = midgradient(pos.y, width);
+	float size = 0.1;
+	float peak = 0.5+0.5*cos(x*pi);
+	
+	float val = peak*impulse();
+	
+	vec4 edge = vec4(0.0, 0.0, 0.0, 1.0);
+	if (y < val+size) {
+		float col;
+		if (y < val+size/2.0) {
+			col = sin(pos.x+time*5.0);
+		}
+		if ( y > val ) {
+			col += 1.0-midgradient(y - (size-val), size);
+			edge += vec4(col, col, col, 1.0);
+		}
+		edge += col;
+	}
+	return edge;
+}
+
+vec4
+drawparticle() {
+	return midpeak(texc);
+}
+
+vec4 horzwave(vec2 pos) 
+{
+	float val = abs(pos.y)*2.0/width;
+	float i = floor(pos.x/4.0);
+	float inter = (pos.x-i);
+	int index = i;
+	float spec = spectrum[index] * inter + spectrum[index+1]*(1.0-inter);
+	float g = 0.0f;
+	if (val < spec) {
+		g = val/spec;
+	}
+	return vec4(1.0-val, g ,g, 1.0);
+}
+
+vec4 vertwave()
+{
+	return vec4(0.0, 0.0,0.0,0.0);
+}
+
+vec4
+drawaudio()
+{
+	float line0 = width/2.0; 
+	vec2 hpos = vec2(texc.x, texc.y-line0);
+	
+	return horzwave(hpos) + vertwave();
+}
+ 
+void main (void)  
+{   
+		int id = decodeid(gl_Color); 
+		
+		switch(id) {
+			case SPRITESHADER_CELLID:
+					gl_FragColor = vec4(gl_Color.b,gl_Color.r,gl_Color.g, 1.0);
+			break;
+			case SPRITESHADER_BUTTONID: 
+					gl_FragColor = vec4(gl_Color.b,gl_Color.r,wave(), 1.0);
+			break;
+			case SPRITESHADER_PARTICLEID:
+					gl_FragColor = drawaudio();
+			break;
+			default:
+					gl_FragColor = vec4(gl_Color.g,gl_Color.b,gl_Color.r, 1.0);
+			break;
+		}
+		
+	//	int GMASK = (int)(gl_Color.g*255.0d);
+	//	//int BMASK = (int)(gl_Color.b*255.0d);
+} 

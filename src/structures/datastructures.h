@@ -1,0 +1,8 @@
+#include "stack.c"
+#include "list.c"
+#include "hashtable.c"
+#include "set.c"
+#include "bintree.c"
+#include "bst.c"
+#include "bitwise-trie.c"
+#include "x-fast-trie.c"

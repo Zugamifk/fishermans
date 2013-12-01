@@ -34,15 +34,13 @@ _S_screeninfo
 #include "hax/bittwiddle.h"
 
 #include "math/funtable.c"
-#include "lookup3.c"
+#include "ext/lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"
 #include "math.c"
 
-#include "stack.c"
-#include "list.c"
-#include "hashtable.c"
-#include "set.c"
+#include "timers.h"
+#include "structures/datastructures.h"
 
 #include "event/bus.h"
 
@@ -63,4 +61,4 @@ _S_screeninfo
 #include "gui/gui.h"
 
 #define SPRITE_PATH app/Sprite
-#include "app/Sprite/src/sprite.h"
+#include "../Sprite/src/sprite.h"

@@ -1,0 +1,26 @@
+event:"QUIT"
+var:"WIDTH"
+var:"HEIGHT"
+var:"GRAPHICS"
+
+GUI
+WINDOW ( name:"Sprite" ) {
+	CELL {
+		(horizontal, 0.7)
+		CELL {
+			(vertical, 0.3)
+			CELL {
+				text:"CURRENT GRAPHICS: %f"+"GRAPHICS"
+			} CELL {
+				VIEWPORT(name:"SPRITE")
+			}
+		} CELL {
+			(vertical, 0.1, 0.2)
+			CELL {
+			BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Quit", click:QUIT)
+			} CELL {
+			BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Play", click:QUIT)
+			} CELL { }
+		}
+	}
+}

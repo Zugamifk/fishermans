@@ -1,0 +1,14 @@
+ERROR: LANG PARSER
+	No production in [ ENVELOPE-0 ] for terminal [ 11 ]
+ERROR: LANG PARSER
+	Token mismatch: expected [ STRING ], got [ NUMBER ]
+ERROR: LANG PARSER
+	Token mismatch: expected [ STRING ], got [ NUMBER ]
+ERROR: LANG PARSER
+	No production in [ SIGNAL ] for terminal [ 11 ]
+ERROR: LANG PARSER
+	Token mismatch: expected [ STRING ], got [ NUMBER ]
+ERROR: LANG PARSER
+	Token mismatch: expected [ STRING ], got [ NUMBER ]
+ERROR: LANG PARSER
+	Token mismatch: expected [ ENDOFINPUT ], got [ NUMBER ]
