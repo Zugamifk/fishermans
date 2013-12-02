@@ -29,6 +29,7 @@ gui_style* Mgs;
 int main(int argc, char** argv) {
 	
 	//bittwiddle_test();
+	darray_vptr_test();
 	//bintree_test();
 	xfasttrie_test();
 	
