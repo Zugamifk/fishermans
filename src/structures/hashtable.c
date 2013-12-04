@@ -114,6 +114,15 @@ hashtable_isfull
 	return table->load == table->size;
 }
 
+int
+hashtable_maxload
+(
+	hashtable* table
+)
+{
+	return table->load >= (table->size)>>1;
+}
+
 void
 hashtable_rehash
 (
@@ -133,6 +142,7 @@ hashtable_rehash
 		for (j = 0; j < free; j++) {
 			if (data[place] == NULL) {
 				darray_vptr_add(table->data, b, place);
+				break;
 			} else {
 				place = (place+(table->probecb(i)))%table->size;
 			}
@@ -173,7 +183,7 @@ hashtable_insert
 {
 	printf("%s %d %d\n", key, table->size, table->load);
 
-	if (hashtable_isfull(table)) hashtable_resize(table, (table->size)<<1); // TODO: REHASH/RESIZE
+	if (hashtable_maxload(table)) hashtable_resize(table, (table->size)<<1); // TODO: REHASH/RESIZE
 	_hashtable_bucket** data = (_hashtable_bucket**)darray_vptr_getarray(table->data);
 	unsigned int hash = _hashtable_hash(table, key);
 	unsigned int place = hash%table->size;

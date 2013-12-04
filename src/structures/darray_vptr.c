@@ -1,7 +1,6 @@
 #define DARRAY_WORDLEN 32
 typedef uint32_t darray_uint_t;
-typedef int32_t darray_index_t;
-#define DARRAY_NULLINDEX -1
+#define DARRAY_NULLINDEX 0
 #define DARRAY_MAXCAP (UINT_MAX>>8)
 #define DARRAY_MINCAP 1
 
@@ -18,7 +17,7 @@ _darray_vptr_s
 {
 	_darray_vptr_resizewhen_e resizewhen;
 	darray_uint_t cap;
-	darray_index_t lastindex;
+	darray_uint_t lastindex;
 	void** d;
 } darray_vptr_t;
 
@@ -101,11 +100,12 @@ darray_vptr_remove
 {
 	darray_uint_t cap = array->cap;
 	if (i >= cap || array->d[i] == NULL) return;
+	array->d[i] = NULL;
 	if (i == array->lastindex)
 		switch(array->resizewhen) {
 			case DARRAY_VPTR_MANUAL: break;
 			case DARRAY_VPTR_DOUBLING: {
-				darray_index_t j;
+				darray_uint_t j;
 				for(j = i-1; 
 					j != DARRAY_NULLINDEX && array->d[j] == NULL; 
 					j--) {}
@@ -114,7 +114,7 @@ darray_vptr_remove
 					darray_vptr_resize(array, (array->cap)>>1);
 			} break;
 			case DARRAY_VPTR_LOADSQUARED: {
-				darray_index_t j;
+				darray_uint_t j;
 				for(j = i-1; 
 					j != DARRAY_NULLINDEX && array->d[j] == NULL; 
 					j--) {}
@@ -125,8 +125,6 @@ darray_vptr_remove
 					nc = (darray_uint_t)sqrt((double)(array->cap));
 			} break;
 		}
-	array->d[i] = NULL;
-
 }
 
 void
@@ -135,6 +133,17 @@ darray_vptr_free
 {
 	free(array->d);
 	free(array);
+}
+
+void
+darray_vptr_print
+( darray_vptr_t* array )
+{
+	printf("DYNAMIC POINTER ARRAY (VOID*)\n***************************\n");
+	char* resizestr[3] = {"MANUAL", "DOUBLING", "SQUARING"};
+	printf("RESIZE WHEN: %s\n", resizestr[array->resizewhen]);
+	printf("CAPACITY: %d\n", array->cap);
+	printf("LAST INDEX: %d\n", array->lastindex);
 }
 
 void
@@ -150,6 +159,7 @@ darray_vptr_test ()
 		}
 		i--;
 		tock();
+		darray_vptr_print(a);
 		
 		tick();
 		for (;i >0; i--) {
@@ -157,6 +167,7 @@ darray_vptr_test ()
 			darray_vptr_remove(a, i);
 		}
 		tock();
+		darray_vptr_print(a);
 		darray_vptr_free(a);
 	}
 }
