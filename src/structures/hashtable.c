@@ -27,6 +27,11 @@ S_hashtable
 }
 hashtable;
 
+void hashtable_print(hashtable*,hashtable_printcb);
+void hashtable_summary( hashtable*, const char*);
+void hashtable_bucket_summary(_hashtable_bucket*);
+void hashtable_pcb_ptr(HASHTABLEDATA* d) {printf("%#x\n", d);}
+
 int
 _hashtable_hash
 (
@@ -36,10 +41,7 @@ _hashtable_hash
 {
 	
 	int hash = hashlittle(key, strlen(key), table->hashseed);
-	// char* c = key;
-	// while (*c != '\0') {
-		// hash = ((hash<<5)^(hash>>27))^*c++;
-	// }
+	//printf("HASH %s %d\n", key, hash%table->size);
 	return hash;
 }
 
@@ -86,7 +88,7 @@ hashtable_init
 	hashtable* table = malloc(sizeof(hashtable));
 	
 	if (size == 0) {
-		table->size = HASHTABLE_MAXSIZE;
+		table->size = 1;
 	} else {
 		table->size = size;
 	}
@@ -142,9 +144,10 @@ hashtable_rehash
 		for (j = 0; j < free; j++) {
 			if (data[place] == NULL) {
 				darray_vptr_add(table->data, b, place);
+				//printf("added %s at %d\n", b->key, place);
 				break;
 			} else {
-				place = (place+(table->probecb(i)))%table->size;
+				place = (place+(table->probecb(j)))%table->size;
 			}
 		}
 	}
@@ -171,6 +174,7 @@ hashtable_resize
 	darray_vptr_resize(table->data, size);
 	table->size = size;
 	hashtable_rehash(table, temparray, table->load);
+	//debug_arrayt(darray_vptr_getarray(table->data), table->size, hashtable_bucket_summary);
 }
 
 void
@@ -181,28 +185,30 @@ hashtable_insert
 	HASHTABLEDATA*	value
 )
 {
-	printf("%s %d %d\n", key, table->size, table->load);
 
-	if (hashtable_maxload(table)) hashtable_resize(table, (table->size)<<1); // TODO: REHASH/RESIZE
+	if (hashtable_maxload(table)) hashtable_resize(table, (table->size)<<1);
+	
 	_hashtable_bucket** data = (_hashtable_bucket**)darray_vptr_getarray(table->data);
 	unsigned int hash = _hashtable_hash(table, key);
 	unsigned int place = hash%table->size;
 	int free = table->size - table->load;
+	//	hashtable_summary(table, key);
+
 	for (int i = 0; i < free; i++) {
 		if (data[place] == NULL) {
-			darray_vptr_add(table->data, _hashtable_initbucket(key, value), place);
+			_hashtable_bucket* bucket = _hashtable_initbucket(key, value);
+			darray_vptr_add(table->data, bucket, place);
 			table->load = table->load + 1;
+		//	debug_ptr(bucket, DEBUG_FMT_INDEXVAL_PTR, place, *bucket);
 			return;
 		} else {
 			place = (place+(table->probecb(i)))%table->size;
 		}
 	}
-		printf("!\n");
-
 }
 
 _hashtable_bucket*
-_hashtable_getbucket
+_hashtable_getbucket 
 (
 	hashtable* table,
 	char* key,
@@ -216,6 +222,7 @@ _hashtable_getbucket
 	_hashtable_bucket* bucket = NULL;
 	for (int i = 0; i < table->size; i++) {
 		bucket = data[place];
+		//debug_ptr(bucket, DEBUG_FMT_NAMEINDEX, key, place);
 		if (bucket == NULL) {
 			return NULL;
 		} else
@@ -223,10 +230,11 @@ _hashtable_getbucket
 			*pos = place;
 			return bucket;
 		} else {
+		//	printf("%s\n", bucket->key);
 			place = (place+(table->probecb(i)))%table->size;
 		}
 	}
-	return NULL;
+	return NULL; 
 }
 	
 HASHTABLEDATA*
@@ -387,7 +395,24 @@ hashtable_print
 	printf("}\n");
 }
 
-void hashtable2string(HASHTABLEDATA* d) {printf("%d\n", d);}
+void 
+hashtable_summary
+(
+	hashtable* table,
+	const char* typestr
+)
+{
+	printf("HASHTABLE[%u/%u]\tLF: %.2f\tSEED: %#x\tTYPE: %s\n", table->load, table->size, table->lfthreshold, table->hashseed, typestr);
+}
+
+void hashtable_bucket_summary
+(
+	_hashtable_bucket* b
+) 
+{
+	printf("BUCKET \"%s\" --> %#010x\n", b->key, b->value);
+}
+
 void
 hashtable_test()
 {
@@ -397,5 +422,6 @@ hashtable_test()
 		hashtable_insert(table, keys[i%10], (HASHTABLEDATA*)(&i));
 		
 	}
-	hashtable_print(table, hashtable2string);
+	debug_arrayt(darray_vptr_getarray(table->data), table->size, (debug_typestring_cb)hashtable_bucket_summary);
+	hashtable_print(table, hashtable_pcb_ptr);
 }

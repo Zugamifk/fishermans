@@ -25,6 +25,6 @@ noiselang_loadsound
 	_lang_token** tokens = lang_tokenize(lex);
 	
 	lang_parse(grammar, tokens, log);
-	
+
 	return noiselang_buildsound(lex, log);
 }

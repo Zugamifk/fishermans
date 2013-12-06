@@ -597,6 +597,7 @@ _lang_parser_getproduction
 {
 	// Build a parsing taken for the given grammar
 	_lang_parsingtable* pt = _lang_parser_initparsingtable(g, log);
+
 	if (pt == NULL) {
 		_lang_parser_error(log, "Parsing table initialization failed!", NULL, NULL);
 		return 1;

@@ -1,6 +1,5 @@
 #include "stack.c"
 #include "list.c"
-#include "darray_ui32.c"
 #include "darray_vptr.c"
 #include "hashtable.c"
 #include "set.c"

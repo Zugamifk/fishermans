@@ -31,6 +31,7 @@ _S_screeninfo
 
 #define DATAPATH data/
 
+#include "debug.c"
 #include "hax/bittwiddle.h"
 
 #include "math/funtable.c"

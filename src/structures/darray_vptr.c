@@ -4,7 +4,6 @@ typedef uint32_t darray_uint_t;
 #define DARRAY_MAXCAP (UINT_MAX>>8)
 #define DARRAY_MINCAP 1
 
-
 typedef enum 
 _darray_vptr_resizewhen_e
 {
@@ -31,7 +30,6 @@ darray_vptr_init
 	array->cap = BT_MAX(cap, DARRAY_MINCAP);
 	array->lastindex = DARRAY_NULLINDEX;
 	array->d = calloc(sizeof(void*), array->cap);
-	
 	return array;
 }
 
@@ -69,7 +67,7 @@ darray_vptr_resize
 			array->d[i] = d[i];
 		}
 		array->cap = size;
-		free(d);
+		//free(d);
 	}
 }
 

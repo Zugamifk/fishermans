@@ -24,13 +24,12 @@ Sprite_init
 	hashtable_insert(vars, "GRAPHICS", &SPRITE_GRAPHICS);
 	SPRITE_SCREENW = hashtable_get(vars, GUIVAR_GUIWIDTH);
 	SPRITE_SCREENH = hashtable_get(vars, GUIVAR_GUIHEIGHT);
-
 	SpriteGUI = guilang_compile(SPRITE_GUISPECPATH, SPRITE_GUIPATH, log, bus, vars);
 	//gui_print(SpriteGUI);
 	SpriteGUIstyle = Sprite_guistyle_init();
 	Spriteevents = bus;
 	Spritelog = log;
-	
+
 	Spritenoiselanggrammar = noiselang_init(SPRITE_AUDIOSPECPATH, log);
 	audio_sound* Spritetestsound = noiselang_loadsound(SPRITE_SOUNDPATH, Spritenoiselanggrammar, Spritelog);
 	audio_sound_bank(Spritetestsound, 5.0, 44100.0);

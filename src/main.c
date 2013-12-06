@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
 	//darray_vptr_test();
 	//bintree_test();
 	//xfasttrie_test();
-	hashtable_test();
+	//hashtable_test();
 	
 	srand(time(NULL));
 	glutInit(&argc, argv);
@@ -58,15 +58,14 @@ int main(int argc, char** argv) {
 	//Mfms = audio_system_init();
 	
 	hashtable* guivars = hashtable_init(0);
+
 	hashtable_insert(guivars, GUIVAR_GUIWIDTH, &screenwidth);
 	hashtable_insert(guivars, GUIVAR_GUIHEIGHT, &screenheight);
-
 	//Mgui = guilang_compile("data/guilangspec1", "data/testgui.txt", Mlog, Meb, guivars);
 	//gui_print(Mgui);
 	//Mgs = gui_debugstyle_init();
-	
 	Sprite_init(Mlog, Meb, guivars);
-	
+
 	//gui_init(Meb, Mms, SCREENW, SCREENH);
 
 	//audio_test_init(Mfms, gui_dials, SDR_NUMDIALS);

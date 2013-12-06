@@ -1,5 +1,4 @@
-#define DARRAY_MAXCAP (UINT_MAX>>8)
-typedef struct
+ typedef struct
 _darray_ui32_s
 {
 	unsigned int cap;
