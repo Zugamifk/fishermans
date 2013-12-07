@@ -50,7 +50,6 @@ _S_screeninfo
 
 #include "mouse.c"
 
-
 #include "color.c"
 #include "font/font.h"
 #include "shapes.c"

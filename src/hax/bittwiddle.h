@@ -30,6 +30,9 @@
 // negate (x) if not f
 #define BT_ELSENEG(f, x) ((f ^ (f - 1)) * (x))
 
+//get the ith bit of x
+#define BT_BIT(x, i) ((x & (1<<i))>>i)
+
 #endif
 
 #include "bittwiddle.c"

@@ -40,7 +40,8 @@ _hashtable_hash
 )
 {
 	
-	int hash = hashlittle(key, strlen(key), table->hashseed);
+	int hash;
+	hash = hashlittle(key, strlen(key), table->hashseed);
 	//printf("HASH %s %d\n", key, hash%table->size);
 	return hash;
 }
@@ -105,7 +106,7 @@ hashtable_init
 	table->hashseed = 0xb00b135;
 	
 	return table;
-}
+} 
 
 int
 hashtable_isfull

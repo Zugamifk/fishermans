@@ -2,15 +2,53 @@
 // X-FAST TRIE
 // ================================================
 
-// TRIE NODES
-// ================================================
+#define XFASTTRIEDATA void
+#define XFASTBYTE char
+#define XFASTBYTESIZE CHAR_BIT
+#define XFAST_LSSROOT(TRIE) TRIE->lss[0]
+#define XFAST_LSSLEAF(TRIE) TRIE->lss[TRIE->depth-1]
+
+typedef enum 
+_xfast_nodelink_e
+{
+	XFAST_LINK_NULL,
+	XFAST_LINK_CHILD,
+	XFAST_LINK_DESCENDANT,
+	XFAST_LINK_ADJACENT
+} _xfast_nodelinktype_t;
+
+typedef enum
+_xfast_direction_e
+{
+	XFAST_LEFT,
+	XFAST_RIGHT,
+	XFAST_SUCC,
+	XFAST_PRED
+} _xfast_direction_t;
+
 typedef struct
 _S_xfast_node
 {
-	unsigned int* value;
+	XFASTBYTE* label;
+	_xfast_nodelinktype_t left;
+	_xfast_nodelinktype_t right;
 	struct _S_xfast_node** links;
 } xfast_node;
 
+typedef struct
+_S_xfasttrie
+{
+	xfast_node* root;
+	xfast_node* inf;
+	xfast_node* ninf;
+	hashtable** lss;
+	hashtable* data;
+	unsigned int depth;
+	unsigned int keylen;
+} xfasttrie;
+
+// TRIE NODES
+// ================================================
 xfast_node*
 _xfast_node_init
 (
@@ -18,6 +56,9 @@ _xfast_node_init
 )
 {	
 	xfast_node* node = malloc(sizeof(xfast_node));
+	node->label = NULL;
+	node->left = XFAST_LINK_NULL;
+	node->right = XFAST_LINK_NULL;
 	node->links = calloc(sizeof(xfast_node*), 2);
 	return node;
 }
@@ -32,164 +73,295 @@ _xfast_node_delete
 	free(n);
 }
 
-// LEVEL SEARCH STRUCTURE TABLE
+// LSS
 // ================================================
-#define XFASTLGWORD 4
-#define XFASTWORD (1<<XFASTLGWORD)
-#define XFASTBINPOW 4
-#define XFASTHASHP1 ((1<<XFASTWORD)-1)	// must be odd < 2^8 = 256
-#define XFASTHASHT1P2 (1<<XFASTLGWORD)-1	// must be < 2^(8-4) = 16
-#define XFASTHASHT2P2 1
-#define XFASTHASH1(x) (unsigned)(XFASTHASHP1 * x + XFASTHASHT1P2)>>(XFASTWORD-XFASTBINPOW)
-#define XFASTHASH2(x) (unsigned)(XFASTHASHP1 * x + XFASTHASHT2P2)>>(XFASTWORD-XFASTBINPOW*2)
 
-typedef struct
-_S_xfast_hashtable2
+void
+xfast_lss_addnode
+(
+	hashtable* ls,
+	xfast_node* node
+)
 {
-	xfast_node** table;
-} xfast_hashtable2;
-
-typedef struct
-_S_xfast_hashtable
-{
-	xfast_hashtable2** subtable;
-} xfast_hashtable;
-
-xfast_hashtable*
-_xfast_hashtable_init
-( void )
-{ 
-	xfast_hashtable* ht = malloc(sizeof(xfast_hashtable));
-	ht->subtable = calloc(sizeof(xfast_hashtable2*), 1<<XFASTBINPOW);
-	return ht;
-}
-
-xfast_hashtable2*
-_xfast_hashtable2_init
-( void )
-{ 
-	xfast_hashtable2* st = malloc(sizeof(xfast_hashtable2));
-	st->table = calloc(sizeof(xfast_hashtable2*), 1<<(XFASTBINPOW*2));
-	return st;
+	hashtable_insert(ls, node->label, node);
 }
 
 void
-_xfast_hashtable_insert
-( xfast_hashtable* ht, unsigned int key, xfast_node* value) {
-	unsigned int i = XFASTHASH1(key);
-	unsigned int j = XFASTHASH2(key);
-	xfast_hashtable2* st = ht->subtable[i];
-	if (st == NULL) st = _xfast_hashtable2_init();
-	st->table[j] = value;
+xfast_lss_init
+(
+	xfasttrie* trie,
+	unsigned int depth
+)
+{
+	trie->lss = calloc(sizeof(hashtable*), depth);
+	for (unsigned int i = 0; i < depth; i++) {
+		trie->lss[i] = hashtable_init(1);
+	}
+	xfast_lss_addnode(XFAST_LSSROOT(trie), trie->root);
+	xfast_lss_addnode(XFAST_LSSLEAF(trie), trie->inf);
+	xfast_lss_addnode(XFAST_LSSLEAF(trie), trie->ninf);
 }
 
-bool
-_xfast_hashtable_find
-( xfast_hashtable* ht,  unsigned int key) {
-	unsigned int i = XFASTHASH1(key);
-	unsigned int j = XFASTHASH2(key);
-	printf("i:%d j:%d\n", i, j);
-	xfast_hashtable2* st = ht->subtable[i];
-	return !(st == NULL || st->table[j] == NULL);
-}
-
-xfast_node*
-_xfast_hashtable_get
-( xfast_hashtable* ht,  unsigned int key) {
-	unsigned int i = XFASTHASH1(key);
-	unsigned int j = XFASTHASH2(key);
-	printf("2i:%d j:%d\n", i, j);
-	xfast_hashtable2* st = ht->subtable[i];
-	if (st == NULL) return NULL;
-	else return st->table[j];
+// Linked list
+// ================================================
+void
+xfast_list_insert
+(
+	xfast_node* value,
+	xfast_node* pred,
+	xfast_node* succ
+)
+{
+	pred->right = XFAST_LINK_ADJACENT;
+	pred->links[1] = value;
+	value->left = XFAST_LINK_ADJACENT;
+	value->links[0] = pred;
+	value->right = XFAST_LINK_ADJACENT;
+	value->links[1] = succ;
+	succ->left = XFAST_LINK_ADJACENT;
+	succ->links[0] = value;	
 }
 
 // X-FAST TRIE
 // ================================================
-typedef struct
-_S_xfasttrie
-{
-	xfast_node* root;
-	xfast_hashtable** lss;
-} xfasttrie;
-
 xfasttrie*
 xfasttrie_init
 (
-	void
+	unsigned int depth
 )
 {
 	xfasttrie* trie = malloc(sizeof(xfasttrie));
 	
 	trie->root = _xfast_node_init();
-	trie->lss = calloc(sizeof(xfast_hashtable), XFASTWORD);
-	for (int i =0; i<XFASTWORD;i++) {
-		trie->lss[i] = _xfast_hashtable_init();
-	}
+	trie->inf = _xfast_node_init();
+	trie->ninf = _xfast_node_init();
+	xfast_lss_init(trie, depth);
+	trie->depth = depth;
+	trie->keylen = ((depth-1)/XFASTBYTESIZE) + 1;
 	
 	return trie;
+}
+
+unsigned int
+xfasttrie_getbit
+(
+	XFASTBYTE* key,
+	unsigned int pos
+)
+{
+	unsigned int bytepos = pos/XFASTBYTESIZE;
+	unsigned int bitpos = pos%XFASTBYTESIZE;
+	return BT_BIT(key[bytepos], bitpos);
+}
+	
+void
+xfasttrie_getkeyprefix
+(
+	XFASTBYTE* prefix,
+	XFASTBYTE* key,
+	unsigned int pos,
+	unsigned int len
+)
+{
+	int i = 0;
+	if (pos > 0) {
+		unsigned int bytepos = pos/XFASTBYTESIZE;
+		unsigned int bitpos = XFASTBYTESIZE-pos%XFASTBYTESIZE;
+		for (;i < bytepos; i++) {
+			prefix[i] = key[i];
+		}
+		prefix[bytepos] = (key[bytepos]>>bitpos)<<bitpos;
+	}
+	for (i++;i<len;i++) {
+		prefix[i] = 0;
+	}
+}
+
+XFASTTRIEDATA*
+xfasttrie_get
+(
+	xfasttrie* trie,
+	XFASTBYTE* key
+)
+{
+	return hashtable_get(trie->data, key);
+}
+
+xfast_node*
+_xfasttrie_lookup
+(
+	xfasttrie* trie,
+	unsigned int level,
+	XFASTBYTE* key
+)
+{
+	return hashtable_get(trie->lss[level], (char*)key);
+}
+
+xfast_node*
+_xfasttrie_getancestor
+(
+	xfasttrie* trie,
+	XFASTBYTE* key,
+	unsigned int* index
+)
+{
+	int pos = trie->depth/2;
+	int cursor = pos;
+	XFASTBYTE prefix[trie->keylen];
+	xfast_node* ancestor = trie->root;
+	while (cursor>0) {
+		cursor>>=1;
+		xfasttrie_getkeyprefix(prefix, key, pos, trie->keylen);
+		xfast_node* node = _xfasttrie_lookup(trie, pos, prefix);
+		if (node == NULL) {
+			pos -= cursor;
+		} else {
+			ancestor = node;
+			pos += cursor;
+		}
+	}
+	if (index != NULL) *index = pos;
+	return ancestor;
+}
+
+xfast_node*
+_xfasttrie_adj
+(
+	xfasttrie* trie,
+	XFASTBYTE* key,
+	_xfast_direction_t dir
+)
+{
+
+	xfast_node* ancestor = _xfasttrie_getancestor(trie, key, NULL);
+	xfast_node* left = ancestor->links[0];
+	xfast_node* right = ancestor->links[1];
+	
+	switch(dir) {
+		case XFAST_SUCC: {
+			switch (ancestor->left) {
+				case XFAST_LINK_NULL: return trie->inf;
+				case XFAST_LINK_CHILD: return right->links[1];
+				case XFAST_LINK_DESCENDANT: return left;
+				default: break;
+			}
+		} break;
+		case XFAST_PRED: {
+			switch (ancestor->right) {
+				case XFAST_LINK_NULL: return trie->ninf;
+				case XFAST_LINK_CHILD: return right->links[0];
+				case XFAST_LINK_DESCENDANT: return right;
+				default: break;
+			}
+		} break;
+		default: break;
+	}
+	printf("THIS SHOULDN'T HAPPEN! xfast_node* _xfasttrie_adj( xfasttrie* trie, XFASTBYTE* key, _xfast_direction_t dir ) in xfast.c!");
+	return NULL;
+}
+
+xfast_node*
+xfast_succ
+(
+	xfasttrie* trie,
+	XFASTBYTE* key
+)
+{
+	return _xfasttrie_adj(trie, key, XFAST_SUCC);
+}
+
+xfast_node*
+xfast_pred
+(
+	xfasttrie* trie,
+	XFASTBYTE* key
+)
+{
+	return _xfasttrie_adj(trie, key, XFAST_PRED);
 }
 
 void
 xfasttrie_insert
 (
 	xfasttrie* trie,
-	unsigned int* str,
-	unsigned int len
+	XFASTBYTE* key,
+	XFASTTRIEDATA* value
 )
 {
-	unsigned int i = 0;
-	xfast_node* pos = trie->root;
-	unsigned int b;
-	for(;i<len;i++) {
-		b = (*str & (1 << i)) >> i;
-		if (pos->links[b] == NULL) break;
-		else pos = pos->links[b];
+	// its already there
+	if (xfasttrie_get(trie, key)) return;
+	
+	// create new node
+	xfast_node* new = _xfast_node_init(); 
+	
+	// Get predecessor and successor nodes
+	xfast_node* pred = xfast_pred(trie, key);
+	xfast_node* succ = xfast_succ(trie, key);
+	
+	// Add new node to linked list at bottom tier
+	xfast_list_insert(new, pred, succ);
+	
+	// Add value to data table and key to trie leaves
+	hashtable_insert(XFAST_LSSLEAF(trie), key, new);
+	hashtable_insert(trie->data, key, value);
+	
+	// allocate space for prefix
+	XFASTBYTE prefix[trie->keylen];
+	unsigned int i, bit;
+	xfast_node* ancestor = _xfasttrie_getancestor(trie, key, &i);
+	xfast_node* child;
+	while(i < trie->depth-1) {
+		child = _xfast_node_init();
+		bit = xfasttrie_getbit(key, i);
+		ancestor->links[bit] = child;
+		child->links[0] = new;
+		child->links[1] = new;
+		xfasttrie_getkeyprefix(prefix, key, i, trie->depth);
+		hashtable_insert(trie->lss[i+1], prefix, child);
+		ancestor = child;
+		i++;
 	}
 	
-	for(;i<len;i++) {
-		b = (*str & (1 << i)) >> i;
-		pos->links[b] = _xfast_node_init();
-		pos = pos->links[b];
-	}
 }
 
-bool
-xfasttrie_find
+void
+xfasttrie_remove
 (
 	xfasttrie* trie,
-	unsigned int str
+	XFASTBYTE* key
 )
 {
-	return _xfast_hashtable_find(trie->lss[0], str);
-}
-
-xfast_node*
-xfasttrie_successor
-(
-	xfasttrie* trie,
-	unsigned int str
-)
-{
-	unsigned int prefix, i, h = XFASTWORD>>1;
-	xfast_node* ancestor = NULL;
-	for(int e = 2; e <= XFASTLGWORD; e++) {
-		i = XFASTWORD-h;
-		prefix = str>>i;
-		if (_xfast_hashtable_find(trie->lss[i], prefix)) {
-			ancestor = _xfast_hashtable_get(trie->lss[i], prefix);
-			h = h + (XFASTWORD>>e);
+	xfast_node* node = hashtable_get(XFAST_LSSLEAF(trie), key);
+	xfast_node* pred = node->links[0];
+	xfast_node* succ = node->links[1];
+	pred->links[1] = succ;
+	succ->links[0] = pred;
+	
+	hashtable_remove(XFAST_LSSLEAF(trie), key);
+	hashtable_remove(trie->data, key);
+	
+	XFASTBYTE prefix[trie->keylen];
+	int i = trie->depth-1;
+	unsigned int bit;
+	xfast_node* cursor;
+	while (i>0) {
+		xfasttrie_getkeyprefix(prefix, key, i, trie->depth);
+		cursor = hashtable_get(trie->lss[i], prefix);
+		bit = xfasttrie_getbit(key, i);
+		if (cursor->links[!bit] == node) {
+			hashtable_remove(trie->lss[i], prefix);
+			_xfast_node_delete(cursor);
 		} else {
-			h = h - (XFASTWORD>>e);
+			if (bit == 0)
+				cursor->links[bit] = succ;
+			else
+				cursor->links[bit] = pred;
+			break;
 		}
-		printf("p:%d i:%d h:%d e:%d\n", prefix, i, h, e);
+		
 	}
-	if (_xfast_hashtable_find(trie->lss[i], prefix)) 
-		ancestor = _xfast_hashtable_get(trie->lss[i], prefix);
-	
-	if (ancestor->links[0]->value == NULL) {
-		return ancestor->links[1];
-	} else return ancestor->links[0]->links[1];
+	_xfast_node_delete(node);
 }
 
 void
@@ -208,20 +380,17 @@ xfasttrie_test
 	void
 )
 {
+	char keys[3][16] = {"coffee", "boobies", "elite"};
 	printf("%d\n", sizeof(unsigned int));
 	for (int j = 1; j<16;j++) {
-		xfasttrie* trie = xfasttrie_init();
+		xfasttrie* trie = xfasttrie_init(128);
 		tick();
 		for (int i = 1<<j; i>0;i--) {
-			unsigned int 
-				a = 0xC0FFEE +i,
-				b = 0xB00B1E5 +i,
-				c = 0x31337 +i;
 				
-			xfasttrie_insert(trie, &a, 4*6);
-			xfasttrie_insert(trie, &b, 4*7);
+			xfasttrie_insert(trie, keys[0], (void*)(4*6));
+			xfasttrie_insert(trie, keys[1], (void*)(4*7));
 			
-			xfasttrie_successor(trie, c);
+			//xfasttrie_successor(trie, c);
 			
 			//printf("A: %d\tB: %d\tC: %d\n", xfasttrie_find(trie, &a, 4*6), xfasttrie_find(trie, &b, 4*7), xfasttrie_find(trie, &c, 4*5));
 		}
