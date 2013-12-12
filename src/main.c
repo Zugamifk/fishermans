@@ -2,7 +2,7 @@
 
 #define DEBUGMAIN
 #ifdef DEBUGMAIN
-	#define DEBUG_DONTOPENWINDOW
+//	#define DEBUG_DONTOPENWINDOW
 	#define DEBUG_KEEPLOG
 #endif
 

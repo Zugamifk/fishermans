@@ -8,6 +8,8 @@
 #define XFAST_LSSROOT(TRIE) TRIE->lss[0]
 #define XFAST_LSSLEAF(TRIE) TRIE->lss[TRIE->depth-1]
 
+#define XFAST_DEBUG
+
 typedef enum 
 _xfast_nodelink_e
 {
@@ -16,6 +18,13 @@ _xfast_nodelink_e
 	XFAST_LINK_DESCENDANT,
 	XFAST_LINK_ADJACENT
 } _xfast_nodelinktype_t;
+
+const char* _xfast_nodelinkstrings[] = {
+	"NULL",
+	"CHILD",
+	"DESCENDANT",
+	"ADJACENT"
+};
 
 typedef enum
 _xfast_direction_e
@@ -73,6 +82,49 @@ _xfast_node_delete
 	free(n);
 }
 
+void
+_xfast_printbyte
+( XFASTBYTE b )
+{
+	printf("%d%d%d%d%d%d%d%d",
+		BT_BIT(b,7),
+		BT_BIT(b,6),
+		BT_BIT(b,5),
+		BT_BIT(b,4),
+		BT_BIT(b,3),
+		BT_BIT(b,2),
+		BT_BIT(b,1),
+		BT_BIT(b,0) );
+}
+
+void
+_xfast_printbytestring
+( XFASTBYTE* str, unsigned int len )
+{
+	for (int i = 0; i < len; i++) {
+		printf(" ");
+		_xfast_printbyte(str[i]);
+	}
+	printf("\n");
+}
+
+void
+xfast_node_print
+( xfast_node* n, unsigned int len )
+{
+	printf("NODE [%s] \'", n->label);
+	_xfast_printbytestring(n->label, len);
+	printf("\'\n");
+	xfast_node *left = n->links[0];
+	xfast_node *right = n->links[1];
+	printf("\tLEFT [%s]: ", _xfast_nodelinkstrings[n->left]);
+	if (left == NULL) printf("NULL\n");
+	else _xfast_printbytestring(left->label, len);
+	printf("\tRIGHT [%s]: ", _xfast_nodelinkstrings[n->left]);
+	if (right == NULL) printf("NULL\n");
+	else _xfast_printbytestring(right->label, len);
+}
+
 // LSS
 // ================================================
 
@@ -112,7 +164,7 @@ xfast_list_insert
 	xfast_node* succ
 )
 {
-	pred->right = XFAST_LINK_ADJACENT;
+	pred->right = XFAST_LINK_ADJACENT; 
 	pred->links[1] = value;
 	value->left = XFAST_LINK_ADJACENT;
 	value->links[0] = pred;
@@ -135,9 +187,30 @@ xfasttrie_init
 	trie->root = _xfast_node_init();
 	trie->inf = _xfast_node_init();
 	trie->ninf = _xfast_node_init();
-	xfast_lss_init(trie, depth);
 	trie->depth = depth;
 	trie->keylen = ((depth-1)/XFASTBYTESIZE) + 1;
+	
+	trie->root->label = calloc(1, depth/XFASTBYTESIZE);
+	trie->root->left  = XFAST_LINK_NULL;
+	trie->root->right  = XFAST_LINK_NULL;
+	trie->root->links[0] = trie->ninf;
+	trie->root->links[1] = trie->inf;
+	
+	trie->inf->label = calloc(1, depth/XFASTBYTESIZE);
+	strcpy(trie->inf->label, "INF");
+	trie->inf->left = XFAST_LINK_ADJACENT;
+	trie->inf->right = XFAST_LINK_ADJACENT;
+	trie->inf->links[0] = trie->ninf;
+	trie->inf->links[1] = trie->inf;
+	
+	trie->ninf->label = calloc(1, depth/XFASTBYTESIZE);
+	strcpy(trie->ninf->label, "NINF");
+	trie->ninf->left = XFAST_LINK_ADJACENT;
+	trie->ninf->right = XFAST_LINK_ADJACENT;
+	trie->ninf->links[0] = trie->ninf;
+	trie->ninf->links[1] = trie->inf;
+	
+	xfast_lss_init(trie, depth);
 	
 	return trie;
 }
@@ -301,6 +374,7 @@ xfasttrie_insert
 	
 	// Add new node to linked list at bottom tier
 	xfast_list_insert(new, pred, succ);
+	xfast_node_print(new, 8);
 	
 	// Add value to data table and key to trie leaves
 	hashtable_insert(XFAST_LSSLEAF(trie), key, new);

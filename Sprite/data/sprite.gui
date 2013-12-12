@@ -17,10 +17,12 @@ WINDOW ( name:"Sprite" ) {
 		} CELL {
 			(vertical, 0.1, 0.2)
 			CELL {
-			BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Quit", click:QUIT)
+				BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Quit", click:QUIT)
 			} CELL {
-			BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Play", click:QUIT)
-			} CELL { }
+				BUTTON(x:10, y:10, w: 0.6, h:0.8, name:"FARTS", text:"Play", click:QUIT)
+			} CELL {
+				SLIDER(x:20, y:20, w:0.5, h:0.1, name:"VOLUME", value:0.5)
+			}
 		}
 	}
 }

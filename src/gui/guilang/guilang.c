@@ -178,6 +178,56 @@ guilang_buildbutton
 	return gb;
 }
 	
+// SLIDER
+// ========================================================================= //
+// SLIDER ( [ [x, y, w, h, value]:#, name:@]* )
+gui_slider*
+guilang_buildslider
+(
+	guilang_processor* processor,
+	gui_cell* gc
+)
+{
+	double x = 0.0;
+	double y = 0.0;
+	double w = 1.0;
+	double h = 1.0;
+	double value = 0.0;
+	char* name = "SLIDER";
+	
+	guilang_processor_match(processor, "SLIDER");
+	guilang_processor_match(processor, "(");
+	char* curr;
+	do {
+			curr = guilang_processor_consume(processor);
+		if (strcmp(curr, "name") == 0) {
+			guilang_processor_match(processor, ":");
+			name = guilang_processor_consume(processor);
+		} else
+		if (strcmp(curr, "value") == 0) {
+			guilang_processor_match(processor, ":");
+			value = strtod(guilang_processor_consume(processor), NULL);
+		}		
+		else {
+			double* param;
+			switch(curr[0]) {
+				case 'x': param = &x; break;
+				case 'y': param = &y; break;
+				case 'w': param = &w; break;
+				case 'h': param = &h; break;
+				default: guilang_error(processor, "Bad parameter! BUTTON object does not accept \'%s\'!", curr);
+			}
+			guilang_processor_match(processor, ":");
+			curr = guilang_processor_consume(processor);
+			*param = strtod(curr, NULL);
+		}
+	} while (strcmp(guilang_processor_consume(processor), ",") == 0);
+	
+	gui_slider* gs = gui_slider_init(name, x, y, w, h);
+	gs->value = value;
+	return gs;
+}
+
 // CELL
 // ========================================================================= //
 // CELL{ [ ( [horizontal, vertical] [,#]* ) ] $CELL* }
@@ -291,6 +341,10 @@ guilang_buildcell
 	if(strcmp(processor->current, "VIEWPORT") == 0) {
 		gui_viewport* gv = guilang_buildviewport(processor, gc);
 		gui_cell_addobject(gc, gv, GUI_CELL_VIEWPORT);
+	} else
+	if(strcmp(processor->current, "SLIDER") == 0) {
+		gui_slider* gs = guilang_buildslider(processor, gc);
+		gui_cell_addobject(gc, gs, GUI_CELL_SLIDER);
 	} else
 	if(strcmp(processor->current, "text") == 0) {
 		gui_text* gt = gui_text_init(0, 0, 10.0);

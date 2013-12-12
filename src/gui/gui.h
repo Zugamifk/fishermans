@@ -9,6 +9,7 @@
 
 #include "gui_viewport.c"
 #include "gui_button.c"
+#include "gui_slider.c"
 
 #include "gui_cell.c"
 #include "gui_window.c"

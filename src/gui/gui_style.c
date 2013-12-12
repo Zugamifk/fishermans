@@ -10,6 +10,7 @@ _S_gui_style
 	void (*button)(struct _S_gui_style*, gui_button*, double, double);
 	void (*text)(struct _S_gui_style*, gui_text*, double, double);
 	void (*viewport)(struct _S_gui_style*, gui_viewport*, double, double);
+	void (*slider)(struct _S_gui_style*, gui_slider*, double, double);
 } gui_style;
 
 gui_style*
@@ -82,6 +83,14 @@ _gui_style_drawcell
 				glPushMatrix();
 				vec2_translate(gc->object.button->pos);
 				style->button(style, gc->object.button, t, dt);
+				glPopMatrix();
+			}
+		} break;
+		case GUI_CELL_SLIDER: {
+			if (style->slider != NULL) {
+				glPushMatrix();
+				vec2_translate(gc->object.slider->pos);
+				style->slider(style, gc->object.slider, t, dt);
 				glPopMatrix();
 			}
 		} break;

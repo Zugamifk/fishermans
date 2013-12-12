@@ -13,7 +13,8 @@ _E_gui_cell_content
 	GUI_CELL_VERTICALCELLS,
 	GUI_CELL_BUTTON,
 	GUI_CELL_TEXT,
-	GUI_CELL_VIEWPORT
+	GUI_CELL_VIEWPORT,
+	GUI_CELL_SLIDER
 } gui_cell_content;
 
 const char* gui_cell_contentstrs[] =
@@ -22,7 +23,9 @@ const char* gui_cell_contentstrs[] =
 	"HORIZONTAL CELLS",
 	"VERTICAL CELLS",
 	"BUTTON",
-	"TEXT"
+	"TEXT",
+	"VIEWPORT",
+	"SLIDER"
 };
 
 typedef union
@@ -31,6 +34,7 @@ _U_gui_cell_object
 	gui_button* button;
 	gui_text* text;
 	gui_viewport* viewport;
+	gui_slider* slider;
 } _gui_cell_object;
 
 typedef struct
@@ -77,6 +81,9 @@ gui_cell_reset
 		}break;
 		case GUI_CELL_BUTTON: {
 			gui_button_reset(gc->object.button);
+		} break;
+		case GUI_CELL_SLIDER: {
+			gui_button_reset(gc->object.slider->clickarea);
 		} break;
 		default: break;
 	}
@@ -140,6 +147,9 @@ gui_cell_mouseupdate
 			case GUI_CELL_BUTTON: {
 				gui_button_mouseupdate(gc->object.button, rx, ry);
 			} break;
+			case GUI_CELL_SLIDER: {
+				gui_slider_mouseupdate(gc->object.slider, rx, ry);
+			} break;
 			default: break;
 		}
 	}
@@ -164,6 +174,9 @@ gui_cell_click
 			}break;
 			case GUI_CELL_BUTTON: {
 				gui_button_click(gc->object.button, bus);
+			} break;
+			case GUI_CELL_SLIDER: {
+				gui_slider_click(gc->object.slider, bus);
 			} break;
 			default: break;
 		}
@@ -207,6 +220,9 @@ gui_cell_resize
 		} break;
 		case GUI_CELL_BUTTON: {
 			gui_button_resize(gc->object.button, gc->dim->w, gc->dim->h);
+		} break;
+		case GUI_CELL_SLIDER: {
+			gui_slider_resize(gc->object.slider, gc->dim->w, gc->dim->h);
 		} break;
 		case GUI_CELL_VIEWPORT: {
 			gui_viewport_resize(gc->object.viewport, gc->dim->w, gc->dim->h);
@@ -272,6 +288,10 @@ gui_cell_addobject
 		case GUI_CELL_VIEWPORT: {
 			gc->content = type;
 			gc->object.viewport = o;
+		} break;
+		case GUI_CELL_SLIDER: {
+			gc->content = type;
+			gc->object.slider = o;
 		} break;
 		default: break;
 	}
@@ -343,6 +363,9 @@ gui_cell_print
 		}break;
 		case GUI_CELL_VIEWPORT: {
 			gui_viewport_print(gc->object.viewport);
+		}break;
+		case GUI_CELL_SLIDER: {
+			gui_slider_print(gc->object.slider);
 		}break;
 		default: break;
 	}

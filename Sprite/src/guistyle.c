@@ -65,6 +65,21 @@ Sprite_guistyle_buttoncb(gui_style* style, gui_button* gb, double t, double dt) 
 }
 
 void
+Sprite_guistyle_slidercb(gui_style* style, gui_slider* gs, double t, double dt) {	 
+	color* c = gui_style_getcolor(style, SPRITESHADER_BUTTONID);
+	color_apply(c);
+	double of = gs->dim->h/2.0;
+	double sqr = gs->dim->w*0.2;
+	double hsqr = sqr/2.0;
+	glBegin(GL_LINES);
+	glVertex2d(hsqr, of);
+	glVertex2d(gs->dim->w-hsqr, of);
+	glEnd();
+	glTranslated(gs->value*0.8*gs->dim->w, of-hsqr, 0.0);
+	shapes_boxfilled(sqr, sqr);
+}
+
+void
 Sprite_guistyle_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	color* c = gui_style_getcolor(style, SPRITESHADER_PARTICLEID);
 	color_apply(c);
@@ -73,7 +88,7 @@ Sprite_guistyle_viewportcb(gui_style* style, gui_viewport* gv, double t, double 
 		
 	glBegin(GL_QUADS);
 	glTexCoord2f(0.0, 0.0);
-	glVertex2d(0.0, 0.0);
+	glVertex2d(0.0, 0.0); 
 	
 	glTexCoord2f(SPRITETEX_WIDTH, 0.0);
 	glVertex2d(gv->dim->w, 0.0);
@@ -109,6 +124,7 @@ Sprite_guistyle_init
 	gs->button = Sprite_guistyle_buttoncb;
 	gs->text = Sprite_guistyle_textcb;
 	gs->viewport = Sprite_guistyle_viewportcb;
+	gs->slider = Sprite_guistyle_slidercb;
 	
 	return gs;
 }
