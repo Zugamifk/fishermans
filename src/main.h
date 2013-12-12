@@ -49,6 +49,7 @@ _S_screeninfo
 #include "errorlog.c"
 
 #include "mouse.c"
+#include "keyboard.c"
 
 #include "color.c"
 #include "font/font.h"

@@ -199,7 +199,7 @@ guilang_buildslider
 	guilang_processor_match(processor, "(");
 	char* curr;
 	do {
-			curr = guilang_processor_consume(processor);
+		curr = guilang_processor_consume(processor);
 		if (strcmp(curr, "name") == 0) {
 			guilang_processor_match(processor, ":");
 			name = guilang_processor_consume(processor);
@@ -215,7 +215,7 @@ guilang_buildslider
 				case 'y': param = &y; break;
 				case 'w': param = &w; break;
 				case 'h': param = &h; break;
-				default: guilang_error(processor, "Bad parameter! BUTTON object does not accept \'%s\'!", curr);
+				default: guilang_error(processor, "Bad parameter! SLIDER object does not accept \'%s\'!", curr);
 			}
 			guilang_processor_match(processor, ":");
 			curr = guilang_processor_consume(processor);
@@ -226,6 +226,57 @@ guilang_buildslider
 	gui_slider* gs = gui_slider_init(name, x, y, w, h);
 	gs->value = value;
 	return gs;
+}
+
+// TEXTIN
+// ========================================================================= //
+// TEXTIN ( [ [x, y, w, h]:#, [name, text]:@]* )
+gui_textin*
+guilang_buildtextin
+(
+	guilang_processor* processor,
+	gui_cell* gc
+)
+{
+	double x = 0.0;
+	double y = 0.0;
+	double w = 1.0;
+	double h = 1.0;
+	char* text = NULL;
+	char* name = "TEXTIN";
+	
+	guilang_processor_match(processor, "TEXTIN");
+	guilang_processor_match(processor, "(");
+	char* curr;
+	do {
+		curr = guilang_processor_consume(processor);
+		if (strcmp(curr, "name") == 0) {
+			guilang_processor_match(processor, ":");
+			name = guilang_processor_consume(processor);
+		} else
+		if (strcmp(curr, "text") == 0) {
+			guilang_processor_match(processor, ":");
+			text = guilang_processor_consume(processor);
+		}		
+		else {
+			double* param;
+			switch(curr[0]) {
+				case 'x': param = &x; break;
+				case 'y': param = &y; break;
+				case 'w': param = &w; break;
+				case 'h': param = &h; break;
+				default: guilang_error(processor, "Bad parameter! TEXTIN object does not accept \'%s\'!", curr);
+			}
+			guilang_processor_match(processor, ":");
+			curr = guilang_processor_consume(processor);
+			*param = strtod(curr, NULL);
+		}
+	} while (strcmp(guilang_processor_consume(processor), ",") == 0);
+
+			printf("?\n");
+	gui_textin* gt = gui_textin_init(name, x, y, w, h);
+	if (text!= NULL) gui_textin_cat(gt, text);
+	return gt;
 }
 
 // CELL
@@ -345,6 +396,10 @@ guilang_buildcell
 	if(strcmp(processor->current, "SLIDER") == 0) {
 		gui_slider* gs = guilang_buildslider(processor, gc);
 		gui_cell_addobject(gc, gs, GUI_CELL_SLIDER);
+	} else
+	if(strcmp(processor->current, "TEXTIN") == 0) {
+		gui_textin* gt = guilang_buildtextin(processor, gc);
+		gui_cell_addobject(gc, gt, GUI_CELL_TEXTIN);
 	} else
 	if(strcmp(processor->current, "text") == 0) {
 		gui_text* gt = gui_text_init(0, 0, 10.0);

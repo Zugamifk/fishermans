@@ -127,6 +127,19 @@ gui_mouseupdate
 }
 
 void
+gui_keyboardupdate
+(
+	gui* g,
+	keyboard_state* ks
+)
+{
+	for(int i = 0; i < g->activewindows->size; i++)
+	{
+		//gui_window_update(g->activewindows->items[i], t, dt);
+	}
+}
+
+void
 gui_click
 (
 	gui* g,

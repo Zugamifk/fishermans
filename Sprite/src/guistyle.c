@@ -68,15 +68,24 @@ void
 Sprite_guistyle_slidercb(gui_style* style, gui_slider* gs, double t, double dt) {	 
 	color* c = gui_style_getcolor(style, SPRITESHADER_BUTTONID);
 	color_apply(c);
-	double of = gs->dim->h/2.0;
-	double sqr = gs->dim->w*0.2;
+	double of = gs->bounds->dim->h/2.0;
+	double sqr = gs->bounds->dim->w*0.2;
 	double hsqr = sqr/2.0;
 	glBegin(GL_LINES);
 	glVertex2d(hsqr, of);
-	glVertex2d(gs->dim->w-hsqr, of);
+	glVertex2d(gs->bounds->dim->w-hsqr, of);
 	glEnd();
-	glTranslated(gs->value*0.8*gs->dim->w, of-hsqr, 0.0);
+	glTranslated(gs->value*0.8*gs->bounds->dim->w, of-hsqr, 0.0);
 	shapes_boxfilled(sqr, sqr);
+}
+
+void
+Sprite_guistyle_textincb(gui_style* style, gui_textin* gt, double t, double dt) {
+	style->text(style, gt->text, t, dt); 
+
+	color* c = gui_style_getcolor(style, SPRITESHADER_BUTTONID);
+	color_apply(c);
+	_gui_box_defdraw(gt->bounds);
 }
 
 void
@@ -125,6 +134,7 @@ Sprite_guistyle_init
 	gs->text = Sprite_guistyle_textcb;
 	gs->viewport = Sprite_guistyle_viewportcb;
 	gs->slider = Sprite_guistyle_slidercb;
+	gs->textin = Sprite_guistyle_textincb;
 	
 	return gs;
 }

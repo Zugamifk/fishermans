@@ -4,12 +4,14 @@
 #endif
 
 #include "_gui_dimension.c"
+#include "_gui_box.c"
 
 #include "gui_text.c"
 
 #include "gui_viewport.c"
 #include "gui_button.c"
 #include "gui_slider.c"
+#include "gui_textin.c"
 
 #include "gui_cell.c"
 #include "gui_window.c"

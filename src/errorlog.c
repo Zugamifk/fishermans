@@ -111,7 +111,7 @@ errorlog_pusherror
 	int 		messagect
 )
 {
-	if (log->bufferlen  == ERRORLOG_BUFFERLEN) _errorlog_flushbuffer(log);
+	/*if (log->bufferlen  == ERRORLOG_BUFFERLEN)*/ _errorlog_flushbuffer(log);
 	int place = log->bufferlen;
 	log->formaterror(log->buffer[place], messages, messagect); 
 	log->bufferlen = log->bufferlen + 1;

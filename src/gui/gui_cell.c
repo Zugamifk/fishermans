@@ -14,7 +14,8 @@ _E_gui_cell_content
 	GUI_CELL_BUTTON,
 	GUI_CELL_TEXT,
 	GUI_CELL_VIEWPORT,
-	GUI_CELL_SLIDER
+	GUI_CELL_SLIDER,
+	GUI_CELL_TEXTIN
 } gui_cell_content;
 
 const char* gui_cell_contentstrs[] =
@@ -25,7 +26,8 @@ const char* gui_cell_contentstrs[] =
 	"BUTTON",
 	"TEXT",
 	"VIEWPORT",
-	"SLIDER"
+	"SLIDER",
+	"TEXTIN"
 };
 
 typedef union
@@ -35,6 +37,7 @@ _U_gui_cell_object
 	gui_text* text;
 	gui_viewport* viewport;
 	gui_slider* slider;
+	gui_textin* textin;
 } _gui_cell_object;
 
 typedef struct
@@ -84,6 +87,9 @@ gui_cell_reset
 		} break;
 		case GUI_CELL_SLIDER: {
 			gui_button_reset(gc->object.slider->clickarea);
+		} break;
+		case GUI_CELL_TEXTIN: {
+			gui_textin_reset(gc->object.textin);
 		} break;
 		default: break;
 	}
@@ -150,6 +156,9 @@ gui_cell_mouseupdate
 			case GUI_CELL_SLIDER: {
 				gui_slider_mouseupdate(gc->object.slider, rx, ry);
 			} break;
+			case GUI_CELL_TEXTIN: {
+				gui_textin_mouseupdate(gc->object.textin, rx, ry);
+			} break;
 			default: break;
 		}
 	}
@@ -177,6 +186,9 @@ gui_cell_click
 			} break;
 			case GUI_CELL_SLIDER: {
 				gui_slider_click(gc->object.slider, bus);
+			} break;
+			case GUI_CELL_TEXTIN: {
+				gui_textin_click(gc->object.textin);
 			} break;
 			default: break;
 		}
@@ -223,6 +235,9 @@ gui_cell_resize
 		} break;
 		case GUI_CELL_SLIDER: {
 			gui_slider_resize(gc->object.slider, gc->dim->w, gc->dim->h);
+		} break;
+		case GUI_CELL_TEXTIN: {
+			gui_textin_resize(gc->object.textin, gc->dim->w, gc->dim->h);
 		} break;
 		case GUI_CELL_VIEWPORT: {
 			gui_viewport_resize(gc->object.viewport, gc->dim->w, gc->dim->h);
@@ -292,6 +307,10 @@ gui_cell_addobject
 		case GUI_CELL_SLIDER: {
 			gc->content = type;
 			gc->object.slider = o;
+		} break;
+		case GUI_CELL_TEXTIN: {
+			gc->content = type;
+			gc->object.textin = o;
 		} break;
 		default: break;
 	}
@@ -366,6 +385,9 @@ gui_cell_print
 		}break;
 		case GUI_CELL_SLIDER: {
 			gui_slider_print(gc->object.slider);
+		}break;
+		case GUI_CELL_TEXTIN: {
+			gui_textin_print(gc->object.textin);
 		}break;
 		default: break;
 	}

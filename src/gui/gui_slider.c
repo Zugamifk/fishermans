@@ -3,8 +3,7 @@ _S_gui_slider
 {
 	char* name;
 	gui_button* clickarea;
-	_gui_dimension* dim;
-	vec2* pos;
+	_gui_box* bounds;
 	double lastp;
 	double value;
 } gui_slider;
@@ -28,8 +27,7 @@ gui_slider_init
 	strcat(buttonname, " CLICK BOX");
 	gs->clickarea = gui_button_init(buttonname, 0.0, 0.0, w, h);
 	
-	gs->dim = _gui_dimension_init(w, h);
-	gs->pos = vec2_new(x, y);
+	gs->bounds = _gui_box_init(x, y, w, h);
 	gs->lastp = 0.0;
 	gs->value = 0.0;
 	return gs;
@@ -43,7 +41,7 @@ gui_slider_contains
 	double y
 )
 {
-	return (gs->pos->x < x && gs->pos->y < y && x < gs->pos->x + gs->dim->w && y < gs->pos->y + gs->dim->h);
+	return _gui_box_contains(gs->bounds, x, y);
 }
 
 void
@@ -71,7 +69,7 @@ gui_slider_mouseupdate
 )
 {
 	if (gui_slider_contains(gs, x, y) && gs->clickarea->state == GUI_BUTTON_ACTIVE) {
-		gs->lastp = ((double)x-gs->pos->x)/gs->dim->w;
+		gs->lastp = _gui_box_getxn(gs->bounds, x);
 		gs->clickarea->state = GUI_BUTTON_HOVER;
 	}
 }
@@ -84,7 +82,7 @@ gui_slider_resize
 	double h
 )
 {
-	_gui_dimension_resize(gs->dim, w, h);
+	_gui_box_resize(gs->bounds, w, h);
 	gui_button_resize(gs->clickarea, w, h);
 }
 
@@ -95,10 +93,7 @@ gui_slider_print
 )
 {
 	printf("SLIDER \'%s\':\n", gs->name);
-	printf("\tPOS:\t");
-	vec2_print(gs->pos);
-	printf("\tDIM:\t");
-	_gui_dimension_print(gs->dim);
+	_gui_box_print(gs->bounds);
 	printf("VALUE: %.4f\t", gs->value);
 	printf("LASTP: %.4f\n", gs->lastp);
 	gui_button_print(gs->clickarea);

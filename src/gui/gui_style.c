@@ -11,6 +11,7 @@ _S_gui_style
 	void (*text)(struct _S_gui_style*, gui_text*, double, double);
 	void (*viewport)(struct _S_gui_style*, gui_viewport*, double, double);
 	void (*slider)(struct _S_gui_style*, gui_slider*, double, double);
+	void (*textin)(struct _S_gui_style*, gui_textin*, double, double);
 } gui_style;
 
 gui_style*
@@ -89,8 +90,16 @@ _gui_style_drawcell
 		case GUI_CELL_SLIDER: {
 			if (style->slider != NULL) {
 				glPushMatrix();
-				vec2_translate(gc->object.slider->pos);
+				vec2_translate(gc->object.slider->bounds->pos);
 				style->slider(style, gc->object.slider, t, dt);
+				glPopMatrix();
+			}
+		} break;
+		case GUI_CELL_TEXTIN: {
+			if (style->textin != NULL) {
+				glPushMatrix();
+				vec2_translate(gc->object.textin->bounds->pos);
+				style->textin(style, gc->object.textin, t, dt);
 				glPopMatrix();
 			}
 		} break;
