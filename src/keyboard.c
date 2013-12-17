@@ -1,17 +1,26 @@
 #define KEYBOARD_SIZE (1<<CHAR_BIT)
 #define KEYBOARD_BUFFERSIZE (1<<12)
 
+typedef enum
+_E_keyboard_keytype
+{
+	KEYBOARD_KEY,
+	KEYBOARD_SPECIAL,
+	KEYBOARD_WTF
+} keyboard_keytype;
+
 typedef struct
 keyboard_state_s
 {
-	char* buffer;
-	unsigned int end;
-	double lasttime;
-	double delay;
-	int repeatcount;
-	int repeatthreshold;
-	double repeatdelay;
-	bool validkeys[KEYBOARD_SIZE];
+	char* buffer; //stores recorded input
+	unsigned int lastkey; // last pressed key
+	unsigned int end; // pointer to end of buffer
+	double lasttime; // last time a key was pressed
+	double delay; // delay between key presses
+	int repeatcount; // how many time a single character has been repeated
+	int repeatthreshold; // how many repeats before decrease delay
+	double repeatdelay; // delay to change to
+	bool validkeys[KEYBOARD_SIZE]; // keys that get recorded
 } keyboard_state;
 
 keyboard_state* 
@@ -19,7 +28,7 @@ keyboard_state_init
 (
 	double delay, 
 	int threshold,
-	int repeatdelay
+	double repeatdelay
 )
 {
 	keyboard_state* state = malloc(sizeof(keyboard_state));
@@ -36,7 +45,7 @@ keyboard_state_init
 	return state;
 }
 
-void
+bool
 keyboard_state_update
 (
 	keyboard_state* state,
@@ -49,13 +58,14 @@ keyboard_state_update
 			state->buffer[state->end] = key;
 			state->end = state->end+1;
 		} 
-		return;
+		return true;
 	} else 
 	if (time - state->lasttime > state->delay) {
 		state->buffer[state->end] = key;
 		state->end = state->end+1;
 		state->repeatcount = state->repeatcount + 1;
-	}
+		return true;
+	} return false;
 }
 
 void

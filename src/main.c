@@ -21,6 +21,7 @@ int screenheight;
 event_bus *Meb;
 errorlog *Mlog;
 mouse_state *Mms;
+keyboard_state *Mks;
 // audio_system *Mfms;
 shaderprogram *Msp;
 gui* Mgui;
@@ -55,6 +56,7 @@ int main(int argc, char** argv) {
 	bus_subscribe(Meb, mouse_event_up, (void *)mouseup);
 	bus_subscribe(Meb, mouse_event_move, (void *)mousemove);
 	
+	Mks = keyboard_state_init(0.25, 4, 0.1);
 	//Mfms = audio_system_init();
 	
 	hashtable* guivars = hashtable_init(0);
@@ -218,6 +220,11 @@ upkeys(unsigned char key, int x, int y)
 			// kill window somehow
 			quit();
 		break;
+		default: {
+			if (keyboard_state_update(Mks, key, TIME)) {
+				Sprite_keyup(Mks, key);
+			}
+		}
 	}
 }
 

@@ -17,7 +17,6 @@ _S_gui
 	hashtable* vars;
 	hashtable* windows;
 	set* activewindows;
-	errorlog* log;
 	void (*clickcb)(struct _S_gui*);
 } gui;
 
@@ -106,6 +105,7 @@ gui_contains
 			y < g->pos->y + g->dim->h);
 }
 
+// rtiggered when mouse is moved
 void
 gui_mouseupdate
 (
@@ -126,16 +126,23 @@ gui_mouseupdate
 	}
 }
 
+// triggered when keys are pressed
 void
 gui_keyboardupdate
 (
 	gui* g,
-	keyboard_state* ks
+	keyboard_state* ks,
+	int key,
+	keyboard_keytype t
 )
 {
-	for(int i = 0; i < g->activewindows->size; i++)
-	{
-		//gui_window_update(g->activewindows->items[i], t, dt);
+	gui_textin* gt = hashtable_get(g->vars, GUI_FOCUSSTRING);
+	if (gt != NULL) {
+		char tocat[KEYBOARD_BUFFERSIZE];
+		keyboard_state_getbuffer(tocat, ks);
+		gui_textin_cat(gt, tocat);
+	} else {
+		keyboard_state_flushbuffer(ks);
 	}
 }
 
@@ -146,6 +153,7 @@ gui_click
 	event_bus* bus
 )
 {
+	hashtable_remove(g->vars, GUI_FOCUSSTRING);
 	if (g->state == GUI_STATE_CONTAINSMOUSE) {
 		if (g->clickcb != NULL) g->clickcb(g);
 		
@@ -154,7 +162,7 @@ gui_click
 			set_end(g->activewindows); 
 			set_next(g->activewindows, &gw))
 		{
-			gui_window_click(gw, bus);
+			gui_window_click(gw, bus, g->vars);
 		}
 	
 	}

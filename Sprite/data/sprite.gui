@@ -23,7 +23,7 @@ WINDOW ( name:"Sprite" ) {
 			} CELL {
 				SLIDER(x:20, y:20, w:0.5, h:0.1, name:"VOLUME", value:0.5)
 			} CELL {
-				TEXTIN (x:10, y:10, w:0.9, h:0.1, name:"TEXT INPUT", text:"A BIG STINKY BUTT")
+				TEXTIN (x:10, y:10, w:0.9, h:0.1, name:"TEXT INPUT", text:"?")
 			}
 		}
 	}

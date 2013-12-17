@@ -168,7 +168,8 @@ void
 gui_cell_click
 (
 	gui_cell* gc,
-	event_bus* bus
+	event_bus* bus, 
+	hashtable* vars
 )
 {
 	if (gc->state == GUI_CELL_CONTAINSMOUSE) {
@@ -178,7 +179,7 @@ gui_cell_click
 			case GUI_CELL_HORIZONTALCELLS:
 			case GUI_CELL_VERTICALCELLS: {
 				for (list *l = gc->cells; l->data != NULL; l = l->next) {
-					gui_cell_click(l->data, bus);
+					gui_cell_click(l->data, bus, vars);
 				}
 			}break;
 			case GUI_CELL_BUTTON: {
@@ -188,7 +189,7 @@ gui_cell_click
 				gui_slider_click(gc->object.slider, bus);
 			} break;
 			case GUI_CELL_TEXTIN: {
-				gui_textin_click(gc->object.textin);
+				gui_textin_click(gc->object.textin, vars);
 			} break;
 			default: break;
 		}

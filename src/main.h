@@ -52,7 +52,7 @@ _S_screeninfo
 #include "keyboard.c"
 
 #include "color.c"
-#include "font/font.h"
+#include "font/line/font.h"
 #include "shapes.c"
 
 #include "shader/shader.h"

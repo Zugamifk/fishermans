@@ -124,14 +124,15 @@ void
 gui_window_click
 (
 	gui_window* gw,
-	event_bus* bus
+	event_bus* bus,
+	hashtable* vars
 )
 {
 	if (gw->state == GUI_WINDOW_CONTAINSMOUSE) {
 		if (gw->clickcb != NULL) gw->clickcb(gw);
 		
 		if (gw->cell != NULL) {
-			gui_cell_click(gw->cell, bus);
+			gui_cell_click(gw->cell, bus, vars);
 		}
 	}
 }

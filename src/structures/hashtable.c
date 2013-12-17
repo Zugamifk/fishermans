@@ -194,13 +194,16 @@ hashtable_insert
 	unsigned int place = hash%table->size;
 	int free = table->size - table->load;
 	//	hashtable_summary(table, key);
-
 	for (int i = 0; i < free; i++) {
 		if (data[place] == NULL) {
 			_hashtable_bucket* bucket = _hashtable_initbucket(key, value);
 			darray_vptr_add(table->data, bucket, place);
 			table->load = table->load + 1;
 		//	debug_ptr(bucket, DEBUG_FMT_INDEXVAL_PTR, place, *bucket);
+			return;
+		} else 
+		if (strcmp(key, data[place]->key) == 0) {
+			data[place]->value = value;
 			return;
 		} else {
 			place = (place+(table->probecb(i)))%table->size;
@@ -274,6 +277,7 @@ hashtable_remove
 		free(bucket->value);
 		free(bucket);
 		darray_vptr_remove(table->data, i);
+		table->load = table->load - 1;
 	}
 }
 

@@ -70,11 +70,13 @@ gui_textin_contains
 void
 gui_textin_click
 (
-	gui_textin* gt
+	gui_textin* gt,
+	hashtable* vars
 )
 {
 	if (gt->state == GUI_TEXTIN_HOVER) {
 		gt->state = GUI_TEXTIN_TYPING;
+		hashtable_insert(vars, GUI_FOCUSSTRING, gt);
 	}
 }
 
