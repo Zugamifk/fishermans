@@ -1,5 +1,7 @@
 #define vec2_print(v)		(vec4_print(v))
 #define vec2_new(x, y) 		(vec4_new(x, y, 0.0, 0.0))
+#define vec2_copy(v) 		(vec4_copy(v))
+#define vec2_copyto(v, u) 		(vec4_copyto(v, u))
 #define vec2_set(v, x, y) 	(vec4_set(v, x, y, 0.0, 0.0))
 #define vec2_apply(v)		(vec4_apply(v))
 #define vec2_translate(v)		(vec4_translate(v))

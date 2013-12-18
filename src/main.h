@@ -38,6 +38,7 @@ _S_screeninfo
 #include "ext/lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"
+#include "math/curves/curves.h"
 #include "math.c"
 
 #include "timers.h"
@@ -53,6 +54,7 @@ _S_screeninfo
 
 #include "color.c"
 #include "font/line/font.h"
+#include "font/outline/font-outline.h"
 #include "shapes.c"
 
 #include "shader/shader.h"
