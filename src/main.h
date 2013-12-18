@@ -63,5 +63,7 @@ _S_screeninfo
 #include "audio/audio.h"
 #include "gui/gui.h"
 
+#include "application.c"
+
 #define SPRITE_PATH app/Sprite
 #include "../Sprite/src/sprite.h"

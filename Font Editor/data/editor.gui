@@ -1,0 +1,13 @@
+event:"QUIT"
+
+GUI
+WINDOW(name:"FONT MAKER") {
+	CELL {
+		(vertical, 0.1)
+		CELL {
+			VIEWPORT(name:"editor")
+		} CELL {
+			TEXTIN(name:"input", text:"Save...")
+		}
+	}
+}

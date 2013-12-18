@@ -21,15 +21,21 @@ Sprite_init
 	hashtable* vars
 )
 {
+
+	// add vars
 	hashtable_insert(vars, "GRAPHICS", &SPRITE_GRAPHICS);
 	SPRITE_SCREENW = hashtable_get(vars, GUIVAR_GUIWIDTH);
 	SPRITE_SCREENH = hashtable_get(vars, GUIVAR_GUIHEIGHT);
+	
+	// Init gui
 	SpriteGUI = guilang_compile(SPRITE_GUISPECPATH, SPRITE_GUIPATH, log, bus, vars);
 	gui_print(SpriteGUI);
 	SpriteGUIstyle = Sprite_guistyle_init();
+	
 	Spriteevents = bus;
 	Spritelog = log;
 
+	// audio
 	Spritenoiselanggrammar = noiselang_init(SPRITE_AUDIOSPECPATH, log);
 	audio_sound* Spritetestsound = noiselang_loadsound(SPRITE_SOUNDPATH, Spritenoiselanggrammar, Spritelog);
 	audio_sound_bank(Spritetestsound, 5.0, 44100.0);
@@ -38,14 +44,7 @@ Sprite_init
 	audiostream* poo = audiostream_init(Spriteaudio, Spritetestsound);
 	FMOD_System_PlaySound(Spriteaudio->sys, 0, poo->fmodsound, false, NULL);
 
-}
-
-void
-Sprite_initshaders
-(
- 	void
-)
-{
+	// graphics
 	Spriteshaders = Spriteshader_init(Spritelog);
 	shaderprogram_addvar(Spriteshaders, "time", &TIME, SHADER_FLOAT1, 1);
 	shaderprogram_addvar(Spriteshaders, "graphics", &SPRITE_GRAPHICS, SHADER_FLOAT1, 1);
@@ -63,6 +62,7 @@ Sprite_initshaders
 	}
 	glBindTexture(GL_TEXTURE_2D, *gradient);
 }
+
 
 void
 Sprite_update
@@ -128,4 +128,25 @@ void
 Sprite_keyup(keyboard_state* ks, int key)
 {
 	gui_keyboardupdate(SpriteGUI, ks, key, KEYBOARD_KEY);
+}
+
+application_data*
+Sprite_getappdata
+(
+	errorlog* log,
+	event_bus* bus,
+	hashtable* vars
+)
+{
+	application_data* S = application_data_init(log, bus, vars);
+	
+	S->init_cb = Sprite_init;
+	S->update_cb = Sprite_update;
+	S->draw_cb = Sprite_draw;
+	S->resize_cb = Sprite_resize;
+	S->mousemove_cb = Sprite_mousemove;
+	S->mouseup_cb = Sprite_mouseup;
+	S->keyboardup_cb = Sprite_keyup;
+	
+	return S;
 }

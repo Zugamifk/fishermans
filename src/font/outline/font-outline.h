@@ -1,4 +1,4 @@
-#define FONTOUTLINE_SIZE CHAR_BIT
+#define FONTOUTLINE_SIZE (1<<CHAR_BIT)
 
 #include "font-outline-char.c"
 #include "font-outline-charset.c"
