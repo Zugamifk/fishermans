@@ -73,6 +73,19 @@ shaderprogram_init
 	return sp;
 }
 
+shaderprogram*
+shaderprogram_init1
+(
+	const char* vs,
+	const char* fs,
+	errorlog* log
+)
+{
+	const char *vsa[] = {vs}; 
+	const char *fsa[] = {fs}; 
+	return shaderprogram_init(vsa, 1, fsa, 1, log);
+}
+
 void
 shaderprogram_activate
 (
@@ -103,6 +116,16 @@ shaderprogram_addtexture
 	GLuint* id = malloc(sizeof(GLuint));
 	gencb(id);
 	hashtable_insert(sp->textures, name, id);
+}
+
+void
+shaderprogram_addtexturedata
+(
+	shaderprogram* sp,
+	texture* tex
+)
+{
+	hashtable_insert(sp->textures, tex->name, &(tex->textureid));
 }
 
 void

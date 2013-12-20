@@ -34,4 +34,5 @@
 
 // gui graphics
 #include "gui_style.c"
+#include "gui_style_defaultstyle.c"
 #include "gui_debugstyle.c"

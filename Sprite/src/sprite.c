@@ -24,8 +24,8 @@ Sprite_init
 
 	// add vars
 	hashtable_insert(vars, "GRAPHICS", &SPRITE_GRAPHICS);
-	SPRITE_SCREENW = hashtable_get(vars, GUIVAR_GUIWIDTH);
-	SPRITE_SCREENH = hashtable_get(vars, GUIVAR_GUIHEIGHT);
+	SPRITE_SCREENW = hashtable_get(vars, "WIDTH");
+	SPRITE_SCREENH = hashtable_get(vars, "HEIGHT");
 	
 	// Init gui
 	SpriteGUI = guilang_compile(SPRITE_GUISPECPATH, SPRITE_GUIPATH, log, bus, vars);

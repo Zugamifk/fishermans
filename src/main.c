@@ -47,10 +47,10 @@ int main(int argc, char** argv) {
 	Mks = keyboard_state_init(0.25, 4, 0.1);
 	
 	hashtable* Mvars = hashtable_init(0);
-	hashtable_insert(Mvars, GUIVAR_GUIWIDTH, &screenwidth);
-	hashtable_insert(Mvars, GUIVAR_GUIHEIGHT, &screenheight);
+	hashtable_insert(Mvars, "WIDTH", &screenwidth);
+	hashtable_insert(Mvars, "HEIGHT", &screenheight);
 
-	Mapp = Sprite_getappdata(Mlog, Meb, Mvars);
+	Mapp = editor_getappdata(Mlog, Meb, Mvars);
 	
 	Mapp->init_cb(Mlog, Meb, Mvars);
 		

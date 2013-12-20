@@ -57,6 +57,7 @@ _S_screeninfo
 #include "font/outline/font-outline.h"
 #include "shapes.c"
 
+#include "texture/texture.h"
 #include "shader/shader.h"
 
 #include "lang/lang_tools.h"
@@ -67,3 +68,5 @@ _S_screeninfo
 
 #define SPRITE_PATH app/Sprite
 #include "../Sprite/src/sprite.h"
+
+#include "../Font Editor/src/editor.h"
