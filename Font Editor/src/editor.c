@@ -1,10 +1,15 @@
 int* editor_width;
 int* editor_height;
+float* editor_time;
+float* editor_dtime;
 char* editor_directory;
 char* editor_file;
+const unsigned int texside = 256;
+const float editor_texs = 256.0;
 
 gui* editor_gui;
 gui_style* editor_guistyle;
+texture *perlin, *gradient;
 event_bus* editor_events;
 errorlog* editor_log;
 
@@ -38,17 +43,19 @@ editor_init
 	editor_events = bus;
 	editor_width = hashtable_get(vars, "WIDTH");
 	editor_height = hashtable_get(vars, "HEIGHT");
+	editor_time = hashtable_get(vars, "TIME");
+	editor_dtime = hashtable_get(vars, "DTIME");
 	
 	// Init gui
 	char* editor_guifile = "editor.gui";
 	char editor_guipath[1024];
 	sprintf(editor_guipath, "%s%s", EDITOR_DATAPATH, editor_guifile);
 	editor_gui = guilang_load(editor_guipath, GUILANGSPEC1, log, bus, vars);
-	printf("%s\n", editor_guipath);
-	gui_print(editor_gui);
 	
 	editor_guistyle = gui_style_initdefault();
-
+	hashtable_insert(editor_guistyle->args, "TEXW", (HASHTABLEDATA*)&editor_texs);
+	hashtable_insert(editor_guistyle->args, "TEXH", (HASHTABLEDATA*)&editor_texs);
+	
 	// graphics
 	char* vsfile = "shader.vs";
 	char* fsfile = "shader.fs";
@@ -61,15 +68,18 @@ editor_init
 	shaderprogram_activate(editor_shaders, editor_log);
 	
 	// textures
-	unsigned int texside = 1<<10;
-	texture *perlin, *gradient;
-	perlin = texture_initatom(texside, texside, TEXTURE_PERLIN);
-	gradient = texture_initatom(texside, texside, TEXTURE_GRADIENT);
+tick();
+	hashtable* perlinargs = hashtable_init(1);
+	hashtable_insert(perlinargs, "TIME", editor_time);
+	perlin = texture_initatom(texside, texside, TEXTURE_PERLIN, perlinargs);
+tock();
+	gradient = texture_initatom(texside, texside, TEXTURE_GRADIENT, perlinargs);
+	shaderprogram_addvar(editor_shaders, "pxside", editor_width, SHADER_INT1, 1);
 	shaderprogram_addtexturedata(editor_shaders, perlin);
 	shaderprogram_addtexturedata(editor_shaders, gradient);
 	
 	// Set current tex
-	GLuint* g = hashtable_get(editor_shaders->textures, "GRADIENT");
+	GLuint* g = hashtable_get(editor_shaders->textures, "PERLIN");
 	glActiveTexture(GL_TEXTURE0);
 	GLuint id = glGetUniformLocation(editor_shaders->program, "tex");
 	if (id < 0) {
@@ -88,8 +98,11 @@ editor_update
 )
 {
 	gui_update(editor_gui, t, dt);	
-	shaderprogram_update(editor_shaders, t, dt);	
-}
+	shaderprogram_update(editor_shaders, t, dt);
+tick();	
+	texture_generate(perlin);
+tock();
+	}
 
 void
 editor_draw

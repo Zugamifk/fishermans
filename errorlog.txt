@@ -1,6 +1,0 @@
-ERROR: SHADER COMPILATION
-	(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
-
-ERROR: SHADER COMPILATION
-	(0) : error C0000: syntax error, unexpected $end at token "<EOF>"
-

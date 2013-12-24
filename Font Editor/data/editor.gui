@@ -5,9 +5,9 @@ WINDOW(name:"FONT MAKER") {
 	CELL {
 		(vertical, 0.1)
 		CELL {
-			
-		} CELL {
 			TEXTIN(name:"input", text:"Save...")
+		} CELL {
+			VIEWPORT(name:"editor")
 		}
 	}
 }

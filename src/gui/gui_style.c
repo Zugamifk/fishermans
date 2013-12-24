@@ -2,6 +2,7 @@
 typedef struct
 _S_gui_style
 {
+	hashtable* args;
 	colorpack* palette;
 	fontinfo* font;
 	void (*gui)(struct _S_gui_style*, gui*, double, double);
@@ -21,7 +22,7 @@ gui_style_init
 )
 {
 	gui_style* gs = calloc(1, sizeof(gui_style));
-
+	gs->args = hashtable_init(1);
 	return gs;
 }
 

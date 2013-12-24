@@ -49,6 +49,8 @@ int main(int argc, char** argv) {
 	hashtable* Mvars = hashtable_init(0);
 	hashtable_insert(Mvars, "WIDTH", &screenwidth);
 	hashtable_insert(Mvars, "HEIGHT", &screenheight);
+	hashtable_insert(Mvars, "TIME", &TIME);
+	hashtable_insert(Mvars, "DTIME", &DTIME);
 
 	Mapp = editor_getappdata(Mlog, Meb, Mvars);
 	

@@ -1,31 +1,23 @@
-typedef struct
-_texture_gen_args_s
-{
-	unsigned int w;
-	unsigned int h;
-	float time;
-	float dtime;
-	int *numbers;
-	int numnums;
-} texture_gen_args;
-typedef BYTE* (*texture_gen_cb)(texture_gen_args);
 
 typedef struct
 _texture_s
 {
 	char* name;
 	GLuint textureid;
-	texture_gen_cb gen_cb;
+	BYTE* (*gen_cb)(struct _texture_s*);
 	unsigned int width;
 	unsigned int height;
+	hashtable* vars;
 } texture;
+typedef BYTE* (*texture_gen_cb)(texture*);
 
 texture*
 texture_init
 (
 	const char* name,
 	unsigned int w,
-	unsigned int h
+	unsigned int h,
+	hashtable* vars
 )
 {
 	texture* t = malloc(sizeof(texture));
@@ -38,6 +30,12 @@ texture_init
 
 	t->width = w;
 	t->height = h;
+	
+	if (vars == NULL) {
+		t->vars = hashtable_init(1);
+	} else {
+		t->vars = vars;
+	}
 	
 	return t;
 }
@@ -58,7 +56,8 @@ texture_generate
 )
 {
 	GLuint id = t->textureid;
-	glDeleteTextures(1, &id);
+	//DeleteTextures(1, &id);
+	//GenTextures(1, &id);
 	glBindTexture(GL_TEXTURE_2D, id);
 
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -68,10 +67,8 @@ texture_generate
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	
 	BYTE *data;
-	texture_gen_args args;
-	args.w = t->width;
-	args.h = t->height;
-	data = t->gen_cb(args);
+	
+	data = t->gen_cb(t);
 	
 	gluBuild2DMipmaps(GL_TEXTURE_2D, 3, t->width, t->height, GL_RGB, GL_UNSIGNED_BYTE, data);
 	

@@ -128,29 +128,32 @@ _gui_style_textincb(gui_style* style, gui_textin* gt, double t, double dt) {
 	_gui_box_defdraw(gt->bounds);
 }
 
-// void
-// _gui_style_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
-	// color* c = gui_style_getcolor(style, GUISTYLE_WTF);
-	// color_apply(c);
+void
+_gui_style_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
+	color* c = gui_style_getcolor(style, GUISTYLE_WTF);
+	float w = gv->dim->w;
+	float h = gv->dim->h;
+	
+	color_apply(c);
 
-	// glEnable(GL_TEXTURE_2D); 
+	glEnable(GL_TEXTURE_2D); 
 		
-	// glBegin(GL_QUADS);
-	// glTexCoord2f(0.0, 0.0);
-	// glVertex2d(0.0, 0.0); 
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0, 0.0);
+	glVertex2d(0.0, 0.0); 
 	
-	// glTexCoord2f(SPRITETEX_WIDTH, 0.0);
-	// glVertex2d(gv->dim->w, 0.0);
+	glTexCoord2f(w/h, 0.0);
+	glVertex2d(w, 0.0);
 	
-	// glTexCoord2f(SPRITETEX_WIDTH, SPRITETEX_HEIGHT);
-	// glVertex2d(gv->dim->w, gv->dim->h);
+	glTexCoord2f(w/h,1.0);
+	glVertex2d(w, h);
 	
-	// glTexCoord2f(0.0, SPRITETEX_HEIGHT);
-	// glVertex2d(0.0, gv->dim->h);
+	glTexCoord2f(0.0, 1.0);
+	glVertex2d(0.0, h);
 	
-	// glEnd();
-	// glDisable(GL_TEXTURE_2D); 
-// }
+	glEnd();
+	glDisable(GL_TEXTURE_2D); 
+}
 
 gui_style*
 gui_style_initdefault
@@ -172,7 +175,7 @@ gui_style_initdefault
 	gs->cell = _gui_style_cellcb;
 	gs->button = _gui_style_buttoncb;
 	gs->text = _gui_style_textcb;
-//	gs->viewport = _gui_style_viewportcb;
+	gs->viewport = _gui_style_viewportcb;
 	gs->slider = _gui_style_slidercb;
 	gs->textin = _gui_style_textincb;
 	
