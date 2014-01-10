@@ -134,6 +134,8 @@ _gui_style_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	float w = gv->dim->w;
 	float h = gv->dim->h;
 	
+	float tw = 1.0;
+	float th = h/w;
 	color_apply(c);
 
 	glEnable(GL_TEXTURE_2D); 
@@ -142,13 +144,13 @@ _gui_style_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	glTexCoord2f(0.0, 0.0);
 	glVertex2d(0.0, 0.0); 
 	
-	glTexCoord2f(w/h, 0.0);
+	glTexCoord2f(tw, 0.0);
 	glVertex2d(w, 0.0);
 	
-	glTexCoord2f(w/h,1.0);
+	glTexCoord2f(tw,th);
 	glVertex2d(w, h);
 	
-	glTexCoord2f(0.0, 1.0);
+	glTexCoord2f(0.0, th);
 	glVertex2d(0.0, h);
 	
 	glEnd();

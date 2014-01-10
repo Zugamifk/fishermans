@@ -34,14 +34,16 @@ _S_screeninfo
 #include "debug.c"
 #include "hax/bittwiddle.h"
 
+#include "timers.h"
+
 #include "math/funtable.c"
 #include "ext/lookup3.c"
 #include "math/perlin.c"
 #include "math/vector.h"
+#include "math/noise/noise.h"
 #include "math/curves/curves.h"
 #include "math.c"
 
-#include "timers.h"
 #include "structures/datastructures.h"
 
 #include "event/bus.h"

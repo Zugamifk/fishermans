@@ -35,6 +35,50 @@ texture_perlin( texture* t )
 }
 
 BYTE*
+texture_perlin2( texture* t )
+{
+	unsigned int w = t->width;
+	unsigned int h = t->height;
+	
+	BYTE *data = malloc(w*h*3);
+	float *r = hashtable_get(t->vars, "RED");
+	float *g = hashtable_get(t->vars, "BLUE");
+	float *b = hashtable_get(t->vars, "GREEN");
+	
+	unsigned int *rc, *gc, *bc;
+	noise_data perlin_info;
+	int pdd[2] = {w, h};
+	perlin_info.dims = pdd;
+	perlin_info.ndims = 2;
+	perlin_info.max = 256;
+	perlin_info.type = NOISE_PERLIN;
+	perlin_info.perlin_depth = 8;
+	perlin_info.perlin_startdepth = 4;
+	
+	perlin_info.seed = (unsigned int)(*r);
+	rc = perlin_generate2dui(&perlin_info);
+	
+	perlin_info.seed = (unsigned int)(*g);
+	gc = perlin_generate2dui(&perlin_info);
+	
+	perlin_info.seed = (unsigned int)(*b);
+	bc = perlin_generate2dui(&perlin_info);
+	
+	for(int x = 0; x < w; x++) {
+		for (int y = 0; y < h; y++) {
+			int i = (x*h + y);
+			data[i*3] = (BYTE)rc[i];
+			data[i*3+1] = (BYTE)gc[i];
+			data[i*3+2] = (BYTE)bc[i];
+		}
+	}
+	free(rc);
+	free(gc);
+	free(bc);
+	return data;
+}
+
+BYTE*
 texture_gradient( texture* t )
 {
 	unsigned int w = t->width;
@@ -69,7 +113,7 @@ texture_initatom
 	texture *t = texture_init(name, w, h, vars);
 	switch(id) {
 		case TEXTURE_PERLIN: {
-			t->gen_cb = texture_perlin; 
+			t->gen_cb = texture_perlin2; 
 			
 			float *rgb = malloc(sizeof(float)*3);
 			rgb[0] = rand()%1000;

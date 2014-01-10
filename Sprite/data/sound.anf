@@ -1,7 +1,8 @@
 "Thump"<(lfo
 	(*
 		(time)
-		(11))
+		( 11.0 )
+	)
 	(sin
 		(*
 			(time)

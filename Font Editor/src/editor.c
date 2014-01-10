@@ -4,8 +4,8 @@ float* editor_time;
 float* editor_dtime;
 char* editor_directory;
 char* editor_file;
-const unsigned int texside = 256;
-const float editor_texs = 256.0;
+const unsigned int texside = 512;
+const float editor_texs = 512.0;
 
 gui* editor_gui;
 gui_style* editor_guistyle;
@@ -99,9 +99,6 @@ editor_update
 {
 	gui_update(editor_gui, t, dt);	
 	shaderprogram_update(editor_shaders, t, dt);
-tick();	
-	texture_generate(perlin);
-tock();
 	}
 
 void
