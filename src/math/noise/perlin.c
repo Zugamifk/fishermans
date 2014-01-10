@@ -62,13 +62,12 @@ perlin_generate2dui
 	unsigned int biggest = 1000;
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
-			//	printf("%u %u %u\n", x,y, span);
 			val = 0;
 			d = data->max >> 1;
 			step = span>>data->perlin_startdepth;
 			pp = 0;
 			for (int l = data->perlin_startdepth; l < data->perlin_depth; l++) {
-				prw = step;
+				prw = (1<<l)+1;
 				lx = x / step; 
 				ly = y / step;
 				
@@ -83,12 +82,12 @@ perlin_generate2dui
 
 				d = BT_MAX(1, d>>1);
 				step = BT_MAX(1, step>>1);
-				side = prw+1;
+				side = prw-1;
 				pp += side*side;
 				
 				//what's a better way to generate normal perlin noise?!
 			}
-			noise[y+x*h] = val;
+			noise[y*w+x] = val;
 			biggest = BT_MIN(biggest, val);
 		}
 	}

@@ -135,7 +135,7 @@ _gui_style_viewportcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	float h = gv->dim->h;
 	
 	float tw = 1.0;
-	float th = h/w;
+	float th = 1.0;
 	color_apply(c);
 
 	glEnable(GL_TEXTURE_2D); 
