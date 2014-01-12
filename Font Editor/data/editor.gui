@@ -1,5 +1,6 @@
 event: GENERATE
 var: START
+var: STARTSLIDER
 
 GUI
 WINDOW(name:"FONT MAKER") {
@@ -12,16 +13,18 @@ WINDOW(name:"FONT MAKER") {
 			CELL {
 				VIEWPORT(name:"editor")
 			} CELL {
-				(vertical, 0.25)
+				(vertical, 0.25, 0.5)
 				CELL {
 					BUTTON(name:"GEN", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
 				} CELL {
-					(vertical, 0.2)
+					(vertical, 0.5)
 					CELL {
-						
+						SLIDER(w:0.8, h:0.8, x:0.1, y:0.1, value:STARTSLIDER)
 					} CELL {
 						text:"Start Depth: %d"+START
 					}
+				} CELL {
+				
 				}
 			}
 		}

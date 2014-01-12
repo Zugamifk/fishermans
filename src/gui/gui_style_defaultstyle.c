@@ -115,7 +115,7 @@ _gui_style_slidercb(gui_style* style, gui_slider* gs, double t, double dt) {
 	glVertex2d(hsqr, of);
 	glVertex2d(gs->bounds->dim->w-hsqr, of);
 	glEnd();
-	glTranslated(gs->value*0.8*gs->bounds->dim->w, of-hsqr, 0.0);
+	glTranslated(*(gs->value)*0.8*gs->bounds->dim->w, of-hsqr, 0.0);
 	shapes_boxfilled(sqr, sqr);
 }
 

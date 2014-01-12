@@ -192,7 +192,7 @@ guilang_buildslider
 	double y = 0.0;
 	double w = 1.0;
 	double h = 1.0;
-	double value = 0.0;
+	double *value = malloc(sizeof(double));
 	char* name = "SLIDER";
 	
 	guilang_processor_match(processor, "SLIDER");
@@ -206,7 +206,13 @@ guilang_buildslider
 		} else
 		if (strcmp(curr, "value") == 0) {
 			guilang_processor_match(processor, ":");
-			value = strtod(guilang_processor_consume(processor), NULL);
+			curr = guilang_processor_consume(processor);
+			if (isdigit(curr[0])) {
+				*value = strtod(curr, NULL);
+			} else {
+				free(value);
+				value = hashtable_get(processor->vars, curr);
+			}
 		}		
 		else {
 			double* param;

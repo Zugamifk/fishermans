@@ -5,8 +5,10 @@ _S_gui_slider
 	gui_button* clickarea;
 	_gui_box* bounds;
 	double lastp;
-	double value;
+	double* value;
 } gui_slider;
+
+double gui_slider_nullvalue = 0.0;
 
 gui_slider*
 gui_slider_init
@@ -29,7 +31,7 @@ gui_slider_init
 	
 	gs->bounds = _gui_box_init(x, y, w, h);
 	gs->lastp = 0.0;
-	gs->value = 0.0;
+	gs->value = &gui_slider_nullvalue;
 	return gs;
 }
 
@@ -53,7 +55,7 @@ gui_slider_click
 {
 	if (gs->clickarea->state == GUI_BUTTON_HOVER) {
 		gs->clickarea->state = GUI_BUTTON_CLICKED;
-		gs->value = gs->lastp;
+		*(gs->value) = gs->lastp;
 		if (gs->clickarea->clickeventid != EVENT_ID_NULL)
 			bus_triggerevent(bus, gs->clickarea->clickeventid, gs);
 	}
@@ -94,7 +96,7 @@ gui_slider_print
 {
 	printf("SLIDER \'%s\':\n", gs->name);
 	_gui_box_print(gs->bounds);
-	printf("VALUE: %.4f\t", gs->value);
+	printf("VALUE: %.4f\t", *(gs->value));
 	printf("LASTP: %.4f\n", gs->lastp);
 	gui_button_print(gs->clickarea);
 }

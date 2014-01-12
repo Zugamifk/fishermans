@@ -11,6 +11,7 @@ gui* editor_gui;
 gui_style* editor_guistyle;
 texture *perlin, *gradient;
 unsigned int perlin_s = 0, perlin_d = 10;
+double start_slider = 0.0;
 event_bus* editor_events;
 errorlog* editor_log;
 
@@ -54,6 +55,7 @@ editor_init
 	
 	// add vars
 	hashtable_insert(vars, "START", &perlin_s);
+	hashtable_insert(vars, "STARTSLIDER", &start_slider);
 	
 	char* editor_guifile = "editor.gui";
 	char editor_guipath[1024];
@@ -151,6 +153,7 @@ void
 editor_generate_event
 (void* blah)
 {
+	perlin_s = (unsigned int)((double)perlin_d*start_slider);
 	texture_generate(perlin);
 	shaderprogram_addtexturedata(editor_shaders, perlin);
 }
