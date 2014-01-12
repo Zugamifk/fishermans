@@ -205,6 +205,7 @@ _lang_token*
 _langspec_translatetoken
 (
 	_langspec_token* token,
+	set* keywordset,
 	errorlog* log
 )
 {
@@ -215,11 +216,14 @@ _langspec_translatetoken
 				return _lang_inittoken(LANG_NUMBER, str);
 			} else
 			if (strcmp(str, "@") == 0) {
-				return _lang_inittoken(LANG_USERSTRING, str);
+				return _lang_inittoken(LANG_STRING, str);
+			} else
+			if (strcmp(str, "%") == 0) {
+				return _lang_inittoken(LANG_IDENTIFIER, str);
 			} else
 			{
-				//sscanf(str, "\'%[^\']\'", str);
-				return _lang_inittoken(LANG_STRING, str);
+				set_add(keywordset, str);
+				return _lang_inittoken(LANG_KEYWORD, str);
 			}
 		} break;
 		case LANGSPEC_NONTERMINAL: {
@@ -248,6 +252,7 @@ _lang_token*
 _langspec_readline
 (
 	hashtable* grammar
+,	set* keywords
 ,	char* name
 ,	_langspec_token** tokens
 ,	errorlog* log
@@ -286,7 +291,7 @@ _langspec_readline
 				) 
 			{
 				if ( curr->type == LANGSPEC_EPSILON) addedepsilon = true;
-				prod[prodpos] = _langspec_translatetoken(curr, log);
+				prod[prodpos] = _langspec_translatetoken(curr, keywords, log);
 				prodpos++;
 			} else
 			if (	curr->type == LANGSPEC_OPTPARENOPEN ||
@@ -296,7 +301,7 @@ _langspec_readline
 				char childname[LANG_WORDLEN];
 				sprintf(childname, "%s-%d", rule->nonterminal, childct);
 				childct++;
-				prod[prodpos] = _langspec_readline(grammar, childname, tokens+i, log);
+				prod[prodpos] = _langspec_readline(grammar, keywords, childname, tokens+i, log);
 				prodpos++;
 				inparens++;
 			} else
@@ -334,6 +339,7 @@ void
 _langspec_generaterules
 (
 	hashtable*	grammar
+,	set* keywords
 ,	_langspec_token** tokens
 ,	errorlog* log
 )
@@ -365,7 +371,7 @@ _langspec_generaterules
 					curr->type == LANGSPEC_NONTERMINAL
 				) 
 			{
-				firstprod[prodpos] = _langspec_translatetoken(curr, log);
+				firstprod[prodpos] = _langspec_translatetoken(curr, keywords, log);
 				prodpos++;
 			} else
 			if (	curr->type == LANGSPEC_OPTPARENOPEN ||
@@ -376,7 +382,7 @@ _langspec_generaterules
 				sprintf(childname, "%s-%d", firstrule->nonterminal, childct);
 				childct++;
 
-				firstprod[prodpos] = _langspec_readline(grammar, childname, tokens+i, log);
+				firstprod[prodpos] = _langspec_readline(grammar, keywords, childname, tokens+i, log);
 				prodpos++;
 				inparens++;
 			}

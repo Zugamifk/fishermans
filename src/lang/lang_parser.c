@@ -215,7 +215,8 @@ _parsingtable_error
 					// Act based on token type
 					switch (term->type) {
 						// Add terminals to the first set
-						case LANG_USERSTRING:
+						case LANG_IDENTIFIER:
+						case LANG_KEYWORD:
 						case LANG_STRING:
 						case LANG_NUMBER:
 						case LANG_EPSILON:
@@ -301,7 +302,8 @@ _parsingtable_error
 				// Add to First(B) based on type
 				switch (first->type) {
 					// Add terminal as items
-					case LANG_USERSTRING:
+					case LANG_IDENTIFIER:
+					case LANG_KEYWORD:
 					case LANG_STRING:
 					case LANG_NUMBER:
 					case LANG_EPSILON:
@@ -390,7 +392,8 @@ _parsingtable_error
 							// act based on next term type
 							switch (follow->type) {
 								// Add terminals to current's follow set
-								case LANG_USERSTRING:
+								case LANG_IDENTIFIER:
+								case LANG_KEYWORD:
 								case LANG_STRING:
 								case LANG_NUMBER:
 								case LANG_ENDOFINPUT:
@@ -563,7 +566,7 @@ _lang_parser_getproduction
 	// Get the nonterminal entry
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
 	// Get numbers by a generic value, otherwise use the given terminal's value
-	if (t->type == LANG_USERSTRING) {
+	if (t->type == LANG_STRING) {
 		return hashtable_get(ti, LANG_GENERICWORD);
 	} else
 	if (t->type == LANG_NUMBER) {
@@ -642,20 +645,21 @@ _lang_parser_getproduction
 				}
 			} break;
 			// String terminal: match token type and value, otherwise syntax error
-			case LANG_STRING: {
-				if (in->type == LANG_STRING) 
+			case LANG_KEYWORD: {
+				if (in->type == LANG_KEYWORD) 
 				{
 					if (strcmp(in->value, top->value) == 0) {
 						cursor++;
 					} else {
-						_lang_parser_error(log, "String token mismatch: expected [ %s ], got [ %s ]", top->value, in->value);
+						_lang_parser_error(log, "Keyword token mismatch: expected [ %s ], got [ %s ]", top->value, in->value);
 					}
 				} else {
 					_lang_parser_mismatch(log,  _lang_tokentypestrings[top->type], _lang_tokentypestrings[in->type]);
 				}
 			} break;
 			// Other terminals: match ttype, otehrwise syntax error
-			case LANG_USERSTRING:
+			case LANG_IDENTIFIER:
+			case LANG_STRING:
 			case LANG_NUMBER: 
 			case LANG_ENDOFINPUT: {
 				if (in->type == top->type) {

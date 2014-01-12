@@ -35,13 +35,13 @@ lang_tokenize
 		} else 
 		if((*word)[0] == '\"') {
 			sscanf(*word, "\"%[^\"]\"", *word);
-			*curr = _lang_inittoken(LANG_USERSTRING, *word);
+			*curr = _lang_inittoken(LANG_STRING, *word);
 		} else
 		if (strcmp(*word, "$$") == 0) {
 			*curr = _lang_inittoken(LANG_ENDOFINPUT, "EOI");
 			endtoken = true;
 		} else {
-			*curr = _lang_inittoken(LANG_STRING, *word);
+			*curr = _lang_inittoken(LANG_KEYWORD, *word);
 		}
  		curr++;
 		word++;

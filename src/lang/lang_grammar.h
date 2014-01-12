@@ -21,7 +21,8 @@ const int _lang_tokencount = 7;
 typedef enum
 _E_lang_tokentype
 {
-	LANG_USERSTRING,
+	LANG_IDENTIFIER,
+	LANG_KEYWORD,
 	LANG_STRING,
 	LANG_NUMBER,
 	LANG_NONTERMINAL,
@@ -31,7 +32,8 @@ _E_lang_tokentype
 } _lang_tokentype;
 
 const char* _lang_tokentypestrings[] ={
-	"USERSTRING",
+	"IDENTIFIER",
+	"KEYWORD",
 	"STRING",
 	"NUMBER",
 	"NONTERMINAL",
@@ -81,7 +83,7 @@ const char* _langspec_tokentypestrings[] =
 };
 
 const char* _langspec_tokensymbols[][LANGSPEC_MAXTOKENSYMBOLSPERTOKENTYPE] = {
-	{ "@", "#", "$$" },
+	{ "@", "#", "$$", "%" },
 	{ "[", "$$"  },
 	{ "]", "$$"  },
 	{ "(", "$$"  },

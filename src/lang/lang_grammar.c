@@ -4,6 +4,7 @@ void _lang_printstr(char* s) {printf("%s", s);}
 typedef struct
 _S_lang_grammar
 {
+	set* keywords;
 	set* terminals;
 	set* nonterminals;
 	hashtable* rules;
@@ -19,6 +20,7 @@ lang_initgrammar
 )
 {
 	lang_grammar* grammar = malloc(sizeof(lang_grammar));
+	grammar->keywords = set_initcb((set_cmpcb)strcmp);
 	grammar->terminals = set_initcb((set_cmpcb)strcmp);
 	grammar->nonterminals = set_initcb((set_cmpcb)strcmp);
 	grammar->rules = hashtable_init(0);
@@ -60,7 +62,7 @@ lang_initgrammar
 		success &= _langspec_analyse(tokens, log);
 		
 		// generate rules from the string
-		_langspec_generaterules(grammar->rules, tokens, log);
+		_langspec_generaterules(grammar->rules, grammar->keywords, tokens, log);
 		
 		// set the start token
 		if (!startsymbolset) {
