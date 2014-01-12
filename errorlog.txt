@@ -1,0 +1,26 @@
+ERROR: LANG PARSER
+	No production in [ EVENT ] for terminal [ GENERATE ]
+ERROR: LANG PARSER
+	No production in [ BUTTONPARAMLIST-0 ] for terminal [ GENERATE ]
+ERROR: LANG PARSER
+	String token mismatch: expected [ ) ], got [ GENERATE ]
+ERROR: LANG PARSER
+	String token mismatch: expected [ } ], got [ GENERATE ]
+ERROR: LANG PARSER
+	No production in [ CELLLIST-0 ] for terminal [ GENERATE ]
+ERROR: LANG PARSER
+	String token mismatch: expected [ } ], got [ GENERATE ]
+ERROR: LANG PARSER
+	No production in [ CELLLIST-0 ] for terminal [ GENERATE ]
+ERROR: LANG PARSER
+	String token mismatch: expected [ } ], got [ GENERATE ]
+ERROR: LANG PARSER
+	No production in [ CELLLIST-0 ] for terminal [ GENERATE ]
+ERROR: LANG PARSER
+	String token mismatch: expected [ } ], got [ GENERATE ]
+ERROR: LANG PARSER
+	String token mismatch: expected [ } ], got [ GENERATE ]
+ERROR: LANG PARSER
+	No production in [ WINDOWLIST-0 ] for terminal [ GENERATE ]
+ERROR: LANG PARSER
+	Token mismatch: expected [ ENDOFINPUT ], got [ STRING ]

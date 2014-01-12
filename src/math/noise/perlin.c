@@ -17,12 +17,12 @@ static unsigned int prng(unsigned int word, unsigned int seed)
 	return lfsr;
 }
 
-static unsigned int lerp(unsigned int a, unsigned int b, float t) {
-	return (unsigned int)((t*(float)a)+((1.0-t)*(float)b));
-}
-
-static unsigned int cerp(unsigned int a, unsigned int b, float t) {
-	t = 0.5 - 0.5*cos(t*3.14159);
+#define PERLIN_LERP(t) 		(t)
+#define PERLIN_COSB(t) 		(0.5 - 0.5*cos(t*3.14159))
+#define PERLIN_HERMITEB(t) 	(3.0*t*t - 2.0*t*t*t)
+#define PERLIN_FIFTHB(t) 	(6.0*t*t*t*t*t - 15.0*t*t*t*t + 10.0*t*t*t)
+static unsigned int blend(unsigned int a, unsigned int b, float t) {
+	t = PERLIN_FIFTHB(t);
 	return (unsigned int)((t*(float)a)+((1.0-t)*(float)b));
 }
 
@@ -41,7 +41,6 @@ perlin_generate2dui
 		int side = (1 << l) + 1;
 		for (int i = 0; i < side*side; i++) {
 			pregen[cursor] = prng(word, cursor + data->seed); // pseudo-rng
-			//printf("%u ", pregen[cursor]);
 			cursor++;
 		}
 	}
@@ -54,14 +53,14 @@ perlin_generate2dui
 	unsigned int range;
 	unsigned int	w = data->dims[0], h = data->dims[1],  // texture dims
 					x = 0, y = 0, // texture positions
-					tl, tr, bl, br, px, py, pstep, prow, pside; // sampling vars
+					tl, tr, bl, br, px, py, pstep, prow; // sampling vars
 	unsigned int pspan;
 	unsigned int lng = BT_MAX(w, h);
 	for (pspan = 1; pspan < lng; pspan <<= 1) {} // find out how large the deepest level is
 	float tx, ty; // interpolation parameters
 	unsigned int pp; // pregenerated prng array cursor
 	
-	unsigned int biggest = 1000;
+	int l;
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
 			val = 0; // value to generate
@@ -70,7 +69,7 @@ perlin_generate2dui
 			pp = 0; // initialize pregen cursor
 			
 			// sample each resolution
-			for (int l = data->perlin_startdepth; l < data->perlin_depth; l++) {
+			for (l = data->perlin_startdepth; l < data->perlin_depth; l++) {
 				prow = (1<<l)+1; // length of a row in pregen array = 2^l + 1
 				px = x / pstep;  
 				py = y / pstep; // scale position for resolution
@@ -85,22 +84,18 @@ perlin_generate2dui
 				
 				tx = (float)(x%pstep) / (float)pstep;
 				ty = (float)(y%pstep) / (float)pstep;
-				val = val + cerp( cerp(br, bl, tx), cerp(tr, tl, tx), ty );
+				val = val + blend( blend(br, bl, tx), blend(tr, tl, tx), ty );
 
 				range = BT_MAX(1, range>>1);
 				pstep = BT_MAX(1, pstep>>1);
-				pside = prow;
-				pp += pside*pside;
+				pp += prow*prow;
 				
 				//what's a better way to generate normal perlin noise?!
 			}
 			noise[x*h+y] = val;
-			biggest = BT_MIN(biggest, val);
-			//printf("\n");
 		}
 	}
 	free(pregen);
-	printf("%u %u %u\n", data->max >> 1, data->max >> 2);
 	return noise;
 }
 

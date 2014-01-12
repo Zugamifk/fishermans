@@ -30,7 +30,7 @@ editor_error
 	errorlog_logdef(editor_log, "FONT EDITOR", errorstring);
 }
 
-
+void editor_generate_event(void*);
 void
 editor_init
 (
@@ -45,13 +45,21 @@ editor_init
 	editor_height = hashtable_get(vars, "HEIGHT");
 	editor_time = hashtable_get(vars, "TIME");
 	editor_dtime = hashtable_get(vars, "DTIME");
-	
+
 	// Init gui
+	// add events
+	event_id genevent = bus_neweventwithname(bus, "GENERATE");
+	bus_subscribe(bus, genevent, editor_generate_event);
+	// TODO
+	
+	// add vars
+	// TODO
+	
 	char* editor_guifile = "editor.gui";
 	char editor_guipath[1024];
 	sprintf(editor_guipath, "%s%s", EDITOR_DATAPATH, editor_guifile);
 	editor_gui = guilang_load(editor_guipath, GUILANGSPEC1, log, bus, vars);
-	
+
 	editor_guistyle = gui_style_initdefault();
 	hashtable_insert(editor_guistyle->args, "TEXW", (HASHTABLEDATA*)&editor_texs);
 	hashtable_insert(editor_guistyle->args, "TEXH", (HASHTABLEDATA*)&editor_texs);
@@ -99,7 +107,7 @@ editor_update
 {
 	gui_update(editor_gui, t, dt);	
 	shaderprogram_update(editor_shaders, t, dt);
-	}
+}
 
 void
 editor_draw
@@ -122,6 +130,37 @@ editor_resize
 	gui_resize(editor_gui, w, h);
 }
 
+void
+editor_mousemove(mouse_state *ms)
+{
+	gui_mouseupdate(editor_gui, ms->x, *editor_height - ms->y);
+}
+
+void
+editor_mouseup(mouse_state *ms)
+{
+	gui_click(editor_gui, editor_events);
+}
+
+// events
+// ==================================
+void
+editor_generate_event
+(void* blah)
+{
+	texture_generate(perlin);
+	shaderprogram_addtexturedata(editor_shaders, perlin);
+	glActiveTexture(GL_TEXTURE0);
+	GLuint id = glGetUniformLocation(editor_shaders->program, "tex");
+	if (id < 0) {
+		//errorlog_logdef(Spritelog, "\'%s\' does not exist!\n", var);
+	} else {
+		glUniform1i(id, 0);
+	}
+	glBindTexture(GL_TEXTURE_2D, perlin->textureid);
+}
+
+
 application_data*
 editor_getappdata
 (
@@ -136,6 +175,8 @@ editor_getappdata
 	E->update_cb = editor_update;
 	E->draw_cb = editor_draw;
 	E->resize_cb = editor_resize;
+	E->mousemove_cb = editor_mousemove;
+	E->mouseup_cb = editor_mouseup;
 	
 	return E;
 }

@@ -1,13 +1,24 @@
 event:"QUIT"
+event:"GENERATE"
 
 GUI
 WINDOW(name:"FONT MAKER") {
 	CELL {
-		(vertical, 0.1)
+		(vertical, 0.16)
 		CELL {
 			TEXTIN(name:"input", text:"Save...")
 		} CELL {
-			VIEWPORT(name:"editor")
+			(horizontal, 0.625)
+			CELL {
+				VIEWPORT(name:"editor")
+			} CELL {
+				(vertical, 0.25)
+				CELL {
+					BUTTON(name:"GEN", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
+				} CELL {
+					
+				}
+			}
 		}
 	}
 }

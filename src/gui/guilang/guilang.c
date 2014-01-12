@@ -273,7 +273,6 @@ guilang_buildtextin
 		}
 	} while (strcmp(guilang_processor_consume(processor), ",") == 0);
 
-			printf("?\n");
 	gui_textin* gt = gui_textin_init(name, x, y, w, h);
 	if (text!= NULL) gui_textin_cat(gt, text);
 	return gt;
