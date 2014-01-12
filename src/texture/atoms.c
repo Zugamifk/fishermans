@@ -45,6 +45,9 @@ texture_perlin2( texture* t )
 	float *r = hashtable_get(t->vars, "RED");
 	float *g = hashtable_get(t->vars, "BLUE");
 	float *b = hashtable_get(t->vars, "GREEN");
+	*r = rand()%1000;
+	*g = rand()%1000;
+	*b = rand()%1000;
 	
 	unsigned int *rc, *gc, *bc;
 	noise_data perlin_info;

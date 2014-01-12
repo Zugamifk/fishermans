@@ -22,7 +22,7 @@ noiselang_loadsound
 	
 	char** lex = lang_scan(data);
 	
-	_lang_token** tokens = lang_tokenize(lex);
+	_lang_token** tokens = lang_tokenize(lex, grammar->keywords);
 	
 	lang_parse(grammar, tokens, log);
 

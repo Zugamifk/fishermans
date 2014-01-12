@@ -566,12 +566,12 @@ _lang_parser_getproduction
 	// Get the nonterminal entry
 	hashtable* ti = hashtable_get(pt->nti, nt->value);
 	// Get numbers by a generic value, otherwise use the given terminal's value
-	if (t->type == LANG_STRING) {
-		return hashtable_get(ti, LANG_GENERICWORD);
-	} else
-	if (t->type == LANG_NUMBER) {
-		return hashtable_get(ti, LANG_GENERICNUM);
-	} else return hashtable_get(ti, t->value);
+	switch(t->type) {
+		case LANG_STRING: return hashtable_get(ti, LANG_GENERICWORD);
+		case LANG_NUMBER: return hashtable_get(ti, LANG_GENERICNUM);
+		case LANG_IDENTIFIER: return hashtable_get(ti, LANG_GENERICKEYWORD);
+		default: return hashtable_get(ti, t->value);
+	}
 }
 
 // PARSER

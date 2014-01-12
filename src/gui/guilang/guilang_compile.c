@@ -21,7 +21,7 @@ guilang_compile
 	
 	char** lex = lang_scan(guidata);
 	
-	_lang_token** tokens = lang_tokenize(lex);
+	_lang_token** tokens = lang_tokenize(lex, spec->keywords);
 	
 	lang_parse(spec, tokens, log);
 
@@ -55,7 +55,7 @@ guilang_load
 	
 	char** lex = lang_scan(guidata);
 	
-	_lang_token** tokens = lang_tokenize(lex);
+	_lang_token** tokens = lang_tokenize(lex, spec->keywords);
 	
 	lang_parse(spec, tokens, log);
 

@@ -2,9 +2,9 @@ FILE -> [ HEADER ] GUI
 
 HEADER -> ( EVENTDECL | VARIABLEDECL ) [ HEADER ]
 EVENTDECL -> 'event' ':' EVENTDECLLIST
-EVENTDECLLIST -> @ [ ',' EVENTDECLLIST ]
+EVENTDECLLIST -> % [ ',' EVENTDECLLIST ]
 VARIABLEDECL -> 'var' ':' VARIABLEDECLLIST
-VARIABLEDECLLIST -> @ [ ',' VARIABLEDECLLIST ]
+VARIABLEDECLLIST -> % [ ',' VARIABLEDECLLIST ]
 
 GUI -> 'GUI' [ GUIHEADER ] [ WINDOWLIST ]
 GUIHEADER -> '(' GUIHEADERPARAMLIST ')'
@@ -43,9 +43,9 @@ DIMENSION -> ( 'w' | 'h' ) ':' #
 POSITION -> ( 'x' | 'y' ) ':' #
 NAME -> 'name' ':' @
 TEXT -> 'text' ':' @ [ TEXTFMTARGLIST ]
-TEXTFMTARGLIST -> '+' ( # | @ ) [ TEXTFMTARGLIST ]
+TEXTFMTARGLIST -> '+' ( # | @ | % ) [ TEXTFMTARGLIST ]
 ORIENTATION -> ( 'vertical' | 'horizontal' )
 
 MOUSEEVENT -> ( 'hover' | 'click' ) ':' EVENT
 
-EVENT -> ( 'QUIT' )
+EVENT -> %

@@ -19,7 +19,8 @@ _lang_tokenizer_isnum
 _lang_token**
 lang_tokenize
 (
-	char** lexemes
+	char** lexemes,
+	set* keywords
 )
 {
 	char** word = lexemes;
@@ -40,8 +41,11 @@ lang_tokenize
 		if (strcmp(*word, "$$") == 0) {
 			*curr = _lang_inittoken(LANG_ENDOFINPUT, "EOI");
 			endtoken = true;
-		} else {
+		} else 
+		if (set_has(keywords, *word)) {
 			*curr = _lang_inittoken(LANG_KEYWORD, *word);
+		} else {
+			*curr = _lang_inittoken(LANG_IDENTIFIER, *word);
 		}
  		curr++;
 		word++;

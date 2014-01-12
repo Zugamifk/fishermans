@@ -1,4 +1,4 @@
-event:"QUIT"
+event: GENERATE
 
 GUI
 WINDOW(name:"FONT MAKER") {
@@ -13,7 +13,7 @@ WINDOW(name:"FONT MAKER") {
 			} CELL {
 				(vertical, 0.25)
 				CELL {
-					BUTTON(name:"GEN", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:QUIT)
+					BUTTON(name:"GEN", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
 				} CELL {
 					
 				}

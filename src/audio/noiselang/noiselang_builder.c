@@ -90,7 +90,7 @@ noiselang_buildsound
 {
 	lang_processor* prcsr = lang_processor_init(lex, log);
 	
-	char* name = lang_processor_consume(prcsr);
+	//char* name = lang_processor_consume(prcsr);
 	
 	lang_processor_match(prcsr, "<");
 	

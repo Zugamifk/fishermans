@@ -150,14 +150,6 @@ editor_generate_event
 {
 	texture_generate(perlin);
 	shaderprogram_addtexturedata(editor_shaders, perlin);
-	glActiveTexture(GL_TEXTURE0);
-	GLuint id = glGetUniformLocation(editor_shaders->program, "tex");
-	if (id < 0) {
-		//errorlog_logdef(Spritelog, "\'%s\' does not exist!\n", var);
-	} else {
-		glUniform1i(id, 0);
-	}
-	glBindTexture(GL_TEXTURE_2D, perlin->textureid);
 }
 
 

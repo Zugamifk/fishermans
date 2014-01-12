@@ -16,6 +16,7 @@
 #define LANG_ENDOFINPUTSTRING ("EOI")
 #define LANG_GENERICWORD ("@")
 #define LANG_GENERICNUM ("#")
+#define LANG_GENERICKEYWORD ("%")
 
 const int _lang_tokencount = 7;
 typedef enum
@@ -83,7 +84,7 @@ const char* _langspec_tokentypestrings[] =
 };
 
 const char* _langspec_tokensymbols[][LANGSPEC_MAXTOKENSYMBOLSPERTOKENTYPE] = {
-	{ "@", "#", "$$", "%" },
+	{ "@", "#", "%", "$$" },
 	{ "[", "$$"  },
 	{ "]", "$$"  },
 	{ "(", "$$"  },
