@@ -53,7 +53,7 @@ texture_perlin2( texture* t )
 	perlin_info.max = 256;
 	perlin_info.type = NOISE_PERLIN;
 	perlin_info.perlin_depth = 8;
-	perlin_info.perlin_startdepth = 4;
+	perlin_info.perlin_startdepth = 2;
 	
 	perlin_info.seed = (unsigned int)(*r);
 	rc = perlin_generate2dui(&perlin_info);
@@ -64,9 +64,10 @@ texture_perlin2( texture* t )
 	perlin_info.seed = (unsigned int)(*b);
 	bc = perlin_generate2dui(&perlin_info);
 	
+	int i;
 	for(int x = 0; x < w; x++) {
 		for (int y = 0; y < h; y++) {
-			int i = (x*h + y);
+			i = (x*h + y);
 			data[i*3] = (BYTE)rc[i];
 			data[i*3+1] = (BYTE)gc[i];
 			data[i*3+2] = (BYTE)bc[i];

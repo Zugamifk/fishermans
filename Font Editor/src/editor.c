@@ -4,8 +4,8 @@ float* editor_time;
 float* editor_dtime;
 char* editor_directory;
 char* editor_file;
-const unsigned int texside = 512;
-const float editor_texs = 512.0;
+const unsigned int texside = 256;
+const float editor_texs = 256.0;
 
 gui* editor_gui;
 gui_style* editor_guistyle;
