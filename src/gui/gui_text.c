@@ -56,6 +56,7 @@ gui_text_update
 			if (*curr == 'd') {
 				fmtstr = "%d";
 				int* arg = (int*)(args->data);
+				
 				textptr += sprintf(textptr, fmtstr, *arg);
 				args = args->next;
 			} else

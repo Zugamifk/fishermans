@@ -49,6 +49,9 @@ texture_perlin2( texture* t )
 	*g = rand()%1000;
 	*b = rand()%1000;
 	
+	unsigned int *sd = hashtable_get(t->vars, "START");
+	unsigned int *d = hashtable_get(t->vars, "DEPTH");
+	
 	unsigned int *rc, *gc, *bc;
 	noise_data perlin_info;
 	int pdd[2] = {w, h};
@@ -56,8 +59,16 @@ texture_perlin2( texture* t )
 	perlin_info.ndims = 2;
 	perlin_info.max = 256<<prec_exp;
 	perlin_info.type = NOISE_PERLIN;
-	perlin_info.perlin_depth = 10;
-	perlin_info.perlin_startdepth = 1;
+	if (d == NULL) {
+		perlin_info.perlin_depth = 8;
+	} else {
+		perlin_info.perlin_depth = *d;
+	}
+	if (sd == NULL) {
+		perlin_info.perlin_startdepth = 0;
+	} else {
+		perlin_info.perlin_startdepth = *sd;
+	}
 	
 	perlin_info.seed = (unsigned int)(*r);
 	rc = perlin_generate2dui(&perlin_info);

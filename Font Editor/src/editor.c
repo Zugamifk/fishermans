@@ -10,6 +10,7 @@ const float editor_texs = 256.0;
 gui* editor_gui;
 gui_style* editor_guistyle;
 texture *perlin, *gradient;
+unsigned int perlin_s = 0, perlin_d = 10;
 event_bus* editor_events;
 errorlog* editor_log;
 
@@ -50,10 +51,9 @@ editor_init
 	// add events
 	event_id genevent = bus_neweventwithname(bus, "GENERATE");
 	bus_subscribe(bus, genevent, editor_generate_event);
-	// TODO
 	
 	// add vars
-	// TODO
+	hashtable_insert(vars, "START", &perlin_s);
 	
 	char* editor_guifile = "editor.gui";
 	char editor_guipath[1024];
@@ -79,6 +79,9 @@ editor_init
 tick();
 	hashtable* perlinargs = hashtable_init(1);
 	hashtable_insert(perlinargs, "TIME", editor_time);
+	hashtable_insert(perlinargs, "START", &perlin_s);
+	hashtable_insert(perlinargs, "DEPTH", &perlin_d);
+	perlin_s = 4; perlin_d = 10;
 	perlin = texture_initatom(texside, texside, TEXTURE_PERLIN, perlinargs);
 tock();
 	gradient = texture_initatom(texside, texside, TEXTURE_GRADIENT, perlinargs);

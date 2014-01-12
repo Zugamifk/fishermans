@@ -1,4 +1,5 @@
 event: GENERATE
+var: START
 
 GUI
 WINDOW(name:"FONT MAKER") {
@@ -15,7 +16,12 @@ WINDOW(name:"FONT MAKER") {
 				CELL {
 					BUTTON(name:"GEN", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
 				} CELL {
-					
+					(vertical, 0.2)
+					CELL {
+						
+					} CELL {
+						text:"Start Depth: %d"+START
+					}
 				}
 			}
 		}

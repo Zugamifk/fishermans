@@ -214,7 +214,7 @@ gui_cell_resize
 				gui_cell* cell = (gui_cell*)(l->data);
 				double* len = (double*)(p->data);
 				gui_cell_resize(cell, gc->dim->w, gc->dim->h);
-				cell->pos->y = pos * h;
+				cell->pos->y = pos * gc->dim->h;
 				p = p->next;
 				pos = *len;
 			}
@@ -226,7 +226,7 @@ gui_cell_resize
 				gui_cell* cell = (gui_cell*)(l->data);
 				double* len = (double*)(p->data);
 				gui_cell_resize(cell, gc->dim->w, gc->dim->h);
-				cell->pos->x = pos * w;
+				cell->pos->x = pos * gc->dim->w;
 				p = p->next;
 				pos = *len;
 			}
