@@ -1,3 +1,4 @@
+#include "array.c"
 #include "stack.c"
 #include "list.c"
 #include "darray_vptr.c"

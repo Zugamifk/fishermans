@@ -1,28 +1,42 @@
 event: GENERATE
-var: START
-var: STARTSLIDER
+event: CLICK
+event: NEXT
+event: PREVIOUS
+event: RESET
+event: SAVE
+var: TEXTMODE
+var: CURRENTCHAR
 
 GUI
 WINDOW(name:"FONT MAKER") {
 	CELL {
 		(vertical, 0.16)
 		CELL {
-			TEXTIN(name:"input", text:"Save...")
+			(horizontal, 0.8)
+			CELL {
+				TEXTIN(name:"input", text:"Save...")
+			} CELL {
+				BUTTON(name:"savecharbutten", text:"Save", x:25, y:10, w:0.8, h:0.8, click:SAVE)
+			}
 		} CELL {
 			(horizontal, 0.625)
 			CELL {
-				VIEWPORT(name:"editor")
+				VIEWPORT(name:"editor", component:mousescanner:CLICK)
 			} CELL {
-				(vertical, 0.25, 0.5)
+				(vertical, 0.25, 0.35, 0.45)
 				CELL {
-					BUTTON(name:"GEN", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
+					BUTTON(name:"GENERATE", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
 				} CELL {
-					(vertical, 0.5)
+					BUTTON(name:"reset button", text:"RESET", x:25, y:10, w:0.8, h:0.8, click:RESET)
+				} CELL {
+					(horizontal, 0.4, 0.6)
 					CELL {
-						SLIDER(w:0.8, h:0.8, x:0.1, y:0.1, value:STARTSLIDER)
+						BUTTON(name:"prevletterbutton", text:"Previous", x:25, y:10, w:0.8, h:0.8, click:PREVIOUS)
 					} CELL {
-						text:"Start Depth: %d"+START
-					}
+						text:"Current: %s"+CURRENTCHAR
+					} CELL {
+						BUTTON(name:"nextletterbutton", text:"Next", x:25, y:10, w:0.8, h:0.8, click: NEXT)
+					}				
 				} CELL {
 				
 				}

@@ -16,10 +16,11 @@ list_new() {
 
 void
 list_delete(list *l) {
-	if (l->next) {
-		list_delete(l->next);
+	list *n=l;
+	for (; l !=NULL; l = n) {
+		n=l->next;
+		free(l);
 	}
-	free(l);
 }
 
 void

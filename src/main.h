@@ -55,8 +55,7 @@ _S_screeninfo
 #include "keyboard.c"
 
 #include "color.c"
-#include "font/line/font.h"
-#include "font/outline/font-outline.h"
+#include "font/font.h"
 #include "shapes.c"
 
 #include "texture/texture.h"

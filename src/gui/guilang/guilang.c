@@ -24,6 +24,7 @@ guilang_error
 	char errorstring[LANG_LINELEN]; 
 	sprintf(errorstring, message, word);
 	errorlog_logdef(processor->log, "GUILANG TRANSLATOR SYNTAX", errorstring);
+	printf("%s\n", errorstring);
 }
 
 // Semantic / Logic errors
@@ -92,6 +93,30 @@ guilang_readheader
 // CORE GUI OBJECTS
 // ========================================================================= //
 
+// TEXT
+// ========================================================================= //
+// text:@[+( @ | # | %)]*
+gui_text*
+guilang_buildtext
+(
+	guilang_processor* processor,
+	gui_cell* gc
+)
+{
+	gui_text* gt = gui_text_init(0, 0, 10.0);
+	guilang_processor_match(processor, "text");
+	guilang_processor_match(processor, ":");
+	char* fmtstr = guilang_processor_consume(processor);
+	if (processor->current[0] == '+') {
+		guilang_processor_match(processor, "+");
+		char* curr = guilang_processor_consume(processor);
+		gui_text_settext(gt, fmtstr, 1, hashtable_get(processor->vars, curr));
+	} else {
+		gui_text_settext(gt, fmtstr, 0);
+	}
+	return gt;
+}
+	
 // VIEWPORT
 // ========================================================================= //
 // VIEWPORT ( [ name ]:@)
@@ -107,6 +132,7 @@ guilang_buildviewport
 	double w = 1.0;
 	double h = 1.0;
 	char* name = "VIEWPORT";
+	char* msclick = NULL;
 	
 	guilang_processor_match(processor, "VIEWPORT");
 	guilang_processor_match(processor, "(");
@@ -116,10 +142,20 @@ guilang_buildviewport
 		if (strcmp(curr, "name") == 0) {
 			guilang_processor_match(processor, ":");
 			name = guilang_processor_consume(processor);
+		}else
+		if (strcmp(curr, "component") == 0) {
+			guilang_processor_match(processor, ":");
+			curr = guilang_processor_consume(processor);
+			if (strcmp(curr, "mousescanner") == 0) {
+				guilang_processor_match(processor, "+");
+				msclick = guilang_processor_consume(processor);
+			} else {
+				guilang_error(processor, "Bad! \"%s\" is not a valid component!\n", curr);
+			}
 		}
 	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
-	
 	gui_viewport* gv = gui_viewport_init(name, x, y, w, h);
+	gui_viewport_setclickcb(gv, processor->bus, msclick);
 	return gv;
 }
 
@@ -139,26 +175,27 @@ guilang_buildbutton
 	double h = 1.0;
 	char* click = NULL;
 	char* name = "BUTTON";
-	char* text = "BUTTON";
 	
 	guilang_processor_match(processor, "BUTTON");
 	guilang_processor_match(processor, "(");
 	char* curr;
+	gui_text* gt = NULL;
 	do {
-		curr = guilang_processor_consume(processor);
-		if (strcmp(curr, "name") == 0) {
+		if (strcmp(processor->current, "name") == 0) {
+			guilang_processor_match(processor, "name");
 			guilang_processor_match(processor, ":");
 			name = guilang_processor_consume(processor);
 		} else 
-		if (strcmp(curr, "text") == 0) {
-			guilang_processor_match(processor, ":");
-			text = guilang_processor_consume(processor);
+		if (strcmp(processor->current, "text") == 0) {
+			gt = guilang_buildtext(processor, gc);
 		} else 
-		if (strcmp(curr, "click") == 0) {
+		if (strcmp(processor->current, "click") == 0) {
+			guilang_processor_match(processor, "click");
 			guilang_processor_match(processor, ":");
 			click = guilang_processor_consume(processor);
 		} else {
 			double* param;
+			curr = guilang_processor_consume(processor);
 			switch(curr[0]) {
 				case 'x': param = &x; break;
 				case 'y': param = &y; break;
@@ -173,8 +210,9 @@ guilang_buildbutton
 	} while(strcmp(guilang_processor_consume(processor), ",") == 0);
 	
 	gui_button* gb = gui_button_init(name, x, y, w, h);
-	gui_text_settext(gb->text, text, 0);
-	gui_button_setclickcb(gb, processor->bus, click);
+	if (click != NULL) gui_button_setclickcb(gb, processor->bus, click);
+	if (gt != NULL) { gui_text_delete(gb->text); gb->text = gt;}
+	
 	return gb;
 }
 	
@@ -331,12 +369,12 @@ guilang_buildcell
 		// Match comma and set up a list of partition values for spacing cells
 		guilang_processor_match(processor, ",");
 		list* positions = list_new();
+
 		do {
 			// match partition value
 			curr = guilang_processor_consume(processor);
 			double* pos = malloc(sizeof(double));			
 			*pos = strtod(curr, NULL);
-			
 			// add to partition list
 			list_add(positions, pos);
 			
@@ -346,7 +384,6 @@ guilang_buildcell
 		
 		// Initialize cell partition
 		gui_cell* cell = guilang_buildcell(processor, gw);
-		
 		// initialize cell position
 		double x = 0.0;
 		double y = 0.0;
@@ -357,7 +394,6 @@ guilang_buildcell
 		
 		// Iterate over list of partitions
 		for(list* l = positions; l->data!=NULL; l = l->next) {
-		
 			// Get positions
 			step = (double*)(l->data);
 			
@@ -387,8 +423,8 @@ guilang_buildcell
 		gui_cell_addcell(gc, cell, orientation, end, 1.0 - laststep);
 		
 		// Clear temp objects
-		list_delete(positions);
-		
+		// TODO: fix, segfaults when theres a viewport with a component?!!?!
+		//list_delete(positions);
 	} else
 	if(strcmp(processor->current, "BUTTON") == 0) {
 		gui_button* gb = guilang_buildbutton(processor, gc);
@@ -407,26 +443,14 @@ guilang_buildcell
 		gui_cell_addobject(gc, gt, GUI_CELL_TEXTIN);
 	} else
 	if(strcmp(processor->current, "text") == 0) {
-		gui_text* gt = gui_text_init(0, 0, 10.0);
-
-		guilang_processor_match(processor, "text");
-		guilang_processor_match(processor, ":");
-		char* fmtstr = guilang_processor_consume(processor);
-		if (processor->current[0] == '+') {
-			guilang_processor_match(processor, "+");
-			curr = guilang_processor_consume(processor);
-			gui_text_settext(gt, fmtstr, 1, hashtable_get(processor->vars, curr));
-		} else {
-			gui_text_settext(gt, fmtstr, 0);
-		}
-		
+		gui_text* gt = guilang_buildtext(processor, gc);
 		gui_cell_addobject(gc, gt, GUI_CELL_TEXT);
 	} else
 	if(strcmp(processor->current, "}") == 0) {
+		// it's empty, use default values
 	}
-
+// this is weird, fix it
 	guilang_processor_match(processor, "}");
-	
 	return gc;
 }
 

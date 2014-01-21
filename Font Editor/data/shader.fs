@@ -3,6 +3,10 @@ uniform sampler2D tex;
 uniform int pxside;
 varying vec2 texc;
 
+const int CELLMAX = 16;
+const float CELLMAXf = 16.0;
+uniform int cells[CELLMAX*CELLMAX];
+
 const float pi = 3.14159;
 
 const int GUIID = 0;
@@ -22,6 +26,15 @@ decodeid
 	float val = float(NUMIDS)*color.r;
 	return val;
 }
+
+float
+getcell
+()
+{
+	int x = int(texc.x*16.0);
+	int y = int(texc.y*16.0);
+	return cells[x+y*16]?1.0:0.0;
+}
  
 void main (void)  
 {   
@@ -29,7 +42,7 @@ void main (void)
 		
 		switch(id) {
 			case WTFID: {
-				gl_FragColor = texture2D(tex, texc);
+				gl_FragColor = texture2D(tex, texc)*getcell();
 			} break;
 			default:
 					gl_FragColor = vec4(gl_Color.g,gl_Color.b,gl_Color.r, 1.0);

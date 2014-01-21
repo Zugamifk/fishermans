@@ -82,6 +82,9 @@ gui_cell_reset
 				gui_cell_reset(l->data);
 			}
 		}break;
+		case GUI_CELL_VIEWPORT: {
+			gui_viewport_reset(gc->object.viewport);
+		} break;
 		case GUI_CELL_BUTTON: {
 			gui_button_reset(gc->object.button);
 		} break;
@@ -110,6 +113,9 @@ gui_cell_update
 				gui_cell_update(l->data, t, dt);
 			}
 		}break;
+		case GUI_CELL_BUTTON:{
+			gui_button_update(gc->object.button);
+		} break;
 		case GUI_CELL_TEXT: {
 			gui_text_update(gc->object.text);
 		} break;
@@ -150,6 +156,9 @@ gui_cell_mouseupdate
 					gui_cell_mouseupdate(l->data, rx, ry);
 				}
 			}break;
+			case GUI_CELL_VIEWPORT: {
+				gui_viewport_mouseupdate(gc->object.viewport, rx, ry);
+			} break;
 			case GUI_CELL_BUTTON: {
 				gui_button_mouseupdate(gc->object.button, rx, ry);
 			} break;
@@ -182,6 +191,9 @@ gui_cell_click
 					gui_cell_click(l->data, bus, vars);
 				}
 			}break;
+			case GUI_CELL_VIEWPORT: {
+				gui_viewport_click(gc->object.viewport, bus);
+			} break;
 			case GUI_CELL_BUTTON: {
 				gui_button_click(gc->object.button, bus);
 			} break;
@@ -369,7 +381,7 @@ gui_cell_print
 			printf("\tCELLS:\n");
 			list* p = gc->partitions;
 			for(list* l = gc->cells; l->data != NULL; l = l->next) {
-				printf("[%f] ", p->data);
+				printf("[%d] ", p->data);
 				gui_cell_print(l->data);
 				p = p->next;
 			}

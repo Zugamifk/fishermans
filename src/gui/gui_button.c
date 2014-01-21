@@ -63,6 +63,15 @@ gui_button_reset
 {
 	gb->state = GUI_BUTTON_ACTIVE;
 }
+
+void
+gui_button_update
+(
+	gui_button* gb
+)
+{
+	gui_text_update(gb->text);
+}
  
 bool
 gui_button_contains
@@ -126,5 +135,5 @@ gui_button_print
 	vec2_print(gb->pos);
 	printf("\tDIM:\t");
 	_gui_dimension_print(gb->dim);
-	printf("\tTEXT: \"%s\"", gb->text);
+	printf("\tTEXT: \"%s\"\n", gb->text->text);
 }

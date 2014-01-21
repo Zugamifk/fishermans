@@ -113,6 +113,17 @@ gui_text_resize
 }
 
 void
+gui_text_delete
+(
+	gui_text* gt
+)
+{
+	free(gt->text);
+	free(gt->fmtstring);
+	free(gt);
+}
+
+void
 gui_text_print
 (
 	gui_text* gt

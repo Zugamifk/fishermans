@@ -55,7 +55,6 @@ int main(int argc, char** argv) {
 	Mapp = editor_getappdata(Mlog, Meb, Mvars);
 	
 	Mapp->init_cb(Mlog, Meb, Mvars);
-		
 	#ifndef DEBUG_DONTOPENWINDOW
 	glutMainLoop();
 	#endif
@@ -101,7 +100,7 @@ initglut()
 	
 	// Set up shaders
 	glewInit();
-		
+	
 	printf("init done!\n");
 
 }
@@ -109,7 +108,6 @@ initglut()
 void
 update(int v)
 {
-	glutPostRedisplay();
 	TIME += DTIME;
 
 	Mapp->update_cb(TIME, DTIME);

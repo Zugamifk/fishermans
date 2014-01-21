@@ -25,6 +25,9 @@
 // Check if (x) is power of 2
 #define BT_POW2(x) ((x) && !((x)&((x)-1)))
 
+// calculate x mod 2^e
+#define BT_MOD2(x, e) ((x) & ((1<<e)-1))
+
 // negate (x) if f
 #define BT_IFNEG(f, x) (((x)^-f)+f)
 // negate (x) if not f

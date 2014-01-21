@@ -10,8 +10,11 @@ const float editor_texs = 256.0;
 gui* editor_gui;
 gui_style* editor_guistyle;
 texture *perlin, *gradient;
-unsigned int perlin_s = 0, perlin_d = 10;
-double start_slider = 0.0;
+unsigned int perlin_s = 4, perlin_d = 10, perlin_max = 10;
+double start_slider = 0.0, depth_slider = 1.0;
+char* editor_modestring = "GRID";
+char* editor_currentchar = "A";
+int editor_charindex = 0;
 event_bus* editor_events;
 errorlog* editor_log;
 
@@ -19,6 +22,10 @@ audiosystem* editor_audio;
 lang_grammar* editor_audiogrammar;
 
 shaderprogram* editor_shaders;
+
+// viewport vars
+float* editor_vpclick;
+float editor_vpclicktime;
 
 void
 editor_error
@@ -33,6 +40,7 @@ editor_error
 }
 
 void editor_generate_event(void*);
+void editor_canvasclick(void*);
 void
 editor_init
 (
@@ -48,21 +56,33 @@ editor_init
 	editor_time = hashtable_get(vars, "TIME");
 	editor_dtime = hashtable_get(vars, "DTIME");
 
+	editor_initvars();
+	
 	// Init gui
 	// add events
-	event_id genevent = bus_neweventwithname(bus, "GENERATE");
-	bus_subscribe(bus, genevent, editor_generate_event);
+	event_id guievent;
+	guievent = bus_neweventwithname(bus, "GENERATE");
+	bus_subscribe(bus, guievent, editor_generate_event);
+	guievent = bus_neweventwithname(bus, "RESET");
+	bus_subscribe(bus, guievent, editor_resetbutton);
+	guievent = bus_neweventwithname(bus, "CLICK");
+	bus_subscribe(bus, guievent, editor_canvasclick);
+	guievent = bus_neweventwithname(bus, "NEXT");
+	bus_subscribe(bus, guievent, editor_charsucc);
+	guievent = bus_neweventwithname(bus, "PREVIOUS");
+	bus_subscribe(bus, guievent, editor_charprev);
+	guievent = bus_neweventwithname(bus, "SAVE");
+	bus_subscribe(bus, guievent, editor_charsave);
 	
 	// add vars
-	hashtable_insert(vars, "START", &perlin_s);
-	hashtable_insert(vars, "STARTSLIDER", &start_slider);
+	editor_bindguivars(vars);
 	
 	char* editor_guifile = "editor.gui";
 	char editor_guipath[1024];
 	sprintf(editor_guipath, "%s%s", EDITOR_DATAPATH, editor_guifile);
 	editor_gui = guilang_load(editor_guipath, GUILANGSPEC1, log, bus, vars);
-
 	editor_guistyle = gui_style_initdefault();
+	editor_guistyle->viewport = editor_viewportdrawcb;
 	hashtable_insert(editor_guistyle->args, "TEXW", (HASHTABLEDATA*)&editor_texs);
 	hashtable_insert(editor_guistyle->args, "TEXH", (HASHTABLEDATA*)&editor_texs);
 	
@@ -73,8 +93,15 @@ editor_init
 	sprintf(vspath, "%s%s", EDITOR_DATAPATH, vsfile);
 	sprintf(fspath, "%s%s", EDITOR_DATAPATH, fsfile);
 	editor_shaders = shaderprogram_init1(vspath, fspath, editor_log);
-
+	
 	shaderprogram_addvar(editor_shaders, "time", &TIME, SHADER_FLOAT1, 1);
+	editor_vpclick = malloc(sizeof(float)*2);
+	editor_vpclick[0] = 0.0;
+	editor_vpclick[1] = 0.0;
+	editor_vpclicktime = TIME;
+	shaderprogram_addvar(editor_shaders, "click", &editor_vpclick, SHADER_FLOAT1, 1);
+	shaderprogram_addvar(editor_shaders, "clicktime", &editor_vpclicktime, SHADER_FLOAT1, 1);
+	editor_bindshadervars(editor_shaders);
 	shaderprogram_activate(editor_shaders, editor_log);
 	
 	// textures
@@ -110,6 +137,8 @@ editor_update
 	float dt
 )
 {
+	perlin_d = (unsigned int)((double)perlin_max*depth_slider);
+	perlin_s = (unsigned int)((double)perlin_d*start_slider);
 	gui_update(editor_gui, t, dt);	
 	shaderprogram_update(editor_shaders, t, dt);
 }
@@ -147,17 +176,21 @@ editor_mouseup(mouse_state *ms)
 	gui_click(editor_gui, editor_events);
 }
 
+void
+editor_keyup(keyboard_state* ks, int key)
+{
+	gui_keyboardupdate(editor_gui, ks, key, KEYBOARD_KEY);
+}
+
 // events
 // ==================================
 void
 editor_generate_event
 (void* blah)
 {
-	perlin_s = (unsigned int)((double)perlin_d*start_slider);
 	texture_generate(perlin);
 	shaderprogram_addtexturedata(editor_shaders, perlin);
 }
-
 
 application_data*
 editor_getappdata
@@ -175,6 +208,7 @@ editor_getappdata
 	E->resize_cb = editor_resize;
 	E->mousemove_cb = editor_mousemove;
 	E->mouseup_cb = editor_mouseup;
+	E->keyboardup_cb = editor_keyup;
 	
 	return E;
 }
