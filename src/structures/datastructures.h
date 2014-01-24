@@ -1,4 +1,5 @@
 #include "array.c"
+#include "bitvector.c"
 #include "stack.c"
 #include "list.c"
 #include "darray_vptr.c"

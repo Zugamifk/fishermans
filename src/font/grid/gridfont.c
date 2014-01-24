@@ -1,6 +1,20 @@
+#define GRIDFONT_MAXHEIGHT 256
+#define GRIDFONT_MAXWIDTH 256
+#define GRIDFONT_BASELINEDEFAULT(H) (0.2*(H))
+#define GRIDFONT_MIDLINEDEFAULT(H) (0.6*(H))
+#define GRIDFONT_LSPACEDEFAULT(W) (0.1*(W))
+#define GRIDFONT_WSPACEDEFAULT(W) (W)
+
 typedef struct
 gridfont_s
 {
+	int maxheight;
+	int maxwidth;
+	int baseline;
+	int midline;
+	int letterspace;
+	int wordspace;
+	gridfont_char *emptychar;
 	gridfont_char **chars;
 } gridfont;
 

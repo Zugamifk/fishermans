@@ -14,6 +14,7 @@ void
 editor_initvars
 ()
 {
+bitvector_test();
 	fontname = malloc(1024);
 	sprintf(fontname, "");
 	
