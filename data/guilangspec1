@@ -41,7 +41,7 @@ TEXTIN -> 'TEXTIN' '(' [ TEXTINPARAMLIST ] ')'
 TEXTINPARAMLIST -> TEXTINPARAM [ ',' TEXTINPARAMLIST ]
 TEXTINPARAM -> ( NAME | DIMENSION | POSITION | TEXT )
 
-MOUSESCANNER -> 'mousescanner' '+' EVENT
+MOUSESCANNER -> 'mousescanner' ':' EVENT
 
 DIMENSION -> ( 'w' | 'h' ) ':' #
 POSITION -> ( 'x' | 'y' ) ':' #

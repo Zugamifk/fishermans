@@ -147,7 +147,7 @@ guilang_buildviewport
 			guilang_processor_match(processor, ":");
 			curr = guilang_processor_consume(processor);
 			if (strcmp(curr, "mousescanner") == 0) {
-				guilang_processor_match(processor, "+");
+				guilang_processor_match(processor, ":");
 				msclick = guilang_processor_consume(processor);
 			} else {
 				guilang_error(processor, "Bad! \"%s\" is not a valid component!\n", curr);

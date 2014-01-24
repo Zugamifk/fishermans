@@ -162,10 +162,15 @@ editor_viewportdrawcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	
 	glColor3d(0.7,0.8,0.4);
 	glPushMatrix();
-	float s = w/(50.0*10.0);
-	glScaled(s,s,1.0);
+	glTranslated(0.0,80.0, 0.0);
+	float rowlen = 30.0;
+	float charstep = w/rowlen;
 	for (int i = 33; i < 255; i++) {
-		glTranslated(16.0,0.0,0.0);
+		if ((i-33)%30==29) {
+			glTranslated(-(charstep*rowlen), -20.0,0.0);
+		} else {
+			glTranslated(charstep,0.0,0.0);
+		}
 		gridfont_char *c = currentfont->chars[i];
 		if (c!= NULL) {
 			gridfont_char_draw(c);
