@@ -286,24 +286,24 @@ guilang_buildtextin
 	double y = 0.0;
 	double w = 1.0;
 	double h = 1.0;
-	char* text = NULL;
+	gui_text* text = NULL;
 	char* name = "TEXTIN";
 	
 	guilang_processor_match(processor, "TEXTIN");
 	guilang_processor_match(processor, "(");
 	char* curr;
 	do {
-		curr = guilang_processor_consume(processor);
-		if (strcmp(curr, "name") == 0) {
+		if (strcmp(processor->current, "name") == 0) {
+			guilang_processor_match(processor, "name");
 			guilang_processor_match(processor, ":");
 			name = guilang_processor_consume(processor);
 		} else
-		if (strcmp(curr, "text") == 0) {
-			guilang_processor_match(processor, ":");
-			text = guilang_processor_consume(processor);
+		if (strcmp(processor->current, "text") == 0) {
+			text = guilang_buildtext(processor, gc);
 		}		
 		else {
 			double* param;
+			curr = guilang_processor_consume(processor);
 			switch(curr[0]) {
 				case 'x': param = &x; break;
 				case 'y': param = &y; break;
@@ -318,7 +318,7 @@ guilang_buildtextin
 	} while (strcmp(guilang_processor_consume(processor), ",") == 0);
 
 	gui_textin* gt = gui_textin_init(name, x, y, w, h);
-	if (text!= NULL) gui_textin_cat(gt, text);
+	if (text!= NULL) { gui_text_delete(gt->text); gt->text = text;}
 	return gt;
 }
 

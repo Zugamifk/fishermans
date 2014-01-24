@@ -79,7 +79,7 @@ gui_textin_click
 		hashtable_insert(vars, GUI_FOCUSSTRING, gt);
 	}
 }
-
+ 
 void
 gui_textin_mouseupdate
 (
@@ -100,9 +100,17 @@ gui_textin_cat
 	char* src
 )
 {
+	char buf[1024];
+	int bi = 0;
+	for (char *c = src; *c != '\0'; c++) {
+		switch (*c) {
+			case 8: break;
+			default: buf[bi++] = *c; break;
+		}
+	}
 	unsigned int cut = GUI_TEXTIN_MAX - gt->len;
-	if (cut < strlen(src)) src[cut] = '\0';
-	strcat(gt->str, src);
+	if (cut < strlen(buf)) buf[cut] = '\0';
+	strcat(gt->str, buf);
 	gui_text_settext(gt->text, gt->str, 0);
 }
 

@@ -4,6 +4,7 @@ event: NEXT
 event: PREVIOUS
 event: RESET
 event: SAVE
+var: FONTNAME
 var: TEXTMODE
 var: CURRENTCHAR
 
@@ -14,7 +15,7 @@ WINDOW(name:"FONT MAKER") {
 		CELL {
 			(horizontal, 0.8)
 			CELL {
-				TEXTIN(name:"input", text:"Save...")
+				TEXTIN(name:"input", text:"%s"+FONTNAME)
 			} CELL {
 				BUTTON(name:"savecharbutten", text:"Save", x:25, y:10, w:0.8, h:0.8, click:SAVE)
 			}
@@ -23,11 +24,13 @@ WINDOW(name:"FONT MAKER") {
 			CELL {
 				VIEWPORT(name:"editor", component:mousescanner:CLICK)
 			} CELL {
-				(vertical, 0.25, 0.35, 0.45)
+				(vertical, 0.25, 0.35, 0.45, 0.55)
 				CELL {
 					BUTTON(name:"GENERATE", text:"GEN", x:25, y:10, w:0.8, h:0.8, click:GENERATE)
 				} CELL {
 					BUTTON(name:"reset button", text:"RESET", x:25, y:10, w:0.8, h:0.8, click:RESET)
+				} CELL {
+					BUTTON(name:"char save buttons", text:"SAVE CHARACTER", x:25, y:10, w:0.8, h:0.8, click:SAVE)
 				} CELL {
 					(horizontal, 0.4, 0.6)
 					CELL {

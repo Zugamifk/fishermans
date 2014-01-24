@@ -1,9 +1,12 @@
+char* fontname;
+
 char* modestring = "GRID";
 char* charstr;
-int charpos = 32;
+int charpos = 33;
 #define EDITOR_GRIDMAX 16
 int gridw = 0, gridh = 0;
 int *cells;
+int **alphabet;
 
 gridfont *currentfont;
 
@@ -11,14 +14,21 @@ void
 editor_initvars
 ()
 {
+	fontname = malloc(1024);
+	sprintf(fontname, "");
+	
 	charstr = malloc(256);
 	sprintf(charstr, "?");
+	
 	gridw = 16;
 	gridh = 16;
-	cells = malloc(sizeof(int)*EDITOR_GRIDMAX*EDITOR_GRIDMAX);
-	for (int i = 0; i < EDITOR_GRIDMAX*EDITOR_GRIDMAX; i++) {
-		cells[i] = 0;
+	
+	alphabet = malloc(sizeof(int*)*256);
+	for (int i = 0; i < 256; i++) {
+		alphabet[i] = calloc(sizeof(int), EDITOR_GRIDMAX*EDITOR_GRIDMAX);
 	}
+	cells = calloc(sizeof(int), EDITOR_GRIDMAX*EDITOR_GRIDMAX);
+	
 	currentfont = gridfont_init();
 }
 
@@ -28,6 +38,7 @@ editor_bindguivars
 	hashtable *vars
 )
 {
+	hashtable_insert(vars, "FONTNAME", &fontname);
 	hashtable_insert(vars, "TEXTMODE", &modestring);
 	hashtable_insert(vars, "CURRENTCHAR", &charstr);
 }
@@ -39,6 +50,15 @@ editor_bindshadervars
 )
 {
 	shaderprogram_addvar(shaders, "cells", cells, SHADER_INT1V, EDITOR_GRIDMAX*EDITOR_GRIDMAX);
+}
+
+void
+editor_changechar(void) 
+{
+	for (int i = 0 ; i < EDITOR_GRIDMAX*EDITOR_GRIDMAX; i++) {
+		cells[i] = alphabet[charpos][i];
+	}
+	sprintf(charstr, "%c", charpos);
 }
 
 void
@@ -68,7 +88,7 @@ editor_charsucc
 {
 	if (charpos < 255) {
 		charpos++;
-		sprintf(charstr, "%c", charpos);
+		editor_changechar();
 	}
 }
 
@@ -78,7 +98,7 @@ editor_charprev
 {
 	if (charpos > 33) {
 		charpos--;
-		sprintf(charstr, "%c", charpos);
+		editor_changechar();
 	}
 }
 
@@ -99,8 +119,31 @@ editor_charsave
 			pts[num] = vec2_new((float)x, (float)y);
 			num++;
 		}
+		alphabet[charpos][i] = cells[i];
 	}
 	currentfont->chars[charpos] = gridfont_char_init(pts, num, w, h);
+}
+
+void
+editor_fontsave
+(void* data)
+{
+	if (strlen(fontname) == 0) return;
+	FILE *f = fopen(fontname, "w");
+	char line[1024];
+	for (int i = 32; i < 256; i++) {
+		gridfont_char *gf = currentfont->chars[i];
+		if (gf != NULL) {
+			sprintf(line, "%s %d %d\n", charstr, gf->w, gf->h);
+			fwrite(line, 1, strlen(line), f);
+			for (int j = 0; j < gf->numpts; j++) {
+				sprintf(line, "%d, %d\n",  gf->pts[j]->x, gf->pts[j]->y);
+				fwrite(line, 1, strlen(line), f);
+			}
+		}
+	}	
+	
+	fclose(f);
 }
 
 // viewport draw callback
@@ -119,7 +162,7 @@ editor_viewportdrawcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 	
 	glColor3d(0.7,0.8,0.4);
 	glPushMatrix();
-	float s = w/128.0;
+	float s = w/(50.0*10.0);
 	glScaled(s,s,1.0);
 	for (int i = 33; i < 255; i++) {
 		glTranslated(16.0,0.0,0.0);
