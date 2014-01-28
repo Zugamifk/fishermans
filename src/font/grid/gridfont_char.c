@@ -1,19 +1,17 @@
 typedef struct 
 gridfont_char_s
 {
-	vec2 **pts;
-	int numpts;
-	int w;
-	int h;
+	bitvector *data;
+	int height;
+	int width;
 } gridfont_char;
 
 gridfont_char*
 gridfont_char_init
 (
-	vec2 **pts,
-	int numpts,
-	int w,
-	int h
+	int *cells,
+	int height,
+	int width
 )
 {
 	gridfont_char *gc = malloc(sizeof(gridfont_char));

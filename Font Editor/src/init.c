@@ -7,14 +7,18 @@ int charpos = 33;
 int gridw = 0, gridh = 0;
 int *cells;
 int **alphabet;
+int *charwidths;
+int midline = 10, baseline = 5;
+int letterspace = 1, wordspace = 5;
 
 gridfont *currentfont;
 
+// init funcs
+// =============================================
 void
 editor_initvars
 ()
 {
-bitvector_test();
 	fontname = malloc(1024);
 	sprintf(fontname, "");
 	
@@ -24,6 +28,7 @@ bitvector_test();
 	gridw = 16;
 	gridh = 16;
 	
+	charwidths = calloc(sizeof(int), 256);
 	alphabet = malloc(sizeof(int*)*256);
 	for (int i = 0; i < 256; i++) {
 		alphabet[i] = calloc(sizeof(int), EDITOR_GRIDMAX*EDITOR_GRIDMAX);
@@ -31,6 +36,7 @@ bitvector_test();
 	cells = calloc(sizeof(int), EDITOR_GRIDMAX*EDITOR_GRIDMAX);
 	
 	currentfont = gridfont_init();
+	gridfont_parameterize(currentfont, EDITOR_GRIDMAX, EDITOR_GRIDMAX, baseline, midline, letterspace, wordspace);
 }
 
 void
@@ -53,8 +59,11 @@ editor_bindshadervars
 	shaderprogram_addvar(shaders, "cells", cells, SHADER_INT1V, EDITOR_GRIDMAX*EDITOR_GRIDMAX);
 }
 
-void
-editor_changechar(void) 
+// static functions
+// ===========================================================================
+
+static void
+changechar(void) 
 {
 	for (int i = 0 ; i < EDITOR_GRIDMAX*EDITOR_GRIDMAX; i++) {
 		cells[i] = alphabet[charpos][i];
@@ -62,6 +71,8 @@ editor_changechar(void)
 	sprintf(charstr, "%c", charpos);
 }
 
+// Callbacks
+// ===========================================================================
 void
 editor_canvasclick
 (void* data) 
@@ -71,7 +82,13 @@ editor_canvasclick
 	int y = gridh*viewport->mousey;
 	
 	cells[x+y*gridw] = cells[x+y*gridw] ^ 1;
-	modestring = "POO";
+	
+	int w = 0;
+	for (int i = 0; i < EDITOR_GRIDMAX*EDITOR_GRIDMAX; i++) {
+		if (cells[i] == 1 && i % EDITOR_GRIDMAX > w) 
+			w = i % EDITOR_GRIDMAX;
+	}
+	charwidths[charpos] = w;
 }
 
 void
@@ -81,6 +98,7 @@ editor_resetbutton
 	for (int i = 0; i < EDITOR_GRIDMAX*EDITOR_GRIDMAX; i++) {
 		cells[i] = 0;
 	}
+	charwidths[charpos] = 0;
 }
 
 void
@@ -89,7 +107,7 @@ editor_charsucc
 {
 	if (charpos < 255) {
 		charpos++;
-		editor_changechar();
+		changechar();
 	}
 }
 
@@ -99,7 +117,7 @@ editor_charprev
 {
 	if (charpos > 33) {
 		charpos--;
-		editor_changechar();
+		changechar();
 	}
 }
 
@@ -107,45 +125,33 @@ void
 editor_charsave
 (void* data)
 {
-	vec2 **pts = malloc(sizeof(vec2*)*EDITOR_GRIDMAX*EDITOR_GRIDMAX);
-	int num = 0;
-	int w=0, h=0;
-	int x, y;
 	for (int i = 0; i < EDITOR_GRIDMAX*EDITOR_GRIDMAX; i++) {
-		if (cells[i]==1) {
-			x = i%gridw;
-			y = i/gridw;
-			if (x > w) w = x;
-			if (y > h) h = y;
-			pts[num] = vec2_new((float)x, (float)y);
-			num++;
-		}
 		alphabet[charpos][i] = cells[i];
 	}
-	currentfont->chars[charpos] = gridfont_char_init(pts, num, w, h);
+	currentfont->chars[charpos] = gridfont_encodechar(alphabet[charpos], EDITOR_GRIDMAX, EDITOR_GRIDMAX);
 }
 
-void
-editor_fontsave
-(void* data)
-{
-	if (strlen(fontname) == 0) return;
-	FILE *f = fopen(fontname, "w");
-	char line[1024];
-	for (int i = 32; i < 256; i++) {
-		gridfont_char *gf = currentfont->chars[i];
-		if (gf != NULL) {
-			sprintf(line, "%s %d %d\n", charstr, gf->w, gf->h);
-			fwrite(line, 1, strlen(line), f);
-			for (int j = 0; j < gf->numpts; j++) {
-				sprintf(line, "%d, %d\n",  gf->pts[j]->x, gf->pts[j]->y);
-				fwrite(line, 1, strlen(line), f);
-			}
-		}
-	}	
+// void
+// editor_fontsave
+// (void* data)
+// {
+	// if (strlen(fontname) == 0) return;
+	// FILE *f = fopen(fontname, "w");
+	// char line[1024];
+	// for (int i = 32; i < 256; i++) {
+		// gridfont_char *gf = currentfont->chars[i];
+		// if (gf != NULL) {
+			// sprintf(line, "%s %d %d\n", charstr, gf->w, gf->h);
+			// fwrite(line, 1, strlen(line), f);
+			// for (int j = 0; j < gf->numpts; j++) {
+				// sprintf(line, "%d, %d\n",  gf->pts[j]->x, gf->pts[j]->y);
+				// fwrite(line, 1, strlen(line), f);
+			// }
+		// }
+	// }	
 	
-	fclose(f);
-}
+	// fclose(f);
+// }
 
 // viewport draw callback
 // =================================
@@ -172,16 +178,26 @@ editor_viewportdrawcb(gui_style* style, gui_viewport* gv, double t, double dt) {
 		} else {
 			glTranslated(charstep,0.0,0.0);
 		}
-		gridfont_char *c = currentfont->chars[i];
 		if (c!= NULL) {
-			gridfont_char_draw(c);
+			gridfont_drawchar(currentfont, i);
 		}
 	}
 	glPopMatrix();
 	
+	glPushMatrix();
+		glTranslated(25.0, 100.0,0.0);
+		gridfont_write(currentfont, "Hello, world!");
+	glPopMatrix();
+	
 	glBegin(GL_LINES);
-	glColor3d(0.0,0.2,0.3);
+	float width = (float)(charwidths[charpos])/(float)EDITOR_GRIDMAX;
+	bool widthl = false;
 	for (double x = txi; x < 1.0; x = x + txi) {
+		if (x > width && !widthl) {
+			glColor3d(0.6,0.1,0.1);
+			widthl = true;
+		} else glColor3d(0.0,0.2,0.3);
+		
 		glVertex2d(x*w, 0.0);
 		glVertex2d(x*w, h);
 	}
