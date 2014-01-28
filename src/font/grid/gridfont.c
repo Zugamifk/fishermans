@@ -30,10 +30,6 @@ gridfont_s
 	int *widths;
 } gridfont;
 
-static float state_fontx = 0.0;
-static float state_fonty = 0.0;
-static float state_scale = 1.0;
-
 gridfont*
 gridfont_init
 (
@@ -130,6 +126,9 @@ gridfont_write
 	glBegin(GL_QUADS);
 	x = 0.0, y = 0.0;
 	for (cptr = str, c = *cptr; c != '\0'; cptr++, c = *cptr) {
+		switch (c) {
+			default: break;
+		}
 		if (gf->chars[(int)c] == NULL) {
 			if (gf->emptychar != NULL) {
 				for (int i = 0; i < gf->maxheight * gf->maxwidth; i++) {
@@ -170,24 +169,4 @@ gridfont_write
 	}
 	glEnd();
 	glPopMatrix();
-}
-
-void
-gridfont_pos
-(
-	double x,
-	double y
-)
-{
-	state_fontx = x;
-	state_fonty = y;
-}
-
-void
-gridfont_scale
-(
-	double s
-)
-{
-	state_scale = s;
 }

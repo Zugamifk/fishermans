@@ -4,7 +4,7 @@ load(const char *filename, char **data, int *len)
 	// open file
 	FILE *fp = fopen(filename, "r");
 	if (!fp) {
-		printf("\'%s\' doesn't exist!\n", filename);
+		printf("\'%s\' couldn't be opened!\n", filename);
 		return 0;
 	}
 	fseek(fp, 0, SEEK_END);
@@ -20,4 +20,19 @@ load(const char *filename, char **data, int *len)
 
 	return succ;
 
+}
+
+void
+save(const char *filename, char *data, int len)
+{
+	// open file
+	FILE *fp = fopen(filename, "w");
+	if (!fp) {
+		printf("\'%s\' couldn't be opened!!\n", filename);
+		return;
+	}
+
+	fwrite(data, 1, len, fp);
+
+	fclose(fp);
 }

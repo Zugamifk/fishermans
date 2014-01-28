@@ -71,8 +71,10 @@ editor_init
 	bus_subscribe(bus, guievent, editor_charsucc);
 	guievent = bus_neweventwithname(bus, "PREVIOUS");
 	bus_subscribe(bus, guievent, editor_charprev);
-	guievent = bus_neweventwithname(bus, "SAVE");
+	guievent = bus_neweventwithname(bus, "CHARSAVE");
 	bus_subscribe(bus, guievent, editor_charsave);
+	guievent = bus_neweventwithname(bus, "FONTSAVE");
+	bus_subscribe(bus, guievent, editor_fontsave);
 	
 	// add vars
 	editor_bindguivars(vars);

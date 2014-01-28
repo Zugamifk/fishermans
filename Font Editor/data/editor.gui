@@ -3,7 +3,8 @@ event: CLICK
 event: NEXT
 event: PREVIOUS
 event: RESET
-event: SAVE
+event: CHARSAVE
+event: FONTSAVE
 var: FONTNAME
 var: TEXTMODE
 var: CURRENTCHAR
@@ -17,7 +18,7 @@ WINDOW(name:"FONT MAKER") {
 			CELL {
 				TEXTIN(name:"input", text:"%s"+FONTNAME)
 			} CELL {
-				BUTTON(name:"savecharbutten", text:"Save", x:25, y:10, w:0.8, h:0.8, click:SAVE)
+				BUTTON(name:"savefontbutten", text:"Save", x:25, y:10, w:0.8, h:0.8, click:FONTSAVE)
 			}
 		} CELL {
 			(horizontal, 0.625)
@@ -30,7 +31,7 @@ WINDOW(name:"FONT MAKER") {
 				} CELL {
 					BUTTON(name:"reset button", text:"RESET", x:25, y:10, w:0.8, h:0.8, click:RESET)
 				} CELL {
-					BUTTON(name:"char save buttons", text:"SAVE CHARACTER", x:25, y:10, w:0.8, h:0.8, click:SAVE)
+					BUTTON(name:"char save buttons", text:"SAVE CHARACTER", x:25, y:10, w:0.8, h:0.8, click:CHARSAVE)
 				} CELL {
 					(horizontal, 0.4, 0.6)
 					CELL {

@@ -65,6 +65,21 @@ bitvector_delete
 	free(b);
 }
 
+int
+bitvector_tochars
+(
+	bitvector *b,
+	char *str
+)
+{
+	int chars_per_block = BITVECTOR_BLOCKSIZE/8;
+	int len = chars_per_block * b->blocknum;
+	for (int i = 0; i < len; i += chars_per_block) {
+		str[i] = (b->bits[i/chars_per_block]) >> (8*(i%chars_per_block));
+	}
+	return len;
+}
+
 void
 bitvector_print
 (

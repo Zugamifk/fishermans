@@ -20,10 +20,10 @@ editor_initvars
 ()
 {
 	fontname = malloc(1024);
-	sprintf(fontname, "");
+	sprintf(fontname, "test");
 	
 	charstr = malloc(256);
-	sprintf(charstr, "?");
+	sprintf(charstr, "%c", charpos);
 	
 	gridw = 16;
 	gridh = 16;
@@ -131,27 +131,12 @@ editor_charsave
 	currentfont->chars[charpos] = gridfont_encodechar(alphabet[charpos], EDITOR_GRIDMAX, EDITOR_GRIDMAX);
 }
 
-// void
-// editor_fontsave
-// (void* data)
-// {
-	// if (strlen(fontname) == 0) return;
-	// FILE *f = fopen(fontname, "w");
-	// char line[1024];
-	// for (int i = 32; i < 256; i++) {
-		// gridfont_char *gf = currentfont->chars[i];
-		// if (gf != NULL) {
-			// sprintf(line, "%s %d %d\n", charstr, gf->w, gf->h);
-			// fwrite(line, 1, strlen(line), f);
-			// for (int j = 0; j < gf->numpts; j++) {
-				// sprintf(line, "%d, %d\n",  gf->pts[j]->x, gf->pts[j]->y);
-				// fwrite(line, 1, strlen(line), f);
-			// }
-		// }
-	// }	
-	
-	// fclose(f);
-// }
+void
+editor_fontsave
+(void* data)
+{
+	gridfont_save(currentfont, fontname);
+}
 
 // viewport draw callback
 // =================================
