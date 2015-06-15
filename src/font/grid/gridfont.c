@@ -9,11 +9,20 @@
 typedef enum
 gridfont_state_e
 {
-	GRIDFONT_BAD,
-	GRIDFONT_EMPTY,
-	GRIDFONT_INITIALIZED,
-	GRIDFONT_FULL
+	GRIDFONT_BAD = 1,
+	GRIDFONT_EMPTY = 2,
+	GRIDFONT_INITIALIZED = 4,
+	GRIDFONT_FULL = 8
 } gridfont_state;
+
+const char *
+gridfont_statestrings[] = 
+{
+	"GRIDFONT BAD",
+	"GRIDFONT EMPTY",
+	"GRIDFONT INITIALIZED",
+	"GRIDFONT FULL"
+};
 
 typedef struct
 gridfont_s
@@ -169,4 +178,25 @@ gridfont_write
 	}
 	glEnd();
 	glPopMatrix();
+}
+
+// tostring, not for drawing
+void
+gridfont_print
+(
+	gridfont *gf
+)
+{
+	printf("GRID FONT\n");
+	printf("State: %s\n", gridfont_statestrings[gf->state]); 
+	if (gf->state & (GRIDFONT_BAD | GRIDFONT_EMPTY)) return;
+	printf("Max width: %d\t Max height: %d\n", gf->maxwidth, gf->maxheight);
+	printf("Midline: %d\t Baseline: %d\n", gf->midline, gf->baseline);
+	printf("Letter space: %d\t Word space: %d\n", gf->letterspace, gf->wordspace);
+	for (int i = 0; i < GRIDFONT_NUMCHARS; i++) {
+		if (gf->chars[i] != NULL) {
+			printf("%c:\t Width: %d\t", (char)i, gf->widths[i]);
+			bitvector_print(gf->chars[i]);
+		}
+	}
 }

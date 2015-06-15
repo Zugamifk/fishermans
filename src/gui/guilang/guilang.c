@@ -288,6 +288,7 @@ guilang_buildtextin
 	double h = 1.0;
 	gui_text* text = NULL;
 	char* name = "TEXTIN";
+	char** inptr = NULL;
 	
 	guilang_processor_match(processor, "TEXTIN");
 	guilang_processor_match(processor, "(");
@@ -297,6 +298,12 @@ guilang_buildtextin
 			guilang_processor_match(processor, "name");
 			guilang_processor_match(processor, ":");
 			name = guilang_processor_consume(processor);
+		} else
+		if (strcmp(processor->current, "inptr") == 0) {
+			guilang_processor_match(processor, "inptr");
+			guilang_processor_match(processor, ":");
+			curr = guilang_processor_consume(processor);
+			inptr = hashtable_get(processor->vars, curr);
 		} else
 		if (strcmp(processor->current, "text") == 0) {
 			text = guilang_buildtext(processor, gc);
@@ -319,6 +326,8 @@ guilang_buildtextin
 
 	gui_textin* gt = gui_textin_init(name, x, y, w, h);
 	if (text!= NULL) { gui_text_delete(gt->text); gt->text = text;}
+	if (inptr!= NULL) gt->inptr = inptr;
+	
 	return gt;
 }
 

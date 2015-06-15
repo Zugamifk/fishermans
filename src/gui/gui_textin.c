@@ -14,6 +14,7 @@ _S_gui_textin
 {
 	char* name;
 	char* str;
+	char** inptr;
 	gui_text* text;
 	unsigned int len;
 	unsigned int cursor;
@@ -34,8 +35,9 @@ gui_textin_init
 	gui_textin* gt = malloc(sizeof(gui_textin));
 	gt->name = malloc(strlen(name));
 	strcpy(gt->name, name);
-	
+
 	gt->str = calloc(1, GUI_TEXTIN_MAX);
+	gt->inptr = NULL;
 	gt->text = gui_text_init(0.0, 5.0, 8.0);
 	gui_text_settext(gt->text, "", 0);
 	gt->len = 0;
@@ -43,7 +45,7 @@ gui_textin_init
 
 	gt->bounds = _gui_box_init(x, y, w, h);
 	gt->state = GUI_TEXTIN_ACTIVE;
-	
+
 	return gt;
 }
 

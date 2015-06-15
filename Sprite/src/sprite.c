@@ -127,7 +127,7 @@ Sprite_mouseup(mouse_state *ms)
 void
 Sprite_keyup(keyboard_state* ks, int key)
 {
-	gui_keyboardupdate(SpriteGUI, ks, key, KEYBOARD_KEY);
+	gui_keyboardupdate(SpriteGUI, Spriteevents, ks, key, KEYBOARD_KEY);
 }
 
 application_data*

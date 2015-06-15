@@ -181,7 +181,7 @@ editor_mouseup(mouse_state *ms)
 void
 editor_keyup(keyboard_state* ks, int key)
 {
-	gui_keyboardupdate(editor_gui, ks, key, KEYBOARD_KEY);
+	gui_keyboardupdate(editor_gui, editor_events, ks, key, KEYBOARD_KEY);
 }
 
 // events

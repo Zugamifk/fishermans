@@ -129,6 +129,8 @@ editor_charsave
 		alphabet[charpos][i] = cells[i];
 	}
 	currentfont->chars[charpos] = gridfont_encodechar(alphabet[charpos], EDITOR_GRIDMAX, EDITOR_GRIDMAX);
+	currentfont->widths[charpos] = charwidths[charpos];
+	gridfont_print(currentfont);
 }
 
 void

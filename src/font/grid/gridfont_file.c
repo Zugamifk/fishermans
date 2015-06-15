@@ -16,7 +16,7 @@ void
 gridfont_save
 (
 	gridfont *gf,
-	const char *filename
+	char *filename
 )
 {
 	char *data = calloc(GRIDFONT_ALLOC, 1);
@@ -47,6 +47,5 @@ gridfont_save
 		*cursor = '\n';
 		cursor++;
 	}
-	printf ("??\n");
 	save(filename, data, cursor-data);
 }

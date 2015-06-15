@@ -131,6 +131,7 @@ void
 gui_keyboardupdate
 (
 	gui* g,
+	event_bus *bus,
 	keyboard_state* ks,
 	int key,
 	keyboard_keytype t
